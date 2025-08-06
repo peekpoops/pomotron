@@ -1,549 +1,303 @@
 import SwiftUI
-
-@available(macOS 13.0, *)
-struct AnalyticsChartView: View {
-    var body: some View {
-        Text("Charts available on macOS 13.0+")
-            .foregroundColor(.secondary)
-    }
-}
+import Charts
 
 struct AnalyticsView: View {
     @EnvironmentObject var timerManager: TimerManager
-    @State private var selectedTimeRange: TimeRange = .week
-    
-    enum TimeRange: String, CaseIterable {
-        case week = "This Week"
-        case month = "This Month"
-        case year = "This Year"
-    }
     
     var body: some View {
-        ScrollView {
-            VStack(spacing: 30) {
-                // Header matching web UI
-                VStack(spacing: 16) {
-                    Text("ANALYTICS & INSIGHTS")
-                        .font(.system(size: 36, weight: .bold, design: .default))
-                        .foregroundStyle(
-                            LinearGradient(
-                                colors: [Color(red: 1.0, green: 0.4, blue: 0.6), Color(red: 0.6, green: 0.4, blue: 1.0)],
-                                startPoint: .leading,
-                                endPoint: .trailing
-                            )
-                        )
-                    
-                    Text("Track your productivity journey")
-                        .font(.system(size: 16))
-                        .foregroundColor(.secondary)
-                }
-                
-                // Time Range Selector - matching web UI style
-                HStack(spacing: 0) {
-                    ForEach(TimeRange.allCases, id: \.self) { range in
-                        Button(range.rawValue) {
-                            selectedTimeRange = range
-                        }
-                        .font(.system(size: 14, weight: .medium))
-                        .foregroundColor(selectedTimeRange == range ? .white : .secondary)
-                        .padding(.horizontal, 20)
-                        .padding(.vertical, 10)
-                        .background(
-                            RoundedRectangle(cornerRadius: 6)
-                                .fill(selectedTimeRange == range ? Color.white.opacity(0.2) : Color.clear)
-                        )
-                    }
-                }
-                .padding(4)
-                .background(
-                    RoundedRectangle(cornerRadius: 10)
-                        .fill(Color.black.opacity(0.3))
+        VStack(spacing: 32) {
+            // Header
+            Text("ANALYTICS")
+                .font(.system(size: 36, weight: .black, design: .monospaced))
+                .foregroundStyle(
+                    LinearGradient(
+                        colors: [
+                            Color(red: 0.945, green: 0.431, blue: 0.765), // Pink
+                            Color(red: 0.647, green: 0.329, blue: 0.808)  // Purple
+                        ],
+                        startPoint: .leading,
+                        endPoint: .trailing
+                    )
                 )
-                
-                // Stats Overview
-                LazyVGrid(columns: [
-                    GridItem(.flexible()),
-                    GridItem(.flexible()),
-                    GridItem(.flexible()),
-                    GridItem(.flexible())
-                ], spacing: 20) {
-                    StatsCard(
-                        title: "Total Sessions",
-                        value: "\(getStats().totalSessions)",
-                        icon: "timer",
-                        color: .cyan
-                    )
-                    
-                    StatsCard(
-                        title: "Focus Time",
-                        value: formatFocusTime(getStats().totalFocusTime),
-                        icon: "brain.head.profile",
-                        color: .purple
-                    )
-                    
-                    StatsCard(
-                        title: "Completion Rate",
-                        value: "\(Int(getStats().completionRate))%",
-                        icon: "checkmark.circle.fill",
-                        color: .green
-                    )
-                    
-                    StatsCard(
-                        title: "Current Streak",
-                        value: "\(getStats().currentStreak) days",
-                        icon: "flame.fill",
-                        color: .orange
-                    )
-                }
-                
-                // Charts Section
-                VStack(spacing: 20) {
-                    // Weekly Progress Chart
-                    AnalyticsCard(title: "Weekly Progress", icon: "chart.bar.fill") {
-                        if #available(macOS 13.0, *) {
-                            WeeklyProgressChart(sessions: getWeeklyData())
-                        } else {
-                            SimpleBarChart(data: getWeeklyData())
-                        }
-                    }
-                    
-                    HStack(spacing: 20) {
-                        // Session Type Distribution
-                        AnalyticsCard(title: "Session Distribution", icon: "chart.pie.fill") {
-                            if #available(macOS 13.0, *) {
-                                SessionDistributionChart(data: getSessionTypeData())
-                            } else {
-                                SimpleDistributionView(data: getSessionTypeData())
-                            }
-                        }
+                .shadow(color: Color(red: 0.945, green: 0.431, blue: 0.765).opacity(0.6), radius: 8)
+            
+            ScrollView {
+                VStack(spacing: 32) {
+                    // Stats Cards
+                    LazyVGrid(columns: [
+                        GridItem(.flexible()),
+                        GridItem(.flexible())
+                    ], spacing: 20) {
+                        StatCard(
+                            title: "TODAY",
+                            value: "\(timerManager.sessionHistory.filter { Calendar.current.isDateInToday($0.startTime) }.count)",
+                            subtitle: "Sessions",
+                            color: Color(red: 0.263, green: 0.824, blue: 0.824)
+                        )
                         
-                        // Daily Patterns
-                        AnalyticsCard(title: "Daily Patterns", icon: "clock.fill") {
-                            if #available(macOS 13.0, *) {
-                                DailyPatternsChart(data: getDailyPatterns())
-                            } else {
-                                SimplePatternsView(data: getDailyPatterns())
-                            }
-                        }
+                        StatCard(
+                            title: "THIS WEEK",
+                            value: "\(getTotalWeeklyMinutes())",
+                            subtitle: "Minutes",
+                            color: Color(red: 0.945, green: 0.431, blue: 0.765)
+                        )
+                        
+                        StatCard(
+                            title: "STREAK",
+                            value: "\(calculateStreak())",
+                            subtitle: "Days",
+                            color: Color(red: 0.647, green: 0.329, blue: 0.808)
+                        )
+                        
+                        StatCard(
+                            title: "COMPLETION",
+                            value: "\(Int(getCompletionRate()))%",
+                            subtitle: "Rate",
+                            color: Color(red: 0.498, green: 0.831, blue: 0.275)
+                        )
                     }
-                }
-                
-                // Recent Sessions
-                AnalyticsCard(title: "Recent Sessions", icon: "list.bullet") {
-                    RecentSessionsList(sessions: getRecentSessions())
-                }
-            }
-            .padding(30)
-        }
-    }
-    
-    // MARK: - Data Methods
-    
-    private func getStats() -> AnalyticsStats {
-        let sessions = getFilteredSessions()
-        let completedSessions = sessions.filter { $0.completed }
-        let focusSessions = completedSessions.filter { $0.sessionType == .focus }
-        
-        let totalFocusTime = focusSessions.reduce(0) { $0 + $1.duration }
-        let completionRate = sessions.isEmpty ? 0.0 : Double(completedSessions.count) / Double(sessions.count) * 100
-        
-        return AnalyticsStats(
-            totalSessions: sessions.count,
-            totalFocusTime: totalFocusTime,
-            completionRate: completionRate,
-            currentStreak: timerManager.getTodaysStats().streak
-        )
-    }
-    
-    private func getFilteredSessions() -> [SessionData] {
-        let calendar = Calendar.current
-        let now = Date()
-        
-        switch selectedTimeRange {
-        case .week:
-            let weekAgo = calendar.date(byAdding: .day, value: -7, to: now) ?? now
-            return timerManager.sessionHistory.filter { $0.date >= weekAgo }
-        case .month:
-            let monthAgo = calendar.date(byAdding: .month, value: -1, to: now) ?? now
-            return timerManager.sessionHistory.filter { $0.date >= monthAgo }
-        case .year:
-            let yearAgo = calendar.date(byAdding: .year, value: -1, to: now) ?? now
-            return timerManager.sessionHistory.filter { $0.date >= yearAgo }
-        }
-    }
-    
-    private func getWeeklyData() -> [WeeklySessionData] {
-        let calendar = Calendar.current
-        let now = Date()
-        var weeklyData: [WeeklySessionData] = []
-        
-        for i in 0..<7 {
-            let date = calendar.date(byAdding: .day, value: -i, to: now) ?? now
-            let dayStart = calendar.startOfDay(for: date)
-            let dayEnd = calendar.date(byAdding: .day, value: 1, to: dayStart) ?? dayStart
-            
-            let daySessions = timerManager.sessionHistory.filter { session in
-                session.date >= dayStart && session.date < dayEnd && session.completed
-            }
-            
-            let focusTime = daySessions
-                .filter { $0.sessionType == .focus }
-                .reduce(0) { $0 + $1.duration }
-            
-            weeklyData.append(WeeklySessionData(
-                date: date,
-                sessions: daySessions.count,
-                focusTime: focusTime
-            ))
-        }
-        
-        return weeklyData.reversed()
-    }
-    
-    private func getSessionTypeData() -> [SessionTypeData] {
-        let sessions = getFilteredSessions().filter { $0.completed }
-        let focusSessions = sessions.filter { $0.sessionType == .focus }.count
-        let breakSessions = sessions.filter { $0.sessionType == .shortBreak }.count
-        let longBreakSessions = sessions.filter { $0.sessionType == .longBreak }.count
-        
-        return [
-            SessionTypeData(type: .focus, count: focusSessions),
-            SessionTypeData(type: .shortBreak, count: breakSessions),
-            SessionTypeData(type: .longBreak, count: longBreakSessions)
-        ]
-    }
-    
-    private func getDailyPatterns() -> [HourlySessionData] {
-        let sessions = getFilteredSessions().filter { $0.completed }
-        var hourlyData: [HourlySessionData] = []
-        
-        for hour in 0...23 {
-            let hourSessions = sessions.filter { session in
-                Calendar.current.component(.hour, from: session.date) == hour
-            }
-            
-            hourlyData.append(HourlySessionData(
-                hour: hour,
-                sessions: hourSessions.count
-            ))
-        }
-        
-        return hourlyData
-    }
-    
-    private func getRecentSessions() -> [SessionData] {
-        return Array(timerManager.sessionHistory.suffix(10).reversed())
-    }
-    
-    private func formatFocusTime(_ minutes: Int) -> String {
-        let hours = minutes / 60
-        let mins = minutes % 60
-        return hours > 0 ? "\(hours)h \(mins)m" : "\(mins)m"
-    }
-}
-
-// MARK: - Charts
-
-@available(macOS 13.0, *)
-struct WeeklyProgressChart: View {
-    let sessions: [WeeklySessionData]
-    
-    var body: some View {
-        Text("Weekly Progress Chart")
-            .frame(height: 200)
-            .foregroundColor(.secondary)
-    }
-}
-
-@available(macOS 13.0, *)
-struct SessionDistributionChart: View {
-    let data: [SessionTypeData]
-    
-    var body: some View {
-        Text("Session Distribution Chart")
-            .frame(height: 200)
-            .foregroundColor(.secondary)
-    }
-}
-
-@available(macOS 13.0, *)
-struct DailyPatternsChart: View {
-    let data: [HourlySessionData]
-    
-    var body: some View {
-        Text("Daily Patterns Chart")
-            .frame(height: 200)
-            .foregroundColor(.secondary)
-    }
-}
-
-// MARK: - Fallback Charts for older macOS
-
-struct SimpleBarChart: View {
-    let data: [WeeklySessionData]
-    
-    var body: some View {
-        VStack(spacing: 8) {
-            ForEach(data.prefix(7)) { session in
-                HStack {
-                    Text(session.date, style: .date)
-                        .font(.caption)
-                        .frame(width: 80, alignment: .leading)
                     
-                    GeometryReader { geometry in
-                        HStack(spacing: 0) {
-                            Rectangle()
-                                .fill(LinearGradient(colors: [.cyan, .purple], startPoint: .leading, endPoint: .trailing))
-                                .frame(width: min(geometry.size.width * CGFloat(session.focusTime) / 120, geometry.size.width))
+                    // Weekly Chart
+                    VStack(spacing: 20) {
+                        HStack {
+                            Text("Weekly Progress")
+                                .font(.system(size: 24, weight: .bold, design: .monospaced))
+                                .foregroundColor(.white)
+                            
                             Spacer()
                         }
-                    }
-                    .frame(height: 20)
-                    
-                    Text("\(session.focusTime)m")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                        .frame(width: 40, alignment: .trailing)
-                }
-            }
-        }
-        .frame(height: 200)
-    }
-}
-
-struct SimpleDistributionView: View {
-    let data: [SessionTypeData]
-    
-    var body: some View {
-        VStack(spacing: 8) {
-            ForEach(data) { item in
-                HStack {
-                    Circle()
-                        .fill(getColorForSessionType(item.type))
-                        .frame(width: 12, height: 12)
-                    
-                    Text(item.type.displayName)
-                        .font(.caption)
-                    
-                    Spacer()
-                    
-                    Text("\(item.count)")
-                        .font(.caption)
-                        .fontWeight(.semibold)
-                }
-            }
-        }
-        .frame(height: 200)
-    }
-    
-    private func getColorForSessionType(_ type: SessionType) -> Color {
-        switch type {
-        case .focus: return .cyan
-        case .shortBreak: return .green
-        case .longBreak: return .purple
-        }
-    }
-}
-
-struct SimplePatternsView: View {
-    let data: [HourlySessionData]
-    
-    var body: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 4) {
-                ForEach(data.filter { $0.sessions > 0 }) { item in
-                    VStack(spacing: 4) {
-                        Rectangle()
-                            .fill(Color.pink)
-                            .frame(width: 20, height: max(4, CGFloat(item.sessions * 10)))
                         
-                        Text("\(item.hour)")
-                            .font(.caption2)
-                            .foregroundColor(.secondary)
+                        if #available(macOS 13.0, *) {
+                            Chart {
+                                ForEach(getWeeklyData(), id: \.day) { data in
+                                    BarMark(
+                                        x: .value("Day", data.day),
+                                        y: .value("Sessions", data.sessions)
+                                    )
+                                    .foregroundStyle(
+                                        LinearGradient(
+                                            colors: [
+                                                Color(red: 0.263, green: 0.824, blue: 0.824),
+                                                Color(red: 0.647, green: 0.329, blue: 0.808)
+                                            ],
+                                            startPoint: .bottom,
+                                            endPoint: .top
+                                        )
+                                    )
+                                }
+                            }
+                            .frame(height: 200)
+                            .chartYAxis {
+                                AxisMarks(position: .leading) { value in
+                                    AxisGridLine()
+                                        .foregroundStyle(Color.gray.opacity(0.3))
+                                    AxisValueLabel()
+                                        .foregroundStyle(.white)
+                                }
+                            }
+                            .chartXAxis {
+                                AxisMarks { value in
+                                    AxisGridLine()
+                                        .foregroundStyle(Color.gray.opacity(0.3))
+                                    AxisValueLabel()
+                                        .foregroundStyle(.white)
+                                }
+                            }
+                        } else {
+                            // Fallback for older macOS versions
+                            VStack {
+                                Text("Charts require macOS 13.0+")
+                                    .foregroundColor(.gray)
+                                    .font(.caption)
+                            }
+                            .frame(height: 200)
+                        }
                     }
+                    .padding(24)
+                    .background(
+                        RoundedRectangle(cornerRadius: 16)
+                            .fill(Color.black.opacity(0.4))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 16)
+                                    .stroke(Color(red: 0.647, green: 0.329, blue: 0.808).opacity(0.3), lineWidth: 1)
+                            )
+                    )
+                    
+                    // Recent Sessions
+                    VStack(spacing: 20) {
+                        HStack {
+                            Text("Recent Sessions")
+                                .font(.system(size: 24, weight: .bold, design: .monospaced))
+                                .foregroundColor(.white)
+                            
+                            Spacer()
+                        }
+                        
+                        LazyVStack(spacing: 12) {
+                            ForEach(timerManager.sessionHistory.suffix(5), id: \.id) { session in
+                                SessionRow(session: session)
+                            }
+                        }
+                    }
+                    .padding(24)
+                    .background(
+                        RoundedRectangle(cornerRadius: 16)
+                            .fill(Color.black.opacity(0.4))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 16)
+                                    .stroke(Color(red: 0.647, green: 0.329, blue: 0.808).opacity(0.3), lineWidth: 1)
+                            )
+                    )
                 }
             }
-            .padding(.horizontal)
         }
-        .frame(height: 200)
+        .padding(.horizontal, 24)
+    }
+    
+    private func getTotalWeeklyMinutes() -> Int {
+        let calendar = Calendar.current
+        let now = Date()
+        let startOfWeek = calendar.dateInterval(of: .weekOfYear, for: now)?.start ?? now
+        
+        return timerManager.sessionHistory
+            .filter { $0.startTime >= startOfWeek }
+            .reduce(0) { $0 + $1.duration }
+    }
+    
+    private func calculateStreak() -> Int {
+        // Simple streak calculation
+        let calendar = Calendar.current
+        var streak = 0
+        var currentDate = Date()
+        
+        while calendar.isDateInToday(currentDate) || 
+              timerManager.sessionHistory.contains(where: { calendar.isDate($0.startTime, inSameDayAs: currentDate) }) {
+            if timerManager.sessionHistory.contains(where: { calendar.isDate($0.startTime, inSameDayAs: currentDate) }) {
+                streak += 1
+            } else if !calendar.isDateInToday(currentDate) {
+                break
+            }
+            currentDate = calendar.date(byAdding: .day, value: -1, to: currentDate) ?? currentDate
+        }
+        
+        return streak
+    }
+    
+    private func getCompletionRate() -> Double {
+        let totalSessions = timerManager.sessionHistory.count
+        let completedSessions = timerManager.sessionHistory.filter { $0.completed }.count
+        
+        guard totalSessions > 0 else { return 0 }
+        return Double(completedSessions) / Double(totalSessions) * 100
+    }
+    
+    private func getWeeklyData() -> [WeeklyData] {
+        let calendar = Calendar.current
+        let now = Date()
+        
+        return (0..<7).compactMap { dayOffset in
+            guard let date = calendar.date(byAdding: .day, value: -dayOffset, to: now) else { return nil }
+            let dayName = calendar.shortWeekdaySymbols[calendar.component(.weekday, from: date) - 1]
+            let sessions = timerManager.sessionHistory.filter { calendar.isDate($0.startTime, inSameDayAs: date) }.count
+            
+            return WeeklyData(day: dayName, sessions: sessions)
+        }.reversed()
     }
 }
 
-// MARK: - Supporting Views
-
-struct StatsCard: View {
+struct StatCard: View {
     let title: String
     let value: String
-    let icon: String
+    let subtitle: String
     let color: Color
     
     var body: some View {
-        HStack(spacing: 16) {
-            // Icon with background
-            Image(systemName: icon)
-                .font(.system(size: 24, weight: .medium))
+        VStack(spacing: 12) {
+            Text(title)
+                .font(.system(size: 12, weight: .bold, design: .monospaced))
                 .foregroundColor(color)
-                .frame(width: 48, height: 48)
-                .background(
-                    RoundedRectangle(cornerRadius: 8)
-                        .fill(color.opacity(0.1))
-                )
             
-            // Content
+            Text(value)
+                .font(.system(size: 32, weight: .black, design: .monospaced))
+                .foregroundColor(.white)
+            
+            Text(subtitle)
+                .font(.system(size: 14, weight: .medium))
+                .foregroundColor(.gray)
+        }
+        .padding(20)
+        .frame(maxWidth: .infinity)
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color.black.opacity(0.4))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(color.opacity(0.3), lineWidth: 1)
+                )
+        )
+        .shadow(color: color.opacity(0.2), radius: 4)
+    }
+}
+
+struct SessionRow: View {
+    let session: PomodoroSession
+    
+    var body: some View {
+        HStack(spacing: 16) {
+            // Session type indicator
+            Circle()
+                .fill(session.sessionType == .focus ? 
+                      Color(red: 0.263, green: 0.824, blue: 0.824) : 
+                      Color(red: 0.945, green: 0.431, blue: 0.765))
+                .frame(width: 12, height: 12)
+            
+            // Session details
             VStack(alignment: .leading, spacing: 4) {
-                Text(value)
-                    .font(.system(size: 20, weight: .bold))
+                Text(session.intention?.task ?? "Focus Session")
+                    .font(.system(size: 16, weight: .semibold))
                     .foregroundColor(.white)
                 
-                Text(title)
-                    .font(.system(size: 12))
-                    .foregroundColor(.secondary)
+                Text(session.startTime, style: .time)
+                    .font(.system(size: 12, weight: .medium))
+                    .foregroundColor(.gray)
             }
             
             Spacer()
-        }
-        .padding(20)
-        .background(
-            RoundedRectangle(cornerRadius: 16)
-                .fill(Color.black.opacity(0.4))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 16)
-                        .stroke(Color.purple.opacity(0.2), lineWidth: 1)
-                )
-        )
-    }
-}
-
-struct AnalyticsCard<Content: View>: View {
-    let title: String
-    let icon: String
-    @ViewBuilder let content: () -> Content
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            HStack {
-                Image(systemName: icon)
-                    .foregroundColor(.cyan)
-                
-                Text(title)
-                    .font(.headline)
-                    .foregroundColor(.white)
-            }
             
-            content()
+            // Duration and completion
+            VStack(alignment: .trailing, spacing: 4) {
+                Text("\(session.duration) min")
+                    .font(.system(size: 14, weight: .semibold))
+                    .foregroundColor(.white)
+                
+                if session.completed {
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundColor(Color(red: 0.498, green: 0.831, blue: 0.275))
+                        .font(.caption)
+                } else {
+                    Image(systemName: "xmark.circle.fill")
+                        .foregroundColor(Color(red: 0.937, green: 0.373, blue: 0.373))
+                        .font(.caption)
+                }
+            }
         }
-        .padding(24)
+        .padding(.horizontal, 16)
+        .padding(.vertical, 12)
         .background(
-            RoundedRectangle(cornerRadius: 16)
-                .fill(Color.black.opacity(0.4))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 16)
-                        .stroke(Color.purple.opacity(0.2), lineWidth: 1)
-                )
+            RoundedRectangle(cornerRadius: 8)
+                .fill(Color.gray.opacity(0.1))
         )
     }
 }
 
-struct RecentSessionsList: View {
-    let sessions: [SessionData]
-    
-    var body: some View {
-        VStack(spacing: 8) {
-            ForEach(sessions) { session in
-                HStack {
-                    Image(systemName: getIconForSessionType(session.sessionType))
-                        .foregroundColor(getColorForSessionType(session.sessionType))
-                    
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(session.sessionType.displayName)
-                            .font(.caption)
-                            .fontWeight(.semibold)
-                            .foregroundColor(.white)
-                        
-                        if let intention = session.intention {
-                            Text(intention)
-                                .font(.caption2)
-                                .foregroundColor(.secondary)
-                                .lineLimit(1)
-                        }
-                    }
-                    
-                    Spacer()
-                    
-                    VStack(alignment: .trailing, spacing: 2) {
-                        Text("\(session.duration)m")
-                            .font(.caption)
-                            .fontWeight(.semibold)
-                            .foregroundColor(.white)
-                        
-                        Image(systemName: session.completed ? "checkmark.circle.fill" : "xmark.circle.fill")
-                            .font(.caption2)
-                            .foregroundColor(session.completed ? .green : .red)
-                    }
-                }
-                .padding(.vertical, 4)
-                
-                if session.id != sessions.last?.id {
-                    Divider()
-                        .background(Color.gray.opacity(0.3))
-                }
-            }
-        }
-    }
-    
-    private func getIconForSessionType(_ type: SessionType) -> String {
-        switch type {
-        case .focus:
-            return "brain.head.profile"
-        case .shortBreak:
-            return "cup.and.saucer.fill"
-        case .longBreak:
-            return "bed.double.fill"
-        }
-    }
-    
-    private func getColorForSessionType(_ type: SessionType) -> Color {
-        switch type {
-        case .focus:
-            return .cyan
-        case .shortBreak:
-            return .green
-        case .longBreak:
-            return .purple
-        }
-    }
-}
-
-// MARK: - Data Models
-
-struct AnalyticsStats {
-    let totalSessions: Int
-    let totalFocusTime: Int
-    let completionRate: Double
-    let currentStreak: Int
-}
-
-struct WeeklySessionData: Identifiable {
-    let id = UUID()
-    let date: Date
-    let sessions: Int
-    let focusTime: Int
-}
-
-struct SessionTypeData: Identifiable {
-    let id = UUID()
-    let type: SessionType
-    let count: Int
-}
-
-struct HourlySessionData: Identifiable {
-    let id = UUID()
-    let hour: Int
+struct WeeklyData {
+    let day: String
     let sessions: Int
 }
 
 #Preview {
     AnalyticsView()
         .environmentObject(TimerManager())
-        .frame(width: 1000, height: 700)
+        .frame(width: 768, height: 1200)
+        .background(Color.black)
 }

@@ -1,371 +1,275 @@
 import SwiftUI
 
 struct SettingsView: View {
+    @EnvironmentObject var timerManager: TimerManager
     @EnvironmentObject var websiteBlocker: WebsiteBlocker
     @EnvironmentObject var soundManager: SoundManager
-    @ObservedObject private var settings = PomotronSettings.shared
-    @State private var newSite = ""
-    @State private var showingPermissionAlert = false
+    @State private var newWebsite = ""
+    @State private var showingExportSheet = false
     
     var body: some View {
-        ScrollView {
-            VStack(spacing: 30) {
-                // Header matching web UI
-                VStack(spacing: 16) {
-                    Text("SETTINGS & CONFIGURATION")
-                        .font(.system(size: 36, weight: .bold, design: .default))
-                        .foregroundStyle(
-                            LinearGradient(
-                                colors: [Color(red: 1.0, green: 0.4, blue: 0.6), Color(red: 0.6, green: 0.4, blue: 1.0)],
-                                startPoint: .leading,
-                                endPoint: .trailing
+        VStack(spacing: 32) {
+            // Header
+            Text("SETTINGS")
+                .font(.system(size: 36, weight: .black, design: .monospaced))
+                .foregroundStyle(
+                    LinearGradient(
+                        colors: [
+                            Color(red: 0.945, green: 0.431, blue: 0.765), // Pink
+                            Color(red: 0.647, green: 0.329, blue: 0.808)  // Purple
+                        ],
+                        startPoint: .leading,
+                        endPoint: .trailing
+                    )
+                )
+                .shadow(color: Color(red: 0.945, green: 0.431, blue: 0.765).opacity(0.6), radius: 8)
+            
+            ScrollView {
+                VStack(spacing: 32) {
+                    // Timer Settings
+                    SettingsSection(title: "Timer Settings") {
+                        VStack(spacing: 20) {
+                            SettingSlider(
+                                title: "Focus Duration",
+                                value: Binding(
+                                    get: { Double(timerManager.settings.focusDuration) },
+                                    set: { timerManager.settings.focusDuration = Int($0) }
+                                ),
+                                range: 15...60,
+                                step: 5,
+                                unit: "minutes",
+                                color: Color(red: 0.263, green: 0.824, blue: 0.824)
                             )
-                        )
-                    
-                    Text("Customize your Pomotron experience")
-                        .font(.system(size: 16))
-                        .foregroundColor(.secondary)
-                }
-                
-                LazyVGrid(columns: [
-                    GridItem(.flexible()),
-                    GridItem(.flexible())
-                ], spacing: 30) {
-                    
-                    // Timer Configuration
-                    SettingsCard(title: "Timer Configuration", icon: "timer") {
-                        TimerConfigurationSection(settings: settings)
+                            
+                            SettingSlider(
+                                title: "Short Break",
+                                value: Binding(
+                                    get: { Double(timerManager.settings.shortBreakDuration) },
+                                    set: { timerManager.settings.shortBreakDuration = Int($0) }
+                                ),
+                                range: 3...15,
+                                step: 1,
+                                unit: "minutes",
+                                color: Color(red: 0.945, green: 0.431, blue: 0.765)
+                            )
+                            
+                            SettingSlider(
+                                title: "Long Break",
+                                value: Binding(
+                                    get: { Double(timerManager.settings.longBreakDuration) },
+                                    set: { timerManager.settings.longBreakDuration = Int($0) }
+                                ),
+                                range: 15...45,
+                                step: 5,
+                                unit: "minutes",
+                                color: Color(red: 0.647, green: 0.329, blue: 0.808)
+                            )
+                            
+                            SettingSlider(
+                                title: "Sessions until Long Break",
+                                value: Binding(
+                                    get: { Double(timerManager.settings.sessionsUntilLongBreak) },
+                                    set: { timerManager.settings.sessionsUntilLongBreak = Int($0) }
+                                ),
+                                range: 2...8,
+                                step: 1,
+                                unit: "sessions",
+                                color: Color(red: 0.498, green: 0.831, blue: 0.275)
+                            )
+                        }
                     }
                     
-                    // Website Blocker
-                    SettingsCard(title: "Website Blocker", icon: "shield.fill") {
-                        WebsiteBlockerSection(
-                            settings: settings,
-                            websiteBlocker: websiteBlocker,
-                            newSite: $newSite,
-                            showingPermissionAlert: $showingPermissionAlert
-                        )
+                    // Behavior Settings
+                    SettingsSection(title: "Behavior") {
+                        VStack(spacing: 16) {
+                            ToggleSetting(
+                                title: "Auto-start Breaks",
+                                subtitle: "Automatically start break sessions",
+                                isOn: $timerManager.settings.autoStartBreaks,
+                                color: Color(red: 0.263, green: 0.824, blue: 0.824)
+                            )
+                            
+                            ToggleSetting(
+                                title: "Auto-start Focus",
+                                subtitle: "Automatically start focus sessions after breaks",
+                                isOn: $timerManager.settings.autoStartFocus,
+                                color: Color(red: 0.945, green: 0.431, blue: 0.765)
+                            )
+                            
+                            ToggleSetting(
+                                title: "Website Blocking",
+                                subtitle: "Block distracting websites during focus",
+                                isOn: $timerManager.settings.websiteBlockingEnabled,
+                                color: Color(red: 0.647, green: 0.329, blue: 0.808)
+                            )
+                        }
                     }
                     
                     // Sound Settings
-                    SettingsCard(title: "Sound Settings", icon: "speaker.wave.2.fill") {
-                        SoundSettingsSection(soundManager: soundManager)
+                    SettingsSection(title: "Audio") {
+                        VStack(spacing: 16) {
+                            ToggleSetting(
+                                title: "Sound Effects",
+                                subtitle: "Enable retro sound effects",
+                                isOn: $soundManager.soundEnabled,
+                                color: Color(red: 0.263, green: 0.824, blue: 0.824)
+                            )
+                            
+                            if soundManager.soundEnabled {
+                                SettingSlider(
+                                    title: "Volume",
+                                    value: Binding(
+                                        get: { Double(soundManager.volume) },
+                                        set: { soundManager.setVolume(Float($0)) }
+                                    ),
+                                    range: 0...1,
+                                    step: 0.1,
+                                    unit: "",
+                                    color: Color(red: 0.945, green: 0.431, blue: 0.765)
+                                )
+                            }
+                        }
                     }
                     
-                    // Keyboard Shortcuts
-                    SettingsCard(title: "Keyboard Shortcuts", icon: "keyboard") {
-                        KeyboardShortcutsSection()
+                    // Website Blocking
+                    if timerManager.settings.websiteBlockingEnabled {
+                        SettingsSection(title: "Website Blocking") {
+                            VStack(spacing: 20) {
+                                // Add new website
+                                HStack(spacing: 12) {
+                                    TextField("Enter website (e.g., reddit.com)", text: $newWebsite)
+                                        .font(.system(size: 14, weight: .medium))
+                                        .foregroundColor(.white)
+                                        .padding(12)
+                                        .background(
+                                            RoundedRectangle(cornerRadius: 8)
+                                                .fill(Color.black.opacity(0.4))
+                                                .overlay(
+                                                    RoundedRectangle(cornerRadius: 8)
+                                                        .stroke(Color.gray.opacity(0.3), lineWidth: 1)
+                                                )
+                                        )
+                                        .textFieldStyle(PlainTextFieldStyle())
+                                    
+                                    Button("Add") {
+                                        if !newWebsite.isEmpty {
+                                            websiteBlocker.addWebsite(newWebsite)
+                                            newWebsite = ""
+                                        }
+                                    }
+                                    .font(.system(size: 14, weight: .semibold))
+                                    .foregroundColor(.white)
+                                    .padding(.horizontal, 16)
+                                    .padding(.vertical, 8)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 8)
+                                            .fill(Color(red: 0.263, green: 0.824, blue: 0.824).opacity(0.2))
+                                            .overlay(
+                                                RoundedRectangle(cornerRadius: 8)
+                                                    .stroke(Color(red: 0.263, green: 0.824, blue: 0.824), lineWidth: 1)
+                                            )
+                                    )
+                                }
+                                
+                                // Website list
+                                LazyVStack(spacing: 8) {
+                                    ForEach(websiteBlocker.blockedWebsites, id: \.self) { website in
+                                        HStack {
+                                            Text(website)
+                                                .font(.system(size: 14, weight: .medium))
+                                                .foregroundColor(.white)
+                                            
+                                            Spacer()
+                                            
+                                            Button("Remove") {
+                                                websiteBlocker.removeWebsite(website)
+                                            }
+                                            .font(.system(size: 12, weight: .medium))
+                                            .foregroundColor(Color(red: 0.937, green: 0.373, blue: 0.373))
+                                        }
+                                        .padding(.horizontal, 12)
+                                        .padding(.vertical, 8)
+                                        .background(
+                                            RoundedRectangle(cornerRadius: 6)
+                                                .fill(Color.gray.opacity(0.1))
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    
+                    // Data Management
+                    SettingsSection(title: "Data") {
+                        VStack(spacing: 16) {
+                            Button("Export Session Data") {
+                                showingExportSheet = true
+                            }
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundColor(.white)
+                            .padding()
+                            .frame(maxWidth: .infinity)
+                            .background(
+                                RoundedRectangle(cornerRadius: 12)
+                                    .fill(Color(red: 0.263, green: 0.824, blue: 0.824).opacity(0.2))
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 12)
+                                            .stroke(Color(red: 0.263, green: 0.824, blue: 0.824), lineWidth: 2)
+                                    )
+                            )
+                            
+                            Button("Clear All Data") {
+                                timerManager.clearAllData()
+                            }
+                            .font(.system(size: 16, weight: .semibold))
+                            .foregroundColor(.white)
+                            .padding()
+                            .frame(maxWidth: .infinity)
+                            .background(
+                                RoundedRectangle(cornerRadius: 12)
+                                    .fill(Color(red: 0.937, green: 0.373, blue: 0.373).opacity(0.2))
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 12)
+                                            .stroke(Color(red: 0.937, green: 0.373, blue: 0.373), lineWidth: 2)
+                                    )
+                            )
+                        }
                     }
                 }
-                
-                // Save Button
-                Button("Save Settings") {
-                    settings.saveSettings()
-                    showSuccessMessage()
-                }
-                .font(.system(size: 16, weight: .semibold))
-                .foregroundColor(.white)
-                .padding(.horizontal, 32)
-                .padding(.vertical, 16)
-                .background(
-                    RoundedRectangle(cornerRadius: 8)
-                        .fill(Color.green)
-                        .shadow(color: .green.opacity(0.3), radius: 8)
-                )
-                .padding(.top, 20)
             }
-            .padding(30)
         }
-        .alert("Permission Required", isPresented: $showingPermissionAlert) {
-            Button("Open System Preferences") {
-                NSWorkspace.shared.open(URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Accessibility")!)
-            }
-            Button("Cancel", role: .cancel) { }
-        } message: {
-            Text("Pomotron needs accessibility permissions to block websites effectively. Please grant access in System Preferences.")
-        }
-    }
-    
-    private func showSuccessMessage() {
-        // You could implement a toast or notification here
-        print("Settings saved successfully!")
-    }
-}
-
-// MARK: - Settings Sections
-
-struct TimerConfigurationSection: View {
-    @ObservedObject var settings: PomotronSettings
-    
-    var body: some View {
-        VStack(spacing: 16) {
-            // Duration Settings
-            HStack(spacing: 12) {
-                SettingsNumberField(
-                    title: "Focus (min)",
-                    value: $settings.focusDuration,
-                    range: 1...120
-                )
-                
-                SettingsNumberField(
-                    title: "Break (min)",
-                    value: $settings.breakDuration,
-                    range: 1...60
-                )
-                
-                SettingsNumberField(
-                    title: "Long Break (min)",
-                    value: $settings.longBreakDuration,
-                    range: 1...120
-                )
-            }
-            
-            SettingsNumberField(
-                title: "Cycles before long break",
-                value: $settings.cyclesBeforeLongBreak,
-                range: 1...10
-            )
-            
-            SettingsNumberField(
-                title: "Idle timeout (min)",
-                value: $settings.idleTimeout,
-                range: 1...60
-            )
-            
-            Divider()
-                .background(Color.cyan.opacity(0.3))
-            
-            // Toggle Settings
-            SettingsToggle(
-                title: "Auto-start next session",
-                isOn: $settings.autoStart
-            )
-            
-            SettingsToggle(
-                title: "Soft start (5s countdown)",
-                isOn: $settings.softStart
-            )
+        .padding(.horizontal, 24)
+        .fileExporter(
+            isPresented: $showingExportSheet,
+            document: SessionDataDocument(sessions: timerManager.sessionHistory),
+            contentType: .json,
+            defaultFilename: "pomotron-sessions"
+        ) { result in
+            // Handle export result if needed
         }
     }
 }
 
-struct WebsiteBlockerSection: View {
-    @ObservedObject var settings: PomotronSettings
-    @ObservedObject var websiteBlocker: WebsiteBlocker
-    @Binding var newSite: String
-    @Binding var showingPermissionAlert: Bool
+struct SettingsSection<Content: View>: View {
+    let title: String
+    let content: Content
+    
+    init(title: String, @ViewBuilder content: () -> Content) {
+        self.title = title
+        self.content = content()
+    }
     
     var body: some View {
-        VStack(spacing: 16) {
-            // Permission Status
+        VStack(spacing: 20) {
             HStack {
-                Image(systemName: websiteBlocker.permissionGranted ? "checkmark.circle.fill" : "exclamationmark.triangle.fill")
-                    .foregroundColor(websiteBlocker.permissionGranted ? .green : .orange)
-                
-                Text(websiteBlocker.permissionGranted ? "Permissions Granted" : "Permissions Required")
-                    .font(.caption)
-                    .foregroundColor(websiteBlocker.permissionGranted ? .green : .orange)
+                Text(title)
+                    .font(.system(size: 24, weight: .bold, design: .monospaced))
+                    .foregroundColor(.white)
                 
                 Spacer()
-                
-                if !websiteBlocker.permissionGranted {
-                    Button("Grant") {
-                        showingPermissionAlert = true
-                    }
-                    .font(.caption2)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(Color.orange.opacity(0.2))
-                    .foregroundColor(.orange)
-                    .cornerRadius(4)
-                }
             }
             
-            SettingsToggle(
-                title: "Enable website blocking",
-                isOn: $settings.websiteBlockingEnabled
-            )
-            
-            SettingsToggle(
-                title: "Friction-based override",
-                isOn: $settings.frictionOverride
-            )
-            
-            Divider()
-                .background(Color.cyan.opacity(0.3))
-            
-            // Blocked Sites Management
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Blocked Websites")
-                    .font(.caption)
-                    .fontWeight(.semibold)
-                    .foregroundColor(.white)
-                
-                // Site List
-                ScrollView {
-                    LazyVStack(spacing: 4) {
-                        ForEach(settings.blockedSites, id: \.self) { site in
-                            HStack {
-                                Text(site)
-                                    .font(.caption2)
-                                    .foregroundColor(.secondary)
-                                
-                                Spacer()
-                                
-                                Button {
-                                    websiteBlocker.removeBlockedSite(site)
-                                } label: {
-                                    Image(systemName: "xmark.circle.fill")
-                                        .foregroundColor(.red)
-                                        .font(.caption)
-                                }
-                                .buttonStyle(PlainButtonStyle())
-                            }
-                            .padding(.vertical, 2)
-                        }
-                    }
-                }
-                .frame(maxHeight: 80)
-                
-                // Add Site Field
-                HStack(spacing: 8) {
-                    TextField("Add website...", text: $newSite)
-                        .textFieldStyle(CompactRetroTextFieldStyle())
-                        .onSubmit {
-                            addSite()
-                        }
-                    
-                    Button {
-                        addSite()
-                    } label: {
-                        Image(systemName: "plus.circle.fill")
-                            .foregroundColor(.cyan)
-                    }
-                    .buttonStyle(PlainButtonStyle())
-                }
-            }
-        }
-    }
-    
-    private func addSite() {
-        guard !newSite.isEmpty else { return }
-        websiteBlocker.addBlockedSite(newSite)
-        newSite = ""
-    }
-}
-
-struct SoundSettingsSection: View {
-    @ObservedObject var soundManager: SoundManager
-    
-    var body: some View {
-        VStack(spacing: 16) {
-            SettingsToggle(
-                title: "Mute sounds",
-                isOn: $soundManager.isMuted
-            )
-            
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Volume")
-                    .font(.caption)
-                    .fontWeight(.semibold)
-                    .foregroundColor(.white)
-                
-                HStack {
-                    Image(systemName: "speaker.fill")
-                        .font(.caption2)
-                        .foregroundColor(.cyan)
-                    
-                    Slider(value: Binding(
-                        get: { soundManager.volume },
-                        set: { soundManager.setVolume($0) }
-                    ), in: 0...1)
-                    .accentColor(.cyan)
-                    
-                    Image(systemName: "speaker.wave.2.fill")
-                        .font(.caption2)
-                        .foregroundColor(.cyan)
-                }
-            }
-            
-            // Test Sounds
-            HStack(spacing: 8) {
-                Button("Test Start") {
-                    soundManager.playStartSound()
-                }
-                .font(.caption2)
-                .padding(.horizontal, 8)
-                .padding(.vertical, 4)
-                .background(Color.green.opacity(0.2))
-                .foregroundColor(.green)
-                .cornerRadius(4)
-                
-                Button("Test Complete") {
-                    soundManager.playCompleteSound()
-                }
-                .font(.caption2)
-                .padding(.horizontal, 8)
-                .padding(.vertical, 4)
-                .background(Color.purple.opacity(0.2))
-                .foregroundColor(.purple)
-                .cornerRadius(4)
-            }
-        }
-    }
-}
-
-struct KeyboardShortcutsSection: View {
-    let shortcuts = [
-        ("Start/Pause Timer", "Space"),
-        ("Reset Timer", "R"),
-        ("End Session", "Esc"),
-        ("Open Settings", "Cmd+,"),
-        ("Toggle Analytics", "A")
-    ]
-    
-    var body: some View {
-        VStack(spacing: 8) {
-            ForEach(shortcuts, id: \.0) { shortcut in
-                HStack {
-                    Text(shortcut.0)
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                    
-                    Spacer()
-                    
-                    Text(shortcut.1)
-                        .font(.caption2)
-                        .fontWeight(.semibold)
-                        .padding(.horizontal, 6)
-                        .padding(.vertical, 2)
-                        .background(Color.gray.opacity(0.3))
-                        .foregroundColor(.white)
-                        .cornerRadius(3)
-                }
-            }
-        }
-    }
-}
-
-// MARK: - Helper Views
-
-struct SettingsCard<Content: View>: View {
-    let title: String
-    let icon: String
-    @ViewBuilder let content: () -> Content
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 20) {
-            HStack(spacing: 12) {
-                Image(systemName: icon)
-                    .font(.system(size: 20, weight: .medium))
-                    .foregroundColor(.cyan)
-                
-                Text(title)
-                    .font(.system(size: 18, weight: .semibold))
-                    .foregroundColor(.white)
-            }
-            
-            content()
+            content
         }
         .padding(24)
         .background(
@@ -373,71 +277,94 @@ struct SettingsCard<Content: View>: View {
                 .fill(Color.black.opacity(0.4))
                 .overlay(
                     RoundedRectangle(cornerRadius: 16)
-                        .stroke(Color.purple.opacity(0.2), lineWidth: 1)
+                        .stroke(Color(red: 0.647, green: 0.329, blue: 0.808).opacity(0.3), lineWidth: 1)
                 )
         )
     }
 }
 
-struct SettingsNumberField: View {
+struct SettingSlider: View {
     let title: String
-    @Binding var value: Int
-    let range: ClosedRange<Int>
+    @Binding var value: Double
+    let range: ClosedRange<Double>
+    let step: Double
+    let unit: String
+    let color: Color
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text(title)
-                .font(.system(size: 14, weight: .medium))
-                .foregroundColor(.secondary)
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Text(title)
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundColor(.white)
+                
+                Spacer()
+                
+                Text("\(Int(value)) \(unit)")
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundColor(color)
+            }
             
-            TextField("", value: $value, format: .number)
-                .textFieldStyle(CompactRetroTextFieldStyle())
-                .onChange(of: value) { newValue in
-                    value = min(max(newValue, range.lowerBound), range.upperBound)
-                }
+            Slider(value: $value, in: range, step: step)
+                .accentColor(color)
         }
     }
 }
 
-struct SettingsToggle: View {
+struct ToggleSetting: View {
     let title: String
+    let subtitle: String
     @Binding var isOn: Bool
+    let color: Color
     
     var body: some View {
-        HStack {
-            Text(title)
-                .font(.system(size: 14, weight: .medium))
-                .foregroundColor(.secondary)
+        HStack(spacing: 16) {
+            VStack(alignment: .leading, spacing: 4) {
+                Text(title)
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundColor(.white)
+                
+                Text(subtitle)
+                    .font(.system(size: 14, weight: .medium))
+                    .foregroundColor(.gray)
+            }
             
             Spacer()
             
             Toggle("", isOn: $isOn)
-                .toggleStyle(SwitchToggleStyle(tint: .cyan))
-                .scaleEffect(0.9)
+                .toggleStyle(SwitchToggleStyle(tint: color))
         }
     }
 }
 
-struct CompactRetroTextFieldStyle: TextFieldStyle {
-    func _body(configuration: TextField<Self._Label>) -> some View {
-        configuration
-            .padding(8)
-            .background(
-                RoundedRectangle(cornerRadius: 4)
-                    .fill(Color.black.opacity(0.4))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 4)
-                            .stroke(Color.cyan.opacity(0.6), lineWidth: 1)
-                    )
-            )
-            .foregroundColor(.white)
-            .font(.caption)
+struct SessionDataDocument: FileDocument {
+    static var readableContentTypes: [UTType] { [.json] }
+    
+    let sessions: [PomodoroSession]
+    
+    init(sessions: [PomodoroSession]) {
+        self.sessions = sessions
+    }
+    
+    init(configuration: ReadConfiguration) throws {
+        self.sessions = []
+    }
+    
+    func fileWrapper(configuration: WriteConfiguration) throws -> FileWrapper {
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .iso8601
+        encoder.outputFormatting = .prettyPrinted
+        
+        let data = try encoder.encode(sessions)
+        return FileWrapper(regularFileWithContents: data)
     }
 }
 
 #Preview {
     SettingsView()
+        .environmentObject(TimerManager())
         .environmentObject(WebsiteBlocker())
         .environmentObject(SoundManager())
-        .frame(width: 1000, height: 700)
+        .frame(width: 768, height: 1200)
+        .background(Color.black)
 }

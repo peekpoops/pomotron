@@ -18,7 +18,7 @@ struct PomotronMacApp: App {
                 .environmentObject(timerManager)
                 .environmentObject(websiteBlocker)
                 .environmentObject(soundManager)
-                .frame(minWidth: 1000, minHeight: 700)
+                .frame(minWidth: 768, idealWidth: 768, maxWidth: 768, minHeight: 1200, idealHeight: 1200, maxHeight: 1200)
         }
         .windowStyle(.hiddenTitleBar)
         .windowResizability(.contentSize)

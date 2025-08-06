@@ -5,37 +5,155 @@ struct TimerView: View {
     @EnvironmentObject var websiteBlocker: WebsiteBlocker
     @EnvironmentObject var soundManager: SoundManager
     @State private var showIntentionModal = false
-    @State private var currentQuote = motivationalQuotes[0]
-    @State private var showFullQuote = false
+    @State private var selectedQuote = motivationalQuotes.randomElement() ?? motivationalQuotes[0]
+    
+    private var timeString: String {
+        let minutes = Int(timerManager.timerState.timeLeft) / 60
+        let seconds = Int(timerManager.timerState.timeLeft) % 60
+        return String(format: "%02d:%02d", minutes, seconds)
+    }
+    
+    private var sessionTypeText: String {
+        if !timerManager.timerState.isRunning && !timerManager.timerState.isPaused {
+            return "Ready to focus"
+        } else if timerManager.timerState.isBreak {
+            return "Break time - relax and recharge"
+        } else {
+            return timerManager.timerState.currentIntention?.task ?? "Focus time"
+        }
+    }
+    
+    private var progress: Double {
+        let totalTime = timerManager.getDurationForCurrentSession() * 60
+        let elapsed = totalTime - Int(timerManager.timerState.timeLeft)
+        return Double(elapsed) / Double(totalTime)
+    }
     
     var body: some View {
-        ScrollView {
-            VStack(spacing: 24) {
-                // Motivational Quote Banner matching web UI
-                QuoteBanner(
-                    quote: $currentQuote,
-                    showFullQuote: $showFullQuote
-                )
-                
-                HStack(spacing: 24) {
-                    // Main Timer Section - matching web UI layout
-                    VStack(spacing: 24) {
-                        TimerDisplay()
-                    }
-                    .frame(maxWidth: 600)
+        VStack(spacing: 48) {
+            // Main timer card with web-style design
+            VStack(spacing: 40) {
+                // Timer display with exact web styling (140px font equivalent)
+                VStack(spacing: 32) {
+                    Text(timeString)
+                        .font(.system(size: 140, weight: .black, design: .monospaced))
+                        .fontWeight(.black)
+                        .foregroundStyle(
+                            LinearGradient(
+                                colors: [
+                                    Color(red: 0.263, green: 0.824, blue: 0.824), // Cyan
+                                    Color(red: 0.647, green: 0.329, blue: 0.808)  // Purple
+                                ],
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                        )
+                        .shadow(color: Color(red: 0.263, green: 0.824, blue: 0.824).opacity(0.6), radius: 12, x: 0, y: 0)
+                        .shadow(color: Color(red: 0.647, green: 0.329, blue: 0.808).opacity(0.4), radius: 16, x: 0, y: 0)
                     
-                    // Today's Progress Sidebar - matching web UI
-                    TodaysStatsCard()
-                        .frame(width: 280)
+                    // Session type and phase indicator
+                    Text(sessionTypeText)
+                        .font(.custom("Orbitron", size: 20))
+                        .fontWeight(.medium)
+                        .foregroundColor(.white.opacity(0.8))
+                        .multilineTextAlignment(.center)
+                    
+                    // Progress bar
+                    ProgressView(value: progress)
+                        .progressViewStyle(RetroProgressViewStyle())
+                        .frame(height: 8)
+                        .padding(.horizontal, 20)
                 }
-                .padding(.horizontal, 24)
                 
-                // Timer Controls at bottom
-                TimerControls()
-                    .padding(.horizontal, 24)
+                // Control buttons
+                VStack(spacing: 20) {
+                    if !timerManager.timerState.isRunning && !timerManager.timerState.isPaused {
+                        // START button
+                        RetroButton(
+                            title: "START",
+                            icon: "play.fill",
+                            color: Color(red: 0.263, green: 0.824, blue: 0.824),
+                            size: .large
+                        ) {
+                            print("START button tapped - showing intention modal")
+                            showIntentionModal = true
+                        }
+                    } else if timerManager.timerState.isRunning {
+                        // PAUSE button
+                        RetroButton(
+                            title: "PAUSE",
+                            icon: "pause.fill",
+                            color: Color(red: 0.945, green: 0.431, blue: 0.765),
+                            size: .large
+                        ) {
+                            timerManager.pauseSession()
+                            soundManager.playPauseSound()
+                        }
+                    } else if timerManager.timerState.isPaused {
+                        // RESUME and STOP buttons
+                        HStack(spacing: 16) {
+                            RetroButton(
+                                title: "RESUME",
+                                icon: "play.fill",
+                                color: Color(red: 0.263, green: 0.824, blue: 0.824),
+                                size: .medium
+                            ) {
+                                timerManager.resumeSession()
+                                soundManager.playStartSound()
+                            }
+                            
+                            RetroButton(
+                                title: "STOP",
+                                icon: "stop.fill",
+                                color: Color(red: 0.937, green: 0.373, blue: 0.373),
+                                size: .medium
+                            ) {
+                                timerManager.stopSession()
+                                websiteBlocker.stopBlocking()
+                                soundManager.playPauseSound()
+                            }
+                        }
+                    }
+                }
             }
-            .padding(.vertical, 24)
+            .padding(32)
+            .background(
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(Color.black.opacity(0.4))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 16)
+                            .stroke(Color(red: 0.647, green: 0.329, blue: 0.808).opacity(0.3), lineWidth: 1)
+                    )
+            )
+            
+            // Motivational quote
+            VStack(spacing: 16) {
+                Text("\"\(selectedQuote.text)\"")
+                    .font(.custom("Orbitron", size: 16))
+                    .fontWeight(.medium)
+                    .foregroundColor(.white.opacity(0.9))
+                    .multilineTextAlignment(.center)
+                    .lineLimit(3)
+                
+                Text("— \(selectedQuote.author)")
+                    .font(.custom("Orbitron", size: 14))
+                    .fontWeight(.regular)
+                    .foregroundColor(Color(red: 0.945, green: 0.431, blue: 0.765))
+            }
+            .padding(24)
+            .background(
+                Capsule()
+                    .fill(Color(red: 0.945, green: 0.431, blue: 0.765).opacity(0.1))
+                    .overlay(
+                        Capsule()
+                            .stroke(Color(red: 0.945, green: 0.431, blue: 0.765).opacity(0.3), lineWidth: 1)
+                    )
+            )
+            .shadow(color: Color(red: 0.945, green: 0.431, blue: 0.765).opacity(0.2), radius: 8)
+            
+            Spacer()
         }
+        .padding(.horizontal, 24)
         .sheet(isPresented: $showIntentionModal) {
             IntentionModal { intention in
                 print("Starting session with intention: \(intention)")
@@ -48,390 +166,15 @@ struct TimerView: View {
                 }
             }
         }
-        .onChange(of: timerManager.timerState.isRunning) { isRunning in
-            if !isRunning && websiteBlocker.isBlocking {
-                websiteBlocker.stopBlocking()
+        .onReceive(timerManager.$timerState) { state in
+            if !state.isRunning && !state.isPaused {
+                selectedQuote = motivationalQuotes.randomElement() ?? motivationalQuotes[0]
             }
-        }
-    }
-    
-    // MARK: - Timer Display
-    
-    @ViewBuilder
-    private func TimerDisplay() -> some View {
-        VStack(spacing: 32) {
-            // Session Type Badge - matching web UI style
-            HStack(spacing: 8) {
-                Image(systemName: getSessionIcon())
-                    .font(.system(size: 16, weight: .medium))
-                
-                Text(timerManager.timerState.sessionType.displayName)
-                    .font(.system(size: 16, weight: .medium, design: .default))
-            }
-            .padding(.horizontal, 24)
-            .padding(.vertical, 12)
-            .background(
-                RoundedRectangle(cornerRadius: 25)
-                    .fill(getSessionColor().opacity(0.2))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 25)
-                            .stroke(getSessionColor(), lineWidth: 1)
-                    )
-            )
-            .foregroundColor(getSessionColor())
-            
-            // Main Timer Display - exactly matching web UI colors and size
-            Text(timerManager.formatTime(timerManager.timerState.timeLeft))
-                .font(.system(size: 140, weight: .black, design: .default))
-                .monospacedDigit()
-                .foregroundStyle(
-                    LinearGradient(
-                        colors: [
-                            Color(red: 0.44, green: 0.78, blue: 0.89), // Light cyan
-                            Color(red: 0.67, green: 0.47, blue: 0.86)  // Light purple
-                        ],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
-                .shadow(color: .cyan.opacity(0.4), radius: 15)
-                .shadow(color: .purple.opacity(0.3), radius: 10)
-            
-            // Progress Bar - matching web UI style
-            VStack(spacing: 12) {
-                GeometryReader { geometry in
-                    ZStack(alignment: .leading) {
-                        // Background track
-                        RoundedRectangle(cornerRadius: 4)
-                            .fill(Color.gray.opacity(0.3))
-                            .frame(height: 8)
-                        
-                        // Progress fill
-                        RoundedRectangle(cornerRadius: 4)
-                            .fill(
-                                LinearGradient(
-                                    colors: [.cyan, .purple],
-                                    startPoint: .leading,
-                                    endPoint: .trailing
-                                )
-                            )
-                            .frame(width: geometry.size.width * CGFloat(timerManager.getProgress() / 100), height: 8)
-                    }
-                }
-                .frame(height: 8)
-                
-                HStack {
-                    Text("00:00")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                    
-                    Spacer()
-                    
-                    Text(timerManager.formatTime(getDurationForCurrentSession() * 60))
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                }
-            }
-            
-            // Session Info
-            Text(getSessionInfo())
-                .font(.system(size: 14))
-                .foregroundColor(.secondary)
-                .multilineTextAlignment(.center)
-        }
-        .padding(40)
-        .background(
-            RoundedRectangle(cornerRadius: 20)
-                .fill(Color.black.opacity(0.4))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 20)
-                        .stroke(
-                            LinearGradient(colors: [.purple.opacity(0.3), .cyan.opacity(0.3)], startPoint: .topLeading, endPoint: .bottomTrailing),
-                            lineWidth: 1
-                        )
-                )
-        )
-    }
-    
-    // MARK: - Timer Controls
-    
-    @ViewBuilder
-    private func TimerControls() -> some View {
-        VStack(spacing: 20) {
-            // Main Control Buttons
-            HStack(spacing: 16) {
-                if !timerManager.timerState.isRunning && !timerManager.timerState.isPaused {
-                    RetroButton(
-                        title: "START",
-                        icon: "play.fill",
-                        color: .green,
-                        size: .large
-                    ) {
-                        print("START button tapped - showing intention modal")
-                        showIntentionModal = true
-                    }
-                } else if timerManager.timerState.isRunning {
-                    RetroButton(
-                        title: "PAUSE",
-                        icon: "pause.fill",
-                        color: .orange,
-                        size: .medium
-                    ) {
-                        timerManager.pauseSession()
-                        soundManager.playPauseSound()
-                    }
-                } else {
-                    RetroButton(
-                        title: "RESUME",
-                        icon: "play.fill",
-                        color: .green,
-                        size: .medium
-                    ) {
-                        timerManager.resumeSession()
-                        soundManager.playStartSound()
-                    }
-                }
-                
-                RetroButton(
-                    title: "RESET",
-                    icon: "arrow.clockwise",
-                    color: .blue,
-                    size: .medium
-                ) {
-                    timerManager.resetSession()
-                    websiteBlocker.stopBlocking()
-                }
-                
-                RetroButton(
-                    title: "END",
-                    icon: "stop.fill",
-                    color: .red,
-                    size: .medium
-                ) {
-                    timerManager.endSession()
-                    websiteBlocker.stopBlocking()
-                }
-            }
-            
-            // Quick Settings
-            HStack(spacing: 30) {
-                ToggleOption(
-                    title: "Auto-start",
-                    isOn: $timerManager.settings.autoStart
-                )
-                
-                ToggleOption(
-                    title: "Soft start",
-                    isOn: $timerManager.settings.softStart
-                )
-            }
-        }
-    }
-    
-    // MARK: - Helper Methods
-    
-    private func getSessionIcon() -> String {
-        switch timerManager.timerState.sessionType {
-        case .focus:
-            return "brain.head.profile"
-        case .shortBreak:
-            return "cup.and.saucer.fill"
-        case .longBreak:
-            return "bed.double.fill"
-        }
-    }
-    
-    private func getSessionColor() -> Color {
-        switch timerManager.timerState.sessionType {
-        case .focus:
-            return .cyan
-        case .shortBreak:
-            return .green
-        case .longBreak:
-            return .purple
-        }
-    }
-    
-    private func getDurationForCurrentSession() -> Int {
-        switch timerManager.timerState.sessionType {
-        case .focus:
-            return timerManager.settings.focusDuration
-        case .shortBreak:
-            return timerManager.settings.breakDuration
-        case .longBreak:
-            return timerManager.settings.longBreakDuration
-        }
-    }
-    
-    private func getSessionInfo() -> String {
-        switch timerManager.timerState.sessionType {
-        case .focus:
-            return "Cycle \(timerManager.timerState.currentCycle) of \(timerManager.settings.cyclesBeforeLongBreak) • Long break after \(timerManager.settings.cyclesBeforeLongBreak) cycles"
-        case .shortBreak:
-            return "Short break • Cycle \(timerManager.timerState.currentCycle) of \(timerManager.settings.cyclesBeforeLongBreak)"
-        case .longBreak:
-            return "Long break • Starting fresh after this break"
         }
     }
 }
 
-// MARK: - Supporting Views
-
-struct QuoteBanner: View {
-    @Binding var quote: MotivationalQuote
-    @Binding var showFullQuote: Bool
-    
-    var body: some View {
-        HStack {
-            VStack(alignment: .leading, spacing: 8) {
-                Text(showFullQuote ? quote.text : String(quote.text.prefix(80)) + "...")
-                    .font(.title3)
-                    .italic()
-                    .foregroundColor(.secondary)
-                
-                if showFullQuote {
-                    HStack {
-                        Text("— \(quote.author)")
-                            .font(.caption)
-                            .fontWeight(.semibold)
-                            .foregroundColor(.cyan)
-                        
-                        Button("New Quote") {
-                            quote = motivationalQuotes.randomElement() ?? motivationalQuotes[0]
-                        }
-                        .font(.caption2)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 4)
-                        .background(Color.cyan.opacity(0.2))
-                        .foregroundColor(.cyan)
-                        .cornerRadius(4)
-                    }
-                }
-            }
-            
-            Spacer()
-            
-            Button(showFullQuote ? "↑" : "→") {
-                showFullQuote.toggle()
-            }
-            .font(.title2)
-            .foregroundColor(.cyan)
-        }
-        .padding(24)
-        .background(
-            RoundedRectangle(cornerRadius: 16)
-                .fill(Color.black.opacity(0.4))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 16)
-                        .stroke(Color.purple.opacity(0.2), lineWidth: 1)
-                )
-        )
-    }
-}
-
-struct CurrentIntentionCard: View {
-    @EnvironmentObject var timerManager: TimerManager
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Image(systemName: "target")
-                    .foregroundColor(.cyan)
-                
-                Text("Current Intention")
-                    .font(.headline)
-                    .foregroundColor(.white)
-            }
-            
-            VStack(alignment: .leading, spacing: 8) {
-                Text("What: \(timerManager.timerState.currentIntention.task)")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                
-                if !timerManager.timerState.currentIntention.why.isEmpty {
-                    Text("Why: \(timerManager.timerState.currentIntention.why)")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                }
-            }
-        }
-        .padding(16)
-        .background(
-            RoundedRectangle(cornerRadius: 12)
-                .fill(Color.black.opacity(0.3))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 12)
-                        .stroke(Color.cyan.opacity(0.5), lineWidth: 1)
-                )
-        )
-    }
-}
-
-struct TodaysStatsCard: View {
-    @EnvironmentObject var timerManager: TimerManager
-    
-    var body: some View {
-        let stats = timerManager.getTodaysStats()
-        
-        VStack(alignment: .leading, spacing: 12) {
-            Text("Today's Progress")
-                .font(.headline)
-                .foregroundColor(.white)
-            
-            VStack(spacing: 8) {
-                StatRow(label: "Sessions", value: "\(stats.sessions)")
-                StatRow(label: "Focus Time", value: "\(stats.focusTime / 60)h \(stats.focusTime % 60)m")
-                StatRow(label: "Streak", value: "\(stats.streak) days")
-            }
-        }
-        .padding(20)
-        .background(
-            RoundedRectangle(cornerRadius: 16)
-                .fill(Color.black.opacity(0.4))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 16)
-                        .stroke(Color.purple.opacity(0.2), lineWidth: 1)
-                )
-        )
-    }
-}
-
-struct StatRow: View {
-    let label: String
-    let value: String
-    
-    var body: some View {
-        HStack {
-            Text(label)
-                .font(.system(size: 13))
-                .foregroundColor(.secondary)
-            
-            Spacer()
-            
-            Text(value)
-                .font(.system(size: 13, weight: .semibold))
-                .foregroundColor(.white)
-        }
-    }
-}
-
-struct ToggleOption: View {
-    let title: String
-    @Binding var isOn: Bool
-    
-    var body: some View {
-        HStack(spacing: 12) {
-            Toggle("", isOn: $isOn)
-                .toggleStyle(SwitchToggleStyle(tint: .cyan))
-                .scaleEffect(0.9)
-            
-            Text(title)
-                .font(.system(size: 14, weight: .medium))
-                .foregroundColor(.secondary)
-        }
-    }
-}
-
+// Retro Button Component
 struct RetroButton: View {
     let title: String
     let icon: String
@@ -445,61 +188,70 @@ struct RetroButton: View {
         var fontSize: CGFloat {
             switch self {
             case .small: return 12
-            case .medium: return 14
-            case .large: return 18
+            case .medium: return 16
+            case .large: return 20
             }
         }
         
         var padding: CGFloat {
             switch self {
             case .small: return 8
-            case .medium: return 12
-            case .large: return 16
+            case .medium: return 14
+            case .large: return 18
             }
         }
     }
     
     var body: some View {
         Button(action: action) {
-            HStack(spacing: 8) {
+            HStack(spacing: 10) {
                 Image(systemName: icon)
-                    .font(.system(size: size.fontSize, weight: .medium))
+                    .font(.system(size: size.fontSize, weight: .semibold))
                 
                 Text(title)
-                    .font(.system(size: size.fontSize, weight: .semibold))
+                    .font(.custom("Orbitron", size: size.fontSize))
+                    .fontWeight(.bold)
             }
-            .padding(.horizontal, size.padding * 1.8)
-            .padding(.vertical, size.padding * 1.2)
+            .padding(.horizontal, size.padding * 2)
+            .padding(.vertical, size.padding)
             .background(
-                RoundedRectangle(cornerRadius: 8)
-                    .fill(color.opacity(0.2))
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(
+                        LinearGradient(
+                            colors: [color.opacity(0.3), color.opacity(0.1)],
+                            startPoint: .top,
+                            endPoint: .bottom
+                        )
+                    )
                     .overlay(
-                        RoundedRectangle(cornerRadius: 8)
+                        RoundedRectangle(cornerRadius: 12)
                             .stroke(color, lineWidth: 2)
                     )
-                    .shadow(color: color.opacity(0.3), radius: 6)
-                )
             )
-            .foregroundColor(color)
+            .shadow(color: color.opacity(0.4), radius: 8)
         }
         .buttonStyle(PlainButtonStyle())
-        .scaleEffect(1.0)
-        .animation(.easeInOut(duration: 0.1), value: false)
+        .foregroundColor(color)
     }
 }
 
+// Retro Progress View Style
 struct RetroProgressViewStyle: ProgressViewStyle {
     func makeBody(configuration: Configuration) -> some View {
         GeometryReader { geometry in
             ZStack(alignment: .leading) {
                 RoundedRectangle(cornerRadius: 4)
-                    .fill(Color.gray.opacity(0.3))
+                    .fill(Color.gray.opacity(0.2))
                     .frame(height: 8)
                 
                 RoundedRectangle(cornerRadius: 4)
                     .fill(
                         LinearGradient(
-                            colors: [.cyan, .purple, .pink],
+                            colors: [
+                                Color(red: 0.263, green: 0.824, blue: 0.824), // Cyan
+                                Color(red: 0.647, green: 0.329, blue: 0.808), // Purple
+                                Color(red: 0.945, green: 0.431, blue: 0.765)  // Pink
+                            ],
                             startPoint: .leading,
                             endPoint: .trailing
                         )
@@ -508,15 +260,14 @@ struct RetroProgressViewStyle: ProgressViewStyle {
                         width: geometry.size.width * CGFloat(configuration.fractionCompleted ?? 0),
                         height: 8
                     )
-                    .shadow(color: .cyan, radius: 4)
+                    .shadow(color: Color(red: 0.263, green: 0.824, blue: 0.824).opacity(0.6), radius: 4)
             }
         }
         .frame(height: 8)
     }
 }
 
-// MARK: - Data Models
-
+// Motivational Quotes Data
 struct MotivationalQuote {
     let text: String
     let author: String
@@ -540,5 +291,6 @@ let motivationalQuotes = [
         .environmentObject(TimerManager())
         .environmentObject(WebsiteBlocker())
         .environmentObject(SoundManager())
-        .frame(width: 1000, height: 700)
+        .frame(width: 768, height: 1200)
+        .background(Color.black)
 }

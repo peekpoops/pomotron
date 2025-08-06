@@ -7,140 +7,85 @@ struct ContentView: View {
     @EnvironmentObject var soundManager: SoundManager
     
     var body: some View {
-        GeometryReader { geometry in
-            ZStack {
-                // Retro synthwave background gradient
-                LinearGradient(
-                    gradient: Gradient(stops: [
-                        .init(color: Color(red: 0.1, green: 0.05, blue: 0.2), location: 0.0),
-                        .init(color: Color(red: 0.2, green: 0.1, blue: 0.3), location: 0.5),
-                        .init(color: Color(red: 0.15, green: 0.05, blue: 0.25), location: 1.0)
-                    ]),
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
+        ZStack {
+            // Background gradient matching web version exactly
+            LinearGradient(
+                gradient: Gradient(colors: [
+                    Color(red: 0.067, green: 0.024, blue: 0.137), // hsl(240, 45%, 7%)
+                    Color.black
+                ]),
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .ignoresSafeArea()
+            
+            // Grid pattern overlay
+            GridPatternView()
+                .opacity(0.2)
                 .ignoresSafeArea()
-                
-                // Neon grid overlay
-                NeonGridOverlay()
-                
-                VStack(spacing: 0) {
-                    // Custom title bar
-                    CustomTitleBar()
-                    
-                    // Main content
-                    HStack(spacing: 0) {
-                        // Sidebar navigation
-                        VStack(spacing: 20) {
-                            Spacer()
-                            
-                            NavigationButton(
-                                title: "Timer",
-                                icon: "timer",
-                                isSelected: selectedTab == 0
-                            ) {
-                                selectedTab = 0
-                            }
-                            
-                            NavigationButton(
-                                title: "Analytics",
-                                icon: "chart.bar.fill",
-                                isSelected: selectedTab == 1
-                            ) {
-                                selectedTab = 1
-                            }
-                            
-                            NavigationButton(
-                                title: "Settings",
-                                icon: "gearshape.fill",
-                                isSelected: selectedTab == 2
-                            ) {
-                                selectedTab = 2
-                            }
-                            
-                            Spacer()
-                        }
-                        .frame(width: 200)
-                        .background(
-                            RoundedRectangle(cornerRadius: 0)
-                                .fill(Color.black.opacity(0.3))
-                                .blur(radius: 1)
+            
+            // Main content with mobile-first vertical layout (768x1200)
+            VStack(spacing: 0) {
+                // Header with POMOTRON logo
+                VStack(spacing: 32) {
+                    // Logo with exact web styling
+                    Text("POMOTRON")
+                        .font(.system(size: 36, weight: .black, design: .monospaced))
+                        .fontWeight(.black)
+                        .foregroundStyle(
+                            LinearGradient(
+                                colors: [
+                                    Color(red: 0.945, green: 0.431, blue: 0.765), // Pink
+                                    Color(red: 0.263, green: 0.824, blue: 0.824)  // Cyan
+                                ],
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
                         )
-                        
-                        // Content area
-                        Group {
-                            switch selectedTab {
-                            case 0:
-                                TimerView()
-                            case 1:
-                                AnalyticsView()
-                            case 2:
-                                SettingsView()
-                            default:
-                                TimerView()
-                            }
+                        .shadow(color: Color(red: 0.945, green: 0.431, blue: 0.765).opacity(0.6), radius: 8, x: 0, y: 0)
+                        .shadow(color: Color(red: 0.263, green: 0.824, blue: 0.824).opacity(0.4), radius: 12, x: 0, y: 0)
+                    
+                    // Navigation tabs with web-style pills
+                    HStack(spacing: 16) {
+                        TabButton(title: "Timer", icon: "timer", isSelected: selectedTab == 0) {
+                            selectedTab = 0
                         }
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        TabButton(title: "Analytics", icon: "chart.bar", isSelected: selectedTab == 1) {
+                            selectedTab = 1
+                        }
+                        TabButton(title: "Settings", icon: "gearshape", isSelected: selectedTab == 2) {
+                            selectedTab = 2
+                        }
                     }
                 }
+                .padding(.top, 60)
+                .padding(.horizontal, 40)
+                
+                // Content area with centered vertical layout
+                VStack(spacing: 0) {
+                    switch selectedTab {
+                    case 0:
+                        TimerView()
+                    case 1:
+                        AnalyticsView()
+                    case 2:
+                        SettingsView()
+                    default:
+                        TimerView()
+                    }
+                }
+                .padding(.horizontal, 40)
+                .padding(.vertical, 32)
+                
+                Spacer(minLength: 40)
             }
         }
-        .onAppear {
-            setupAppearance()
-        }
-    }
-    
-    private func setupAppearance() {
-        // Configure app-wide appearance for retro theme
-        NSApplication.shared.appearance = NSAppearance(named: .darkAqua)
-    }
-}
-
-struct CustomTitleBar: View {
-    var body: some View {
-        HStack {
-            // App icon and title
-            HStack(spacing: 12) {
-                Image(systemName: "timer")
-                    .font(.title2)
-                    .foregroundColor(.pink)
-                
-                Text("POMOTRON")
-                    .font(.custom("Orbitron", size: 20))
-                    .fontWeight(.black)
-                    .foregroundStyle(
-                        LinearGradient(
-                            colors: [.pink, .purple, .cyan],
-                            startPoint: .leading,
-                            endPoint: .trailing
-                        )
-                    )
-            }
-            
-            Spacer()
-            
-            // System controls placeholder
-            HStack(spacing: 8) {
-                Circle()
-                    .fill(Color.yellow.opacity(0.8))
-                    .frame(width: 12, height: 12)
-                
-                Circle()
-                    .fill(Color.green.opacity(0.8))
-                    .frame(width: 12, height: 12)
-                
-                Circle()
-                    .fill(Color.red.opacity(0.8))
-                    .frame(width: 12, height: 12)
-            }
-        }
-        .padding(.horizontal, 20)
-        .padding(.vertical, 10)
-        .background(Color.black.opacity(0.8))
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
 
-struct NavigationButton: View {
+// Tab Button Component
+struct TabButton: View {
     let title: String
     let icon: String
     let isSelected: Bool
@@ -148,56 +93,62 @@ struct NavigationButton: View {
     
     var body: some View {
         Button(action: action) {
-            HStack(spacing: 12) {
+            HStack(spacing: 8) {
                 Image(systemName: icon)
-                    .font(.title3)
-                    .foregroundColor(isSelected ? .cyan : .gray)
+                    .font(.system(size: 14, weight: .medium))
                 
                 Text(title)
-                    .font(.custom("Orbitron", size: 14))
-                    .fontWeight(.medium)
-                    .foregroundColor(isSelected ? .white : .gray)
-                
-                Spacer()
+                    .font(.system(size: 14, weight: .semibold))
             }
             .padding(.horizontal, 20)
             .padding(.vertical, 12)
             .background(
-                RoundedRectangle(cornerRadius: 8)
-                    .fill(isSelected ? Color.cyan.opacity(0.2) : Color.clear)
+                RoundedRectangle(cornerRadius: 20)
+                    .fill(isSelected ? Color(red: 0.945, green: 0.431, blue: 0.765).opacity(0.2) : Color.clear)
                     .overlay(
-                        RoundedRectangle(cornerRadius: 8)
-                            .stroke(isSelected ? Color.cyan : Color.clear, lineWidth: 1)
+                        RoundedRectangle(cornerRadius: 20)
+                            .stroke(
+                                isSelected ? 
+                                LinearGradient(
+                                    colors: [Color(red: 0.945, green: 0.431, blue: 0.765), Color(red: 0.263, green: 0.824, blue: 0.824)],
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                ) : 
+                                LinearGradient(colors: [Color.gray.opacity(0.3)], startPoint: .leading, endPoint: .trailing),
+                                lineWidth: 2
+                            )
                     )
+            )
+            .shadow(
+                color: isSelected ? Color(red: 0.945, green: 0.431, blue: 0.765).opacity(0.3) : Color.clear,
+                radius: 8
             )
         }
         .buttonStyle(PlainButtonStyle())
-        .padding(.horizontal, 16)
+        .foregroundColor(isSelected ? .white : .gray)
     }
 }
 
-struct NeonGridOverlay: View {
+// Grid Pattern Component
+struct GridPatternView: View {
     var body: some View {
         Canvas { context, size in
-            let gridSpacing: CGFloat = 50
+            let gridSize: CGFloat = 40
             
-            context.stroke(
-                Path { path in
-                    // Vertical lines
-                    for x in stride(from: 0, through: size.width, by: gridSpacing) {
-                        path.move(to: CGPoint(x: x, y: 0))
-                        path.addLine(to: CGPoint(x: x, y: size.height))
-                    }
-                    
-                    // Horizontal lines
-                    for y in stride(from: 0, through: size.height, by: gridSpacing) {
-                        path.move(to: CGPoint(x: 0, y: y))
-                        path.addLine(to: CGPoint(x: size.width, y: y))
-                    }
-                },
-                with: .color(.cyan.opacity(0.1)),
-                lineWidth: 0.5
-            )
+            // Draw grid lines
+            for x in stride(from: 0, through: size.width, by: gridSize) {
+                var path = Path()
+                path.move(to: CGPoint(x: x, y: 0))
+                path.addLine(to: CGPoint(x: x, y: size.height))
+                context.stroke(path, with: .color(Color(red: 0.263, green: 0.824, blue: 0.824).opacity(0.1)), lineWidth: 1)
+            }
+            
+            for y in stride(from: 0, through: size.height, by: gridSize) {
+                var path = Path()
+                path.move(to: CGPoint(x: 0, y: y))
+                path.addLine(to: CGPoint(x: size.width, y: y))
+                context.stroke(path, with: .color(Color(red: 0.263, green: 0.824, blue: 0.824).opacity(0.1)), lineWidth: 1)
+            }
         }
         .allowsHitTesting(false)
     }
@@ -208,4 +159,5 @@ struct NeonGridOverlay: View {
         .environmentObject(TimerManager())
         .environmentObject(WebsiteBlocker())
         .environmentObject(SoundManager())
+        .frame(width: 768, height: 1200)
 }
