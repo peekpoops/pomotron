@@ -100,26 +100,6 @@ export default function Timer({ onOpenSettings }: TimerProps) {
 
   return (
     <div className="max-w-6xl mx-auto space-y-8">
-      {/* Current Intention Banner */}
-      <Card className="glass-morphism animate-float">
-        <CardContent className="p-6">
-          <h3 className="section-title text-lg mb-4 text-secondary flex items-center justify-center">
-            <Clock className="h-5 w-5 mr-2" />
-            Current Intention
-          </h3>
-          <div className="text-center space-y-2">
-            <div className="text-sm text-muted-foreground">
-              <span className="text-primary font-medium">Task:</span>{' '}
-              <span className="text-foreground">{timerState.currentIntention.task || 'Click Start to set your intention'}</span>
-            </div>
-            <div className="text-sm text-muted-foreground">
-              <span className="text-primary font-medium">Why:</span>{' '}
-              <span className="text-foreground">{timerState.currentIntention.why || '-'}</span>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
       {/* Motivational Quote Banner */}
       <Card className="glass-morphism animate-float">
         <CardContent className="p-6 relative">
@@ -329,6 +309,30 @@ export default function Timer({ onOpenSettings }: TimerProps) {
           </Card>
         </div>
       </div>
+
+      {/* Current Intention - Only show if user has started and entered text */}
+      {timerState.currentIntention.task && (
+        <Card className="glass-morphism animate-float">
+          <CardContent className="p-6">
+            <h3 className="section-title text-lg mb-4 text-secondary flex items-center justify-center">
+              <Clock className="h-5 w-5 mr-2" />
+              Current Intention
+            </h3>
+            <div className="text-center space-y-2">
+              <div className="text-sm text-muted-foreground">
+                <span className="text-primary font-medium">What are you working on today:</span>{' '}
+                <span className="text-foreground">{timerState.currentIntention.task}</span>
+              </div>
+              {timerState.currentIntention.why && (
+                <div className="text-sm text-muted-foreground">
+                  <span className="text-primary font-medium">Why is this important to you:</span>{' '}
+                  <span className="text-foreground">{timerState.currentIntention.why}</span>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       <IntentionModal
         open={showIntentionModal}
