@@ -1,0 +1,256 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600&display=swap');
+
+:root {
+  /* Starcourt Retro Theme */
+  --background: hsl(240, 45%, 7%);
+  --foreground: hsl(0, 0%, 100%);
+  --muted: hsl(240, 20%, 15%);
+  --muted-foreground: hsl(240, 10%, 70%);
+  --popover: hsl(240, 45%, 7%);
+  --popover-foreground: hsl(0, 0%, 100%);
+  --card: hsl(240, 35%, 10%);
+  --card-foreground: hsl(0, 0%, 100%);
+  --border: hsl(330, 95%, 70%);
+  --input: hsl(240, 20%, 15%);
+  --primary: hsl(330, 95%, 70%);
+  --primary-foreground: hsl(0, 0%, 100%);
+  --secondary: hsl(180, 70%, 60%);
+  --secondary-foreground: hsl(240, 45%, 7%);
+  --accent: hsl(270, 50%, 65%);
+  --accent-foreground: hsl(0, 0%, 100%);
+  --destructive: hsl(0, 85%, 60%);
+  --destructive-foreground: hsl(0, 0%, 100%);
+  --ring: hsl(330, 95%, 70%);
+  --radius: 0.75rem;
+  
+  /* Retro Colors */
+  --neon-pink: hsl(330, 95%, 70%);
+  --electric-blue: hsl(180, 70%, 60%);
+  --synthwave-purple: hsl(270, 50%, 65%);
+  --sunset-orange: hsl(30, 100%, 64%);
+  --lime-green: hsl(120, 100%, 48%);
+  --dark-navy: hsl(240, 45%, 7%);
+  --charcoal: hsl(240, 20%, 15%);
+}
+
+.minimal-theme {
+  --background: hsl(0, 0%, 100%);
+  --foreground: hsl(224, 71%, 4%);
+  --muted: hsl(220, 14%, 96%);
+  --muted-foreground: hsl(220, 9%, 46%);
+  --popover: hsl(0, 0%, 100%);
+  --popover-foreground: hsl(224, 71%, 4%);
+  --card: hsl(0, 0%, 100%);
+  --card-foreground: hsl(224, 71%, 4%);
+  --border: hsl(220, 13%, 91%);
+  --input: hsl(220, 13%, 91%);
+  --primary: hsl(262, 83%, 58%);
+  --primary-foreground: hsl(210, 20%, 98%);
+  --secondary: hsl(220, 14%, 96%);
+  --secondary-foreground: hsl(220, 9%, 46%);
+  --accent: hsl(142, 71%, 45%);
+  --accent-foreground: hsl(210, 20%, 98%);
+  --destructive: hsl(0, 85%, 60%);
+  --destructive-foreground: hsl(210, 20%, 98%);
+  --ring: hsl(262, 83%, 58%);
+}
+
+.ghibli-theme {
+  --background: hsl(48, 42%, 98%);
+  --foreground: hsl(140, 12%, 20%);
+  --muted: hsl(48, 30%, 92%);
+  --muted-foreground: hsl(140, 8%, 45%);
+  --popover: hsl(48, 42%, 98%);
+  --popover-foreground: hsl(140, 12%, 20%);
+  --card: hsl(48, 42%, 98%);
+  --card-foreground: hsl(140, 12%, 20%);
+  --border: hsl(140, 30%, 70%);
+  --input: hsl(48, 30%, 92%);
+  --primary: hsl(140, 30%, 55%);
+  --primary-foreground: hsl(48, 42%, 98%);
+  --secondary: hsl(35, 50%, 80%);
+  --secondary-foreground: hsl(140, 12%, 20%);
+  --accent: hsl(35, 50%, 65%);
+  --accent-foreground: hsl(140, 12%, 20%);
+  --destructive: hsl(0, 85%, 60%);
+  --destructive-foreground: hsl(48, 42%, 98%);
+  --ring: hsl(140, 30%, 55%);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+    font-family: 'Inter', sans-serif;
+  }
+  
+  .font-orbitron {
+    font-family: 'Orbitron', monospace;
+  }
+}
+
+@layer components {
+  .neon-border {
+    border: 2px solid var(--neon-pink);
+    box-shadow: 0 0 10px var(--neon-pink);
+  }
+  
+  .neon-text {
+    text-shadow: 0 0 10px currentColor;
+  }
+  
+  .retro-gradient {
+    background: linear-gradient(135deg, var(--neon-pink) 0%, var(--synthwave-purple) 50%, var(--electric-blue) 100%);
+  }
+  
+  .glass-morphism {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+  
+  .btn-primary {
+    @apply bg-gradient-to-r from-primary to-accent text-primary-foreground border-none;
+    box-shadow: 0 0 20px rgba(255, 107, 157, 0.5);
+  }
+  
+  .btn-primary:hover {
+    box-shadow: 0 0 30px rgba(255, 107, 157, 0.7);
+    transform: translateY(-2px);
+  }
+  
+  .btn-secondary {
+    @apply bg-secondary bg-opacity-20 text-secondary border border-secondary;
+  }
+  
+  .btn-secondary:hover {
+    @apply bg-secondary bg-opacity-30;
+    box-shadow: 0 0 20px rgba(78, 205, 196, 0.3);
+  }
+  
+  .btn-tertiary {
+    @apply bg-accent bg-opacity-20 text-accent border border-accent;
+  }
+  
+  .btn-tertiary:hover {
+    @apply bg-accent bg-opacity-30;
+    box-shadow: 0 0 20px rgba(139, 95, 191, 0.3);
+  }
+  
+  .btn-danger {
+    @apply bg-destructive bg-opacity-20 text-destructive border border-destructive;
+  }
+  
+  .btn-danger:hover {
+    @apply bg-destructive bg-opacity-30;
+    box-shadow: 0 0 20px rgba(255, 23, 68, 0.3);
+  }
+  
+  .form-input {
+    @apply bg-muted border border-border text-foreground p-3 rounded-lg;
+  }
+  
+  .form-input:focus {
+    @apply outline-none border-primary;
+    box-shadow: 0 0 0 3px rgba(255, 107, 157, 0.1);
+  }
+  
+  .form-input::placeholder {
+    @apply text-muted-foreground;
+  }
+  
+  .toggle-switch {
+    @apply w-12 h-6 bg-muted rounded-full relative cursor-pointer transition-all duration-300;
+  }
+  
+  .toggle-switch::after {
+    content: '';
+    @apply absolute top-0.5 left-0.5 w-5 h-5 bg-background rounded-full transition-all duration-300;
+  }
+  
+  .toggle-switch.active {
+    @apply bg-primary;
+    box-shadow: 0 0 10px rgba(255, 107, 157, 0.5);
+  }
+  
+  .toggle-switch.active::after {
+    transform: translateX(24px);
+  }
+  
+  .nav-tab {
+    @apply bg-secondary bg-opacity-10 text-secondary border border-transparent transition-all duration-300;
+  }
+  
+  .nav-tab:hover {
+    @apply bg-secondary bg-opacity-20 border-secondary border-opacity-30;
+  }
+  
+  .nav-tab.active {
+    @apply bg-primary bg-opacity-20 text-primary border-primary;
+    box-shadow: 0 0 15px rgba(255, 107, 157, 0.3);
+  }
+  
+  /* Background pattern for retro theme */
+  .retro-bg::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    opacity: 0.1;
+    pointer-events: none;
+    background-image: repeating-linear-gradient(45deg, transparent, transparent 2px, var(--neon-pink) 2px, var(--neon-pink) 4px);
+  }
+}
+
+@layer utilities {
+  .animate-glow {
+    animation: glow 2s ease-in-out infinite alternate;
+  }
+  
+  .animate-pulse-slow {
+    animation: pulse 3s ease-in-out infinite;
+  }
+  
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+  
+  @keyframes glow {
+    from {
+      box-shadow: 0 0 20px var(--neon-pink);
+    }
+    to {
+      box-shadow: 0 0 30px var(--neon-pink), 0 0 40px var(--neon-pink);
+    }
+  }
+  
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .container {
+    @apply px-4;
+  }
+  
+  .timer-display {
+    @apply text-5xl;
+  }
+  
+  .btn-primary, .btn-secondary, .btn-tertiary, .btn-danger {
+    @apply px-6 py-3 text-sm;
+  }
+}

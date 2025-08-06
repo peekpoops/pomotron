@@ -1,0 +1,53 @@
+{
+  "name": "Pomotron - Retro Pomodoro Timer",
+  "short_name": "Pomotron",
+  "description": "A retro-themed Pomodoro timer with intention-setting, website blocking, and productivity analytics",
+  "version": "2.1.0",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0F0F23",
+  "theme_color": "#FF6B9D",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "en",
+  "categories": ["productivity", "utilities"],
+  "icons": [
+    {
+      "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgdmlld0JveD0iMCAwIDE5MiAxOTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxOTIiIGhlaWdodD0iMTkyIiByeD0iMjQiIGZpbGw9InVybCgjZ3JhZGllbnQwX2xpbmVhcl8xXzEpIi8+CjxjaXJjbGUgY3g9Ijk2IiBjeT0iOTYiIHI9IjQwIiBzdHJva2U9IiNGRkY2QjkiIHN0cm9rZS13aWR0aD0iNCIgZmlsbD0ibm9uZSIvPgo8Y2lyY2xlIGN4PSI5NiIgY3k9Ijk2IiByPSI2MCIgc3Ryb2tlPSIjNEVDREM0IiBzdHJva2Utd2lkdGg9IjQiIGZpbGw9Im5vbmUiIHN0cm9rZS1kYXNoYXJyYXk9IjEwIDUiLz4KPGxpbmUgeDE9Ijk2IiB5MT0iNDAiIHgyPSI5NiIgeTI9Ijc2IiBzdHJva2U9IiNGRkY2QjkiIHN0cm9rZS13aWR0aD0iNCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIi8+CjxsaW5lIHgxPSI5NiIgeTE9Ijk2IiB4Mj0iMTIwIiB5Mj0iODAiIHN0cm9rZT0iI0ZGRjZCOSIgc3Ryb2tlLXdpZHRoPSIzIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KPGRlZnM+CjxsaW5lYXJHcmFkaWVudCBpZD0iZ3JhZGllbnQwX2xpbmVhcl8xXzEiIHgxPSIwIiB5MT0iMCIgeDI9IjE5MiIgeTI9IjE5MiIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPgo8c3RvcCBzdG9wLWNvbG9yPSIjRkY2QjlEIi8+CjxzdG9wIG9mZnNldD0iMC41IiBzdG9wLWNvbG9yPSIjOEI1RkJGIi8+CjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzRFQ0RDNCIvPgo8L2xpbmVhckdyYWRpZW50Pgo8L2RlZnM+Cjwvc3ZnPgo=",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDUxMiA1MTIiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI1MTIiIGhlaWdodD0iNTEyIiByeD0iNjQiIGZpbGw9InVybCgjZ3JhZGllbnQwX2xpbmVhcl8xXzEpIi8+CjxjaXJjbGUgY3g9IjI1NiIgY3k9IjI1NiIgcj0iMTA0IiBzdHJva2U9IiNGRkY2QjkiIHN0cm9rZS13aWR0aD0iMTAiIGZpbGw9Im5vbmUiLz4KPGNpcmNsZSBjeD0iMjU2IiBjeT0iMjU2IiByPSIxNjAiIHN0cm9rZT0iIzRFQ0RDNCIgc3Ryb2tlLXdpZHRoPSIxMCIgZmlsbD0ibm9uZSIgc3Ryb2tlLWRhc2hhcnJheT0iMjQgMTIiLz4KPGxpbmUgeDE9IjI1NiIgeTE9IjEwNCIgeDI9IjI1NiIgeTI9IjIwMCIgc3Ryb2tlPSIjRkZGNkI5IiBzdHJva2Utd2lkdGg9IjEwIiBzdHJva2UtbGluZWNhcD0icm91bmQiLz4KPGxpbmUgeDE9IjI1NiIgeTE9IjI1NiIgeDI9IjMxNiIgeTI9IjIxNiIgc3Ryb2tlPSIjRkZGNkI5IiBzdHJva2Utd2lkdGg9IjgiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8ZGVmcz4KPGxpbmVhckdyYWRpZW50IGlkPSJncmFkaWVudDBfbGluZWFyXzFfMSIgeDE9IjAiIHkxPSIwIiB4Mj0iNTEyIiB5Mj0iNTEyIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+CjxzdG9wIHN0b3AtY29sb3I9IiNGRjZCOUQiLz4KPHN0b3Agb2Zmc2V0PSIwLjUiIHN0b3AtY29sb3I9IiM4QjVGQkYiLz4KPHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjNEVDREM0Ii8+CjwvbGluZWFyR3JhZGllbnQ+CjwvZGVmcz4KPC9zdmc+Cg==",
+      "sizes": "512x512",
+      "type": "image/svg+xml"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Start Timer",
+      "short_name": "Timer",
+      "description": "Start a focus session",
+      "url": "/?action=start",
+      "icons": [
+        {
+          "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iOTYiIGhlaWdodD0iOTYiIHZpZXdCb3g9IjAgMCA5NiA5NiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iNDgiIGN5PSI0OCIgcj0iNDgiIGZpbGw9IiNGRjZCOUQiLz4KPHBhdGggZD0iTTM4IDMyVjY0TDY0IDQ4TDM4IDMyWiIgZmlsbD0id2hpdGUiLz4KPC9zdmc+Cg==",
+          "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Analytics",
+      "short_name": "Stats",
+      "description": "View productivity analytics",
+      "url": "/?view=analytics",
+      "icons": [
+        {
+          "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iOTYiIGhlaWdodD0iOTYiIHZpZXdCb3g9IjAgMCA5NiA5NiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iNDgiIGN5PSI0OCIgcj0iNDgiIGZpbGw9IiM0RUNDO0M0Ii8+CjxyZWN0IHg9IjIwIiB5PSI1NiIgd2lkdGg9IjgiIGhlaWdodD0iMjAiIGZpbGw9IndoaXRlIi8+CjxyZWN0IHg9IjM2IiB5PSI0MCIgd2lkdGg9IjgiIGhlaWdodD0iMzYiIGZpbGw9IndoaXRlIi8+CjxyZWN0IHg9IjUyIiB5PSI0OCIgd2lkdGg9IjgiIGhlaWdodD0iMjgiIGZpbGw9IndoaXRlIi8+CjxyZWN0IHg9IjY4IiB5PSIzMiIgd2lkdGg9IjgiIGhlaWdodD0iNDQiIGZpbGw9IndoaXRlIi8+Cjwvc3ZnPgo=",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ],
+  "prefer_related_applications": false
+}
