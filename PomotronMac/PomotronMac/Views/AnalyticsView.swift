@@ -21,33 +21,44 @@ struct AnalyticsView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 30) {
-                // Header
-                VStack(spacing: 8) {
+                // Header matching web UI
+                VStack(spacing: 16) {
                     Text("ANALYTICS & INSIGHTS")
-                        .font(.custom("Orbitron", size: 28))
-                        .fontWeight(.black)
+                        .font(.system(size: 36, weight: .bold, design: .default))
                         .foregroundStyle(
                             LinearGradient(
-                                colors: [.pink, .purple, .cyan],
+                                colors: [Color(red: 1.0, green: 0.4, blue: 0.6), Color(red: 0.6, green: 0.4, blue: 1.0)],
                                 startPoint: .leading,
                                 endPoint: .trailing
                             )
                         )
                     
                     Text("Track your productivity journey")
-                        .font(.subheadline)
+                        .font(.system(size: 16))
                         .foregroundColor(.secondary)
                 }
                 
-                // Time Range Selector
-                Picker("Time Range", selection: $selectedTimeRange) {
+                // Time Range Selector - matching web UI style
+                HStack(spacing: 0) {
                     ForEach(TimeRange.allCases, id: \.self) { range in
-                        Text(range.rawValue)
-                            .tag(range)
+                        Button(range.rawValue) {
+                            selectedTimeRange = range
+                        }
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundColor(selectedTimeRange == range ? .white : .secondary)
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 10)
+                        .background(
+                            RoundedRectangle(cornerRadius: 6)
+                                .fill(selectedTimeRange == range ? Color.white.opacity(0.2) : Color.clear)
+                        )
                     }
                 }
-                .pickerStyle(SegmentedPickerStyle())
-                .padding(.horizontal, 40)
+                .padding(4)
+                .background(
+                    RoundedRectangle(cornerRadius: 10)
+                        .fill(Color.black.opacity(0.3))
+                )
                 
                 // Stats Overview
                 LazyVGrid(columns: [
@@ -367,28 +378,37 @@ struct StatsCard: View {
     let color: Color
     
     var body: some View {
-        VStack(spacing: 8) {
+        HStack(spacing: 16) {
+            // Icon with background
             Image(systemName: icon)
-                .font(.title2)
+                .font(.system(size: 24, weight: .medium))
                 .foregroundColor(color)
+                .frame(width: 48, height: 48)
+                .background(
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(color.opacity(0.1))
+                )
             
-            Text(value)
-                .font(.custom("Orbitron", size: 20))
-                .fontWeight(.bold)
-                .foregroundColor(.white)
+            // Content
+            VStack(alignment: .leading, spacing: 4) {
+                Text(value)
+                    .font(.system(size: 20, weight: .bold))
+                    .foregroundColor(.white)
+                
+                Text(title)
+                    .font(.system(size: 12))
+                    .foregroundColor(.secondary)
+            }
             
-            Text(title)
-                .font(.caption)
-                .foregroundColor(.secondary)
-                .multilineTextAlignment(.center)
+            Spacer()
         }
-        .padding(16)
+        .padding(20)
         .background(
-            RoundedRectangle(cornerRadius: 12)
-                .fill(Color.black.opacity(0.3))
+            RoundedRectangle(cornerRadius: 16)
+                .fill(Color.black.opacity(0.4))
                 .overlay(
-                    RoundedRectangle(cornerRadius: 12)
-                        .stroke(color.opacity(0.5), lineWidth: 1)
+                    RoundedRectangle(cornerRadius: 16)
+                        .stroke(Color.purple.opacity(0.2), lineWidth: 1)
                 )
         )
     }
@@ -412,13 +432,13 @@ struct AnalyticsCard<Content: View>: View {
             
             content()
         }
-        .padding(20)
+        .padding(24)
         .background(
-            RoundedRectangle(cornerRadius: 12)
-                .fill(Color.black.opacity(0.3))
+            RoundedRectangle(cornerRadius: 16)
+                .fill(Color.black.opacity(0.4))
                 .overlay(
-                    RoundedRectangle(cornerRadius: 12)
-                        .stroke(Color.cyan.opacity(0.5), lineWidth: 1)
+                    RoundedRectangle(cornerRadius: 16)
+                        .stroke(Color.purple.opacity(0.2), lineWidth: 1)
                 )
         )
     }

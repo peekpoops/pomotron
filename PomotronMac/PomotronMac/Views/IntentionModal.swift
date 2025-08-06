@@ -35,18 +35,17 @@ struct IntentionModal: View {
                         )
                     
                     Text("SET YOUR INTENTION")
-                        .font(.custom("Orbitron", size: 24))
-                        .fontWeight(.black)
+                        .font(.system(size: 28, weight: .bold, design: .default))
                         .foregroundStyle(
                             LinearGradient(
-                                colors: [.pink, .purple, .cyan],
+                                colors: [Color(red: 1.0, green: 0.4, blue: 0.6), Color(red: 0.6, green: 0.4, blue: 1.0)],
                                 startPoint: .leading,
                                 endPoint: .trailing
                             )
                         )
                     
                     Text("Focus your mind before you begin")
-                        .font(.subheadline)
+                        .font(.system(size: 16))
                         .foregroundColor(.secondary)
                 }
                 
@@ -55,7 +54,7 @@ struct IntentionModal: View {
                     // Task Input
                     VStack(alignment: .leading, spacing: 8) {
                         Text("What are you working on today?")
-                            .font(.headline)
+                            .font(.system(size: 18, weight: .semibold))
                             .foregroundColor(.white)
                         
                         TextField("Enter your task or goal...", text: $task)
@@ -76,7 +75,7 @@ struct IntentionModal: View {
                     // Why Input
                     VStack(alignment: .leading, spacing: 8) {
                         Text("Why is this important to you?")
-                            .font(.headline)
+                            .font(.system(size: 18, weight: .semibold))
                             .foregroundColor(.white)
                         
                         TextField("Your motivation, purpose, or goal...", text: $why, axis: .vertical)
@@ -96,7 +95,18 @@ struct IntentionModal: View {
                         onSubmit(("Quick focus session", ""))
                         dismiss()
                     }
-                    .buttonStyle(SecondaryRetroButtonStyle())
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 24)
+                    .padding(.vertical, 14)
+                    .background(
+                        RoundedRectangle(cornerRadius: 8)
+                            .fill(Color.gray.opacity(0.6))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 8)
+                                    .stroke(Color.gray.opacity(0.8), lineWidth: 1)
+                            )
+                    )
                     
                     Button("Start Focused Session") {
                         if task.isEmpty {
@@ -107,7 +117,15 @@ struct IntentionModal: View {
                         onSubmit((task, why))
                         dismiss()
                     }
-                    .buttonStyle(PrimaryRetroButtonStyle())
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 32)
+                    .padding(.vertical, 14)
+                    .background(
+                        RoundedRectangle(cornerRadius: 8)
+                            .fill(Color.green)
+                            .shadow(color: .green.opacity(0.3), radius: 8)
+                    )
                 }
                 
                 Spacer()
@@ -124,6 +142,16 @@ struct RetroTextFieldStyle: TextFieldStyle {
     func _body(configuration: TextField<Self._Label>) -> some View {
         configuration
             .padding(16)
+            .background(
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(Color.black.opacity(0.4))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(Color.purple.opacity(0.3), lineWidth: 1)
+                    )
+            )
+            .foregroundColor(.white)
+            .font(.system(size: 16))
             .background(
                 RoundedRectangle(cornerRadius: 8)
                     .fill(Color.black.opacity(0.4))

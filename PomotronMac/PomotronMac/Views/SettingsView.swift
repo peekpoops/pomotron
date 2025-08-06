@@ -10,21 +10,20 @@ struct SettingsView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 30) {
-                // Header
-                VStack(spacing: 8) {
+                // Header matching web UI
+                VStack(spacing: 16) {
                     Text("SETTINGS & CONFIGURATION")
-                        .font(.custom("Orbitron", size: 28))
-                        .fontWeight(.black)
+                        .font(.system(size: 36, weight: .bold, design: .default))
                         .foregroundStyle(
                             LinearGradient(
-                                colors: [.pink, .purple, .cyan],
+                                colors: [Color(red: 1.0, green: 0.4, blue: 0.6), Color(red: 0.6, green: 0.4, blue: 1.0)],
                                 startPoint: .leading,
                                 endPoint: .trailing
                             )
                         )
                     
                     Text("Customize your Pomotron experience")
-                        .font(.subheadline)
+                        .font(.system(size: 16))
                         .foregroundColor(.secondary)
                 }
                 
@@ -64,7 +63,15 @@ struct SettingsView: View {
                     settings.saveSettings()
                     showSuccessMessage()
                 }
-                .buttonStyle(PrimaryRetroButtonStyle())
+                .font(.system(size: 16, weight: .semibold))
+                .foregroundColor(.white)
+                .padding(.horizontal, 32)
+                .padding(.vertical, 16)
+                .background(
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(Color.green)
+                        .shadow(color: .green.opacity(0.3), radius: 8)
+                )
                 .padding(.top, 20)
             }
             .padding(30)
@@ -347,25 +354,26 @@ struct SettingsCard<Content: View>: View {
     @ViewBuilder let content: () -> Content
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            HStack {
+        VStack(alignment: .leading, spacing: 20) {
+            HStack(spacing: 12) {
                 Image(systemName: icon)
+                    .font(.system(size: 20, weight: .medium))
                     .foregroundColor(.cyan)
                 
                 Text(title)
-                    .font(.headline)
+                    .font(.system(size: 18, weight: .semibold))
                     .foregroundColor(.white)
             }
             
             content()
         }
-        .padding(20)
+        .padding(24)
         .background(
-            RoundedRectangle(cornerRadius: 12)
-                .fill(Color.black.opacity(0.3))
+            RoundedRectangle(cornerRadius: 16)
+                .fill(Color.black.opacity(0.4))
                 .overlay(
-                    RoundedRectangle(cornerRadius: 12)
-                        .stroke(Color.cyan.opacity(0.5), lineWidth: 1)
+                    RoundedRectangle(cornerRadius: 16)
+                        .stroke(Color.purple.opacity(0.2), lineWidth: 1)
                 )
         )
     }
@@ -379,7 +387,7 @@ struct SettingsNumberField: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(title)
-                .font(.caption)
+                .font(.system(size: 14, weight: .medium))
                 .foregroundColor(.secondary)
             
             TextField("", value: $value, format: .number)
@@ -398,14 +406,14 @@ struct SettingsToggle: View {
     var body: some View {
         HStack {
             Text(title)
-                .font(.caption)
+                .font(.system(size: 14, weight: .medium))
                 .foregroundColor(.secondary)
             
             Spacer()
             
             Toggle("", isOn: $isOn)
                 .toggleStyle(SwitchToggleStyle(tint: .cyan))
-                .scaleEffect(0.8)
+                .scaleEffect(0.9)
         }
     }
 }
