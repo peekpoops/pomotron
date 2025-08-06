@@ -10,33 +10,31 @@ struct TimerView: View {
     
     var body: some View {
         ScrollView {
-            VStack(spacing: 30) {
-                // Motivational Quote Banner
+            VStack(spacing: 24) {
+                // Motivational Quote Banner matching web UI
                 QuoteBanner(
                     quote: $currentQuote,
                     showFullQuote: $showFullQuote
                 )
                 
-                HStack(spacing: 40) {
-                    // Main Timer Section
-                    VStack(spacing: 30) {
+                HStack(spacing: 24) {
+                    // Main Timer Section - matching web UI layout
+                    VStack(spacing: 24) {
                         TimerDisplay()
-                        TimerControls()
                     }
-                    .frame(maxWidth: 500)
+                    .frame(maxWidth: 600)
                     
-                    // Sidebar
-                    VStack(spacing: 20) {
-                        if !timerManager.timerState.currentIntention.task.isEmpty {
-                            CurrentIntentionCard()
-                        }
-                        
-                        TodaysStatsCard()
-                    }
-                    .frame(width: 300)
+                    // Today's Progress Sidebar - matching web UI
+                    TodaysStatsCard()
+                        .frame(width: 280)
                 }
+                .padding(.horizontal, 24)
+                
+                // Timer Controls at bottom
+                TimerControls()
+                    .padding(.horizontal, 24)
             }
-            .padding(30)
+            .padding(.vertical, 24)
         }
         .sheet(isPresented: $showIntentionModal) {
             IntentionModal { intention in
@@ -58,48 +56,69 @@ struct TimerView: View {
     
     @ViewBuilder
     private func TimerDisplay() -> some View {
-        VStack(spacing: 20) {
-            // Session Type Badge
-            HStack {
+        VStack(spacing: 32) {
+            // Session Type Badge - matching web UI style
+            HStack(spacing: 8) {
                 Image(systemName: getSessionIcon())
-                    .font(.title2)
+                    .font(.system(size: 16, weight: .medium))
                 
                 Text(timerManager.timerState.sessionType.displayName)
-                    .font(.custom("Orbitron", size: 18))
-                    .fontWeight(.bold)
+                    .font(.system(size: 16, weight: .medium, design: .default))
             }
-            .padding(.horizontal, 20)
-            .padding(.vertical, 10)
+            .padding(.horizontal, 24)
+            .padding(.vertical, 12)
             .background(
-                RoundedRectangle(cornerRadius: 20)
+                RoundedRectangle(cornerRadius: 25)
                     .fill(getSessionColor().opacity(0.2))
                     .overlay(
-                        RoundedRectangle(cornerRadius: 20)
-                            .stroke(getSessionColor(), lineWidth: 2)
+                        RoundedRectangle(cornerRadius: 25)
+                            .stroke(getSessionColor(), lineWidth: 1)
                     )
             )
             .foregroundColor(getSessionColor())
             
-            // Main Timer Display
+            // Main Timer Display - exactly matching web UI colors and size
             Text(timerManager.formatTime(timerManager.timerState.timeLeft))
-                .font(.custom("Orbitron", size: 72))
-                .fontWeight(.black)
+                .font(.system(size: 140, weight: .black, design: .default))
+                .monospacedDigit()
                 .foregroundStyle(
                     LinearGradient(
-                        colors: [.cyan, .purple, .pink],
+                        colors: [
+                            Color(red: 0.44, green: 0.78, blue: 0.89), // Light cyan
+                            Color(red: 0.67, green: 0.47, blue: 0.86)  // Light purple
+                        ],
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing
                     )
                 )
-                .shadow(color: .cyan, radius: 10)
+                .shadow(color: .cyan.opacity(0.4), radius: 15)
+                .shadow(color: .purple.opacity(0.3), radius: 10)
             
-            // Progress Bar
-            VStack(spacing: 8) {
-                ProgressView(value: timerManager.getProgress(), total: 100)
-                    .progressViewStyle(RetroProgressViewStyle())
+            // Progress Bar - matching web UI style
+            VStack(spacing: 12) {
+                GeometryReader { geometry in
+                    ZStack(alignment: .leading) {
+                        // Background track
+                        RoundedRectangle(cornerRadius: 4)
+                            .fill(Color.gray.opacity(0.3))
+                            .frame(height: 8)
+                        
+                        // Progress fill
+                        RoundedRectangle(cornerRadius: 4)
+                            .fill(
+                                LinearGradient(
+                                    colors: [.cyan, .purple],
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                )
+                            )
+                            .frame(width: geometry.size.width * CGFloat(timerManager.getProgress() / 100), height: 8)
+                    }
+                }
+                .frame(height: 8)
                 
                 HStack {
-                    Text(timerManager.formatTime(Int(timerManager.getProgress() / 100 * Double(getDurationForCurrentSession() * 60))))
+                    Text("00:00")
                         .font(.caption)
                         .foregroundColor(.secondary)
                     
@@ -113,17 +132,20 @@ struct TimerView: View {
             
             // Session Info
             Text(getSessionInfo())
-                .font(.caption)
+                .font(.system(size: 14))
                 .foregroundColor(.secondary)
                 .multilineTextAlignment(.center)
         }
         .padding(40)
         .background(
             RoundedRectangle(cornerRadius: 20)
-                .fill(Color.black.opacity(0.3))
+                .fill(Color.black.opacity(0.4))
                 .overlay(
                     RoundedRectangle(cornerRadius: 20)
-                        .stroke(Color.cyan.opacity(0.5), lineWidth: 1)
+                        .stroke(
+                            LinearGradient(colors: [.purple.opacity(0.3), .cyan.opacity(0.3)], startPoint: .topLeading, endPoint: .bottomTrailing),
+                            lineWidth: 1
+                        )
                 )
         )
     }
@@ -296,13 +318,13 @@ struct QuoteBanner: View {
             .font(.title2)
             .foregroundColor(.cyan)
         }
-        .padding(20)
+        .padding(24)
         .background(
-            RoundedRectangle(cornerRadius: 12)
-                .fill(Color.black.opacity(0.3))
+            RoundedRectangle(cornerRadius: 16)
+                .fill(Color.black.opacity(0.4))
                 .overlay(
-                    RoundedRectangle(cornerRadius: 12)
-                        .stroke(Color.purple.opacity(0.5), lineWidth: 1)
+                    RoundedRectangle(cornerRadius: 16)
+                        .stroke(Color.purple.opacity(0.2), lineWidth: 1)
                 )
         )
     }
@@ -363,13 +385,13 @@ struct TodaysStatsCard: View {
                 StatRow(label: "Streak", value: "\(stats.streak) days")
             }
         }
-        .padding(16)
+        .padding(20)
         .background(
-            RoundedRectangle(cornerRadius: 12)
-                .fill(Color.black.opacity(0.3))
+            RoundedRectangle(cornerRadius: 16)
+                .fill(Color.black.opacity(0.4))
                 .overlay(
-                    RoundedRectangle(cornerRadius: 12)
-                        .stroke(Color.green.opacity(0.5), lineWidth: 1)
+                    RoundedRectangle(cornerRadius: 16)
+                        .stroke(Color.purple.opacity(0.2), lineWidth: 1)
                 )
         )
     }
@@ -382,14 +404,13 @@ struct StatRow: View {
     var body: some View {
         HStack {
             Text(label)
-                .font(.caption)
+                .font(.system(size: 13))
                 .foregroundColor(.secondary)
             
             Spacer()
             
             Text(value)
-                .font(.caption)
-                .fontWeight(.semibold)
+                .font(.system(size: 13, weight: .semibold))
                 .foregroundColor(.white)
         }
     }
@@ -400,13 +421,13 @@ struct ToggleOption: View {
     @Binding var isOn: Bool
     
     var body: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: 12) {
             Toggle("", isOn: $isOn)
                 .toggleStyle(SwitchToggleStyle(tint: .cyan))
-                .scaleEffect(0.8)
+                .scaleEffect(0.9)
             
             Text(title)
-                .font(.caption)
+                .font(.system(size: 14, weight: .medium))
                 .foregroundColor(.secondary)
         }
     }
@@ -443,21 +464,22 @@ struct RetroButton: View {
         Button(action: action) {
             HStack(spacing: 8) {
                 Image(systemName: icon)
-                    .font(.system(size: size.fontSize))
+                    .font(.system(size: size.fontSize, weight: .medium))
                 
                 Text(title)
-                    .font(.custom("Orbitron", size: size.fontSize))
-                    .fontWeight(.bold)
+                    .font(.system(size: size.fontSize, weight: .semibold))
             }
-            .padding(.horizontal, size.padding * 1.5)
-            .padding(.vertical, size.padding)
+            .padding(.horizontal, size.padding * 1.8)
+            .padding(.vertical, size.padding * 1.2)
             .background(
                 RoundedRectangle(cornerRadius: 8)
-                    .fill(color.opacity(0.2))
+                    .fill(color)
                     .overlay(
                         RoundedRectangle(cornerRadius: 8)
-                            .stroke(color, lineWidth: 2)
+                            .stroke(color.opacity(0.8), lineWidth: 1)
                     )
+                    .shadow(color: color.opacity(0.3), radius: 6)
+                )
             )
             .foregroundColor(color)
         }
