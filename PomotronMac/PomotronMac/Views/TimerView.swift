@@ -38,11 +38,14 @@ struct TimerView: View {
         }
         .sheet(isPresented: $showIntentionModal) {
             IntentionModal { intention in
+                print("Starting session with intention: \(intention)")
                 timerManager.startSession(intention: intention)
                 if timerManager.settings.websiteBlockingEnabled {
                     websiteBlocker.startBlocking()
                 }
-                soundManager.playStartSound()
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    soundManager.playStartSound()
+                }
             }
         }
         .onChange(of: timerManager.timerState.isRunning) { isRunning in
@@ -164,12 +167,8 @@ struct TimerView: View {
                         color: .green,
                         size: .large
                     ) {
-                        if timerManager.timerState.sessionType == .focus {
-                            showIntentionModal = true
-                        } else {
-                            timerManager.startSession()
-                            soundManager.playStartSound()
-                        }
+                        print("START button tapped - showing intention modal")
+                        showIntentionModal = true
                     }
                 } else if timerManager.timerState.isRunning {
                     RetroButton(
@@ -473,10 +472,10 @@ struct RetroButton: View {
             .padding(.vertical, size.padding * 1.2)
             .background(
                 RoundedRectangle(cornerRadius: 8)
-                    .fill(color)
+                    .fill(color.opacity(0.2))
                     .overlay(
                         RoundedRectangle(cornerRadius: 8)
-                            .stroke(color.opacity(0.8), lineWidth: 1)
+                            .stroke(color, lineWidth: 2)
                     )
                     .shadow(color: color.opacity(0.3), radius: 6)
                 )

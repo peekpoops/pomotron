@@ -92,6 +92,7 @@ struct IntentionModal: View {
                 // Action Buttons
                 HStack(spacing: 20) {
                     Button("Skip & Start") {
+                        print("Skip & Start button tapped")
                         onSubmit(("Quick focus session", ""))
                         dismiss()
                     }
@@ -109,6 +110,7 @@ struct IntentionModal: View {
                     )
                     
                     Button("Start Focused Session") {
+                        print("Start Focused Session button tapped")
                         if task.isEmpty {
                             showValidation = true
                             return

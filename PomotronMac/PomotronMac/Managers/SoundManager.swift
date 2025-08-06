@@ -17,24 +17,35 @@ class SoundManager: ObservableObject {
     }
 
     private func setupAudioEngine() {
-        // Attach nodes
-        audioEngine.attach(player)
-        audioEngine.attach(mixer)
-
-        // Connect nodes
-        audioEngine.connect(player, to: mixer, format: nil)
-        audioEngine.connect(mixer, to: audioEngine.outputNode, format: nil)
-
-        // Start engine
         do {
+            // Configure audio session
+            let audioSession = AVAudioSession.sharedInstance()
+            try audioSession.setCategory(.playback, mode: .default)
+            try audioSession.setActive(true)
+            
+            // Attach nodes
+            audioEngine.attach(player)
+            audioEngine.attach(mixer)
+
+            // Connect nodes
+            audioEngine.connect(player, to: mixer, format: nil)
+            audioEngine.connect(mixer, to: audioEngine.outputNode, format: nil)
+
+            // Start engine
             try audioEngine.start()
         } catch {
-            print("Failed to start audio engine: \(error)")
+            print("Failed to setup audio engine: \(error)")
+            // Fallback to simpler audio or disable sounds
+            soundEnabled = false
         }
     }
 
     func playStartSound() {
-        guard soundEnabled && !isMuted else { return }
+        print("SoundManager.playStartSound called - enabled: \(soundEnabled), muted: \(isMuted)")
+        guard soundEnabled && !isMuted else { 
+            print("Sound disabled or muted")
+            return 
+        }
         generateRetroTick()
     }
 

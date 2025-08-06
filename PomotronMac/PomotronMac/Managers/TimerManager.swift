@@ -17,6 +17,8 @@ class TimerManager: ObservableObject {
     }
     
     func startSession(intention: (task: String, why: String)? = nil) {
+        print("TimerManager.startSession called with intention: \(intention?.task ?? "none")")
+        
         if let intention = intention {
             timerState.currentIntention = intention
         }
@@ -27,6 +29,8 @@ class TimerManager: ObservableObject {
         
         let duration = getDurationForCurrentSession()
         timerState.timeLeft = duration * 60
+        
+        print("Timer started: \(duration) minutes (\(duration * 60) seconds)")
         
         scheduleNotification()
         startTimer()
