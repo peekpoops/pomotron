@@ -36,22 +36,22 @@
                 8E4B5F5D2C645C3200123456 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
                 8E4B5F5F2C645C3200123456 /* PomotronMac.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PomotronMac.entitlements; sourceTree = "<group>"; };
                 8E4B5F6A2C645C3000123456 /* PomotronMacApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PomotronMacApp.swift; sourceTree = "<group>"; };
-                8E4B5F6F2C645C5000123456 /* TimerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Views/TimerView.swift"; sourceTree = "<group>"; };
-                8E4B5F712C645C5500123456 /* AnalyticsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Views/AnalyticsView.swift"; sourceTree = "<group>"; };
-                8E4B5F732C645C5A00123456 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Views/SettingsView.swift"; sourceTree = "<group>"; };
-                8E4B5F752C645C6000123456 /* IntentionModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Views/IntentionModal.swift"; sourceTree = "<group>"; };
-                8E4B5F772C645C6500123456 /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Models/Settings.swift"; sourceTree = "<group>"; };
-                8E4B5F792C645C6A00123456 /* TimerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Managers/TimerManager.swift"; sourceTree = "<group>"; };
-                8E4B5F7B2C645C6E00123456 /* SoundManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Managers/SoundManager.swift"; sourceTree = "<group>"; };
-                8E4B5F7D2C645C7200123456 /* WebsiteBlocker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Managers/WebsiteBlocker.swift"; sourceTree = "<group>"; };
-                8E4B5F7F2C645C7600123456 /* FontManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Utils/FontManager.swift"; sourceTree = "<group>"; };
-                8E4B5F812C645C7A00123456 /* Font+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Utils/Font+Extensions.swift"; sourceTree = "<group>"; };
+                8E4B5F6F2C645C5000123456 /* TimerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "TimerView.swift"; path = "Views/TimerView.swift"; sourceTree = "<group>"; };
+                8E4B5F712C645C5500123456 /* AnalyticsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "AnalyticsView.swift"; path = "Views/AnalyticsView.swift"; sourceTree = "<group>"; };
+                8E4B5F732C645C5A00123456 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "SettingsView.swift"; path = "Views/SettingsView.swift"; sourceTree = "<group>"; };
+                8E4B5F752C645C6000123456 /* IntentionModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "IntentionModal.swift"; path = "Views/IntentionModal.swift"; sourceTree = "<group>"; };
+                8E4B5F772C645C6500123456 /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Settings.swift"; path = "Models/Settings.swift"; sourceTree = "<group>"; };
+                8E4B5F792C645C6A00123456 /* TimerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "TimerManager.swift"; path = "Managers/TimerManager.swift"; sourceTree = "<group>"; };
+                8E4B5F7B2C645C6E00123456 /* SoundManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "SoundManager.swift"; path = "Managers/SoundManager.swift"; sourceTree = "<group>"; };
+                8E4B5F7D2C645C7200123456 /* WebsiteBlocker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "WebsiteBlocker.swift"; path = "Managers/WebsiteBlocker.swift"; sourceTree = "<group>"; };
+                8E4B5F7F2C645C7600123456 /* FontManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "FontManager.swift"; path = "Utils/FontManager.swift"; sourceTree = "<group>"; };
+                8E4B5F812C645C7A00123456 /* Font+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Font+Extensions.swift"; path = "Utils/Font+Extensions.swift"; sourceTree = "<group>"; };
                 8E4B5F8D2C645C8000123456 /* Inter-Variable.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Inter-Variable.ttf"; path = "Resources/Fonts/Inter-Variable.ttf"; sourceTree = "<group>"; };
                 8E4B5F8F2C645C8100123456 /* Orbitron-Variable.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Orbitron-Variable.ttf"; path = "Resources/Fonts/Orbitron-Variable.ttf"; sourceTree = "<group>"; };
                 8E4B5F912C645C8200123456 /* ShareTechMono-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "ShareTechMono-Regular.ttf"; path = "Resources/Fonts/ShareTechMono-Regular.ttf"; sourceTree = "<group>"; };
                 8E4B5F932C645C8300123456 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-                8E4B5F992C645C9000123456 /* AudioManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Managers/AudioManager.swift"; sourceTree = "<group>"; };
-                8E4B5F9C2C645C9100123456 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Models/Models.swift"; sourceTree = "<group>"; };
+                8E4B5F992C645C9000123456 /* AudioManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "AudioManager.swift"; path = "Managers/AudioManager.swift"; sourceTree = "<group>"; };
+                8E4B5F9C2C645C9100123456 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Models.swift"; path = "Models/Models.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
