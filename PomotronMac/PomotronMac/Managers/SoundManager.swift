@@ -2,6 +2,7 @@
 import Foundation
 import AVFoundation
 import SwiftUI
+import AppKit
 
 class SoundManager: ObservableObject {
     private var audioEngine = AVAudioEngine()
@@ -18,12 +19,7 @@ class SoundManager: ObservableObject {
 
     private func setupAudioEngine() {
         do {
-            // Configure audio session
-            let audioSession = AVAudioSession.sharedInstance()
-            try audioSession.setCategory(.playback, mode: .default)
-            try audioSession.setActive(true)
-            
-            // Attach nodes
+            // macOS doesn't use AVAudioSession - directly configure engine
             audioEngine.attach(player)
             audioEngine.attach(mixer)
 
@@ -35,33 +31,51 @@ class SoundManager: ObservableObject {
             try audioEngine.start()
         } catch {
             print("Failed to setup audio engine: \(error)")
-            // Fallback to simpler audio or disable sounds
+            // Use simple system sounds instead
             soundEnabled = false
         }
     }
 
     func playStartSound() {
         print("SoundManager.playStartSound called - enabled: \(soundEnabled), muted: \(isMuted)")
-        guard soundEnabled && !isMuted else { 
-            print("Sound disabled or muted")
+        guard !isMuted else { 
+            print("Sound muted")
             return 
         }
-        generateRetroTick()
+        
+        if soundEnabled {
+            generateRetroTick()
+        } else {
+            // Fallback to system sound
+            NSSound.beep()
+        }
     }
 
     func playCompleteSound() {
-        guard soundEnabled && !isMuted else { return }
-        generateRetroComplete()
+        guard !isMuted else { return }
+        if soundEnabled {
+            generateRetroComplete()
+        } else {
+            NSSound.beep()
+        }
     }
 
     func playBreakSound() {
-        guard soundEnabled && !isMuted else { return }
-        generateRetroBreak()
+        guard !isMuted else { return }
+        if soundEnabled {
+            generateRetroBreak()
+        } else {
+            NSSound.beep()
+        }
     }
 
     func playPauseSound() {
-        guard soundEnabled && !isMuted else { return }
-        generateRetroPause()
+        guard !isMuted else { return }
+        if soundEnabled {
+            generateRetroPause()
+        } else {
+            NSSound.beep()
+        }
     }
 
     private func generateRetroTick() {
