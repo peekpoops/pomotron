@@ -1,3 +1,4 @@
+
 import Foundation
 import AVFoundation
 import SwiftUI
@@ -9,6 +10,7 @@ class SoundManager: ObservableObject {
 
     @Published var volume: Float = 0.5
     @Published var soundEnabled = true
+    @Published var isMuted = false
 
     init() {
         setupAudioEngine()
@@ -32,27 +34,31 @@ class SoundManager: ObservableObject {
     }
 
     func playStartSound() {
-        guard soundEnabled else { return }
+        guard soundEnabled && !isMuted else { return }
         generateRetroTick()
     }
 
     func playCompleteSound() {
-        guard soundEnabled else { return }
+        guard soundEnabled && !isMuted else { return }
         generateRetroComplete()
     }
 
     func playBreakSound() {
-        guard soundEnabled else { return }
+        guard soundEnabled && !isMuted else { return }
         generateRetroBreak()
+    }
+
+    func playPauseSound() {
+        guard soundEnabled && !isMuted else { return }
+        generateRetroPause()
     }
 
     private func generateRetroTick() {
         let sampleRate = 44100.0
         let frameCount = AVAudioFrameCount(sampleRate * 0.1) // 0.1 second
 
-        guard let buffer = AVAudioPCMBuffer(pcmFormat: AVAudioFormat(standardFormatWithSampleRate: sampleRate, channels: 1)!, frameCapacity: frameCount) else {
-            return
-        }
+        guard let format = AVAudioFormat(standardFormatWithSampleRate: sampleRate, channels: 1) else { return }
+        guard let buffer = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: frameCount) else { return }
 
         buffer.frameLength = frameCount
 
@@ -76,9 +82,8 @@ class SoundManager: ObservableObject {
         let sampleRate = 44100.0
         let frameCount = AVAudioFrameCount(sampleRate * 0.5) // 0.5 second
 
-        guard let buffer = AVAudioPCMBuffer(pcmFormat: AVAudioFormat(standardFormatWithSampleRate: sampleRate, channels: 1)!, frameCapacity: frameCount) else {
-            return
-        }
+        guard let format = AVAudioFormat(standardFormatWithSampleRate: sampleRate, channels: 1) else { return }
+        guard let buffer = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: frameCount) else { return }
 
         buffer.frameLength = frameCount
 
@@ -102,9 +107,8 @@ class SoundManager: ObservableObject {
         let sampleRate = 44100.0
         let frameCount = AVAudioFrameCount(sampleRate * 0.3) // 0.3 second
 
-        guard let buffer = AVAudioPCMBuffer(pcmFormat: AVAudioFormat(standardFormatWithSampleRate: sampleRate, channels: 1)!, frameCapacity: frameCount) else {
-            return
-        }
+        guard let format = AVAudioFormat(standardFormatWithSampleRate: sampleRate, channels: 1) else { return }
+        guard let buffer = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: frameCount) else { return }
 
         buffer.frameLength = frameCount
 
@@ -119,6 +123,31 @@ class SoundManager: ObservableObject {
             let envelope = 1.0 - (time / 0.3) // Linear fade
 
             channelData[frame] = Float(wave * envelope * 0.25 * Double(volume))
+        }
+
+        playBuffer(buffer)
+    }
+
+    private func generateRetroPause() {
+        let sampleRate = 44100.0
+        let frameCount = AVAudioFrameCount(sampleRate * 0.2) // 0.2 second
+
+        guard let format = AVAudioFormat(standardFormatWithSampleRate: sampleRate, channels: 1) else { return }
+        guard let buffer = AVAudioPCMBuffer(pcmFormat: format, frameCapacity: frameCount) else { return }
+
+        buffer.frameLength = frameCount
+
+        guard let channelData = buffer.floatChannelData?[0] else { return }
+
+        for frame in 0..<Int(frameCount) {
+            let time = Double(frame) / sampleRate
+
+            // Generate a soft pause tone
+            let frequency = 300.0
+            let wave = sin(2.0 * Double.pi * frequency * time)
+            let envelope = exp(-time * 8.0) // Quick fade
+
+            channelData[frame] = Float(wave * envelope * 0.15 * Double(volume))
         }
 
         playBuffer(buffer)
@@ -141,5 +170,9 @@ class SoundManager: ObservableObject {
 
     func toggleSound() {
         soundEnabled.toggle()
+    }
+
+    func toggleMute() {
+        isMuted.toggle()
     }
 }
