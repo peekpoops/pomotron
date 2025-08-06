@@ -31,7 +31,7 @@ struct IntentionModal: View {
                 // Header
                 VStack(spacing: 16) {
                     Text("SET YOUR INTENTION")
-                        .font(.pomotronHeading(size: 32))
+                        .font(.custom("Orbitron", size: 32))
                         .fontWeight(.black)
                         .foregroundStyle(
                             LinearGradient(
@@ -46,7 +46,7 @@ struct IntentionModal: View {
                         .shadow(color: Color(red: 0.945, green: 0.431, blue: 0.765).opacity(0.6), radius: 8)
                     
                     Text("What are you working on today?")
-                        .font(.pomotronBody())
+                        .font(.custom("Orbitron", size: 16))
                         .fontWeight(.medium)
                         .foregroundColor(.white.opacity(0.8))
                         .multilineTextAlignment(.center)
@@ -57,7 +57,7 @@ struct IntentionModal: View {
                     // Task input
                     VStack(alignment: .leading, spacing: 12) {
                         Text("TASK")
-                            .font(.pomotronHeading(size: 14))
+                            .font(.custom("Orbitron", size: 14))
                             .fontWeight(.bold)
                             .foregroundColor(Color(red: 0.263, green: 0.824, blue: 0.824))
                         
@@ -82,7 +82,7 @@ struct IntentionModal: View {
                     // Why input
                     VStack(alignment: .leading, spacing: 12) {
                         Text("WHY (OPTIONAL)")
-                            .font(.pomotronHeading(size: 14))
+                            .font(.custom("Orbitron", size: 14))
                             .fontWeight(.bold)
                             .foregroundColor(Color(red: 0.945, green: 0.431, blue: 0.765))
                         
@@ -119,7 +119,7 @@ struct IntentionModal: View {
                         onSubmit((task, why))
                         dismiss()
                     }
-                    .font(.pomotronHeading(size: 18))
+                    .font(.custom("Orbitron", size: 18))
                     .fontWeight(.bold)
                     .foregroundColor(.white)
                     .padding(.horizontal, 32)
@@ -149,7 +149,7 @@ struct IntentionModal: View {
                         onSubmit(("Quick focus session", ""))
                         dismiss()
                     }
-                    .font(.pomotronHeading(size: 16))
+                    .font(.custom("Orbitron", size: 16))
                     .fontWeight(.semibold)
                     .foregroundColor(Color(red: 0.263, green: 0.824, blue: 0.824))
                     .padding(.horizontal, 24)

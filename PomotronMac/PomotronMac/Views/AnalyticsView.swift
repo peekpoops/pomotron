@@ -8,7 +8,7 @@ struct AnalyticsView: View {
         VStack(spacing: 32) {
             // Header
             Text("ANALYTICS")
-                .font(.pomotronTitle())
+                .font(.system(size: 36, weight: .black, design: .monospaced))
                 .foregroundStyle(
                     LinearGradient(
                         colors: [
@@ -61,7 +61,7 @@ struct AnalyticsView: View {
                     VStack(spacing: 20) {
                         HStack {
                             Text("Weekly Progress")
-                                .font(.pomotronHeading())
+                                .font(.system(size: 24, weight: .bold, design: .monospaced))
                                 .foregroundColor(.white)
                             
                             Spacer()
@@ -127,7 +127,7 @@ struct AnalyticsView: View {
                     VStack(spacing: 20) {
                         HStack {
                             Text("Recent Sessions")
-                                .font(.pomotronHeading())
+                                .font(.system(size: 24, weight: .bold, design: .monospaced))
                                 .foregroundColor(.white)
                             
                             Spacer()
@@ -214,15 +214,15 @@ struct StatCard: View {
     var body: some View {
         VStack(spacing: 12) {
             Text(title)
-                .font(.pomotronHeading(size: 12))
+                .font(.system(size: 12, weight: .bold, design: .monospaced))
                 .foregroundColor(color)
             
             Text(value)
-                .font(.pomotronHeading(size: 32))
+                .font(.system(size: 32, weight: .black, design: .monospaced))
                 .foregroundColor(.white)
             
             Text(subtitle)
-                .font(.pomotronBody(size: 14))
+                .font(.system(size: 14, weight: .medium))
                 .foregroundColor(.gray)
         }
         .padding(20)

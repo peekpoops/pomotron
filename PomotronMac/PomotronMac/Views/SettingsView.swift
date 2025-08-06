@@ -11,7 +11,7 @@ struct SettingsView: View {
         VStack(spacing: 32) {
             // Header
             Text("SETTINGS")
-                .font(.pomotronTitle())
+                .font(.system(size: 36, weight: .black, design: .monospaced))
                 .foregroundStyle(
                     LinearGradient(
                         colors: [
@@ -263,7 +263,7 @@ struct SettingsSection<Content: View>: View {
         VStack(spacing: 20) {
             HStack {
                 Text(title)
-                    .font(.pomotronHeading())
+                    .font(.system(size: 24, weight: .bold, design: .monospaced))
                     .foregroundColor(.white)
                 
                 Spacer()
@@ -295,13 +295,13 @@ struct SettingSlider: View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
                 Text(title)
-                    .font(.pomotronBody(size: 16))
+                    .font(.system(size: 16, weight: .semibold))
                     .foregroundColor(.white)
                 
                 Spacer()
                 
                 Text("\(Int(value)) \(unit)")
-                    .font(.pomotronBody(size: 14))
+                    .font(.system(size: 14, weight: .medium))
                     .foregroundColor(color)
             }
             
@@ -321,11 +321,11 @@ struct ToggleSetting: View {
         HStack(spacing: 16) {
             VStack(alignment: .leading, spacing: 4) {
                 Text(title)
-                    .font(.pomotronBody(size: 16))
+                    .font(.system(size: 16, weight: .semibold))
                     .foregroundColor(.white)
                 
                 Text(subtitle)
-                    .font(.pomotronBody(size: 14))
+                    .font(.system(size: 14, weight: .medium))
                     .foregroundColor(.gray)
             }
             

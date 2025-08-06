@@ -36,7 +36,7 @@ struct TimerView: View {
                 // Timer display with exact web styling (140px font equivalent)
                 VStack(spacing: 32) {
                     Text(timeString)
-                        .font(.pomotronTimer())
+                        .font(.system(size: 140, weight: .black, design: .monospaced))
                         .fontWeight(.black)
                         .foregroundStyle(
                             LinearGradient(
@@ -53,7 +53,7 @@ struct TimerView: View {
                     
                     // Session type and phase indicator
                     Text(sessionTypeText)
-                        .font(.pomotronHeading(size: 20))
+                        .font(.custom("Orbitron", size: 20))
                         .fontWeight(.medium)
                         .foregroundColor(.white.opacity(0.8))
                         .multilineTextAlignment(.center)
