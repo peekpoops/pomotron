@@ -198,10 +198,10 @@
   
   .nav-tab {
     @apply bg-secondary bg-opacity-10 border border-transparent transition-all duration-300;
-    color: rgb(229, 229, 229); /* Much darker/lighter text for better visibility */
+    color: rgb(156, 163, 175); /* Much darker gray for better visibility */
     font-family: 'Share Tech Mono', monospace;
-    font-weight: 500;
-    text-shadow: 0 0 5px rgba(229, 229, 229, 0.6);
+    font-weight: 600;
+    text-shadow: 0 0 5px rgba(156, 163, 175, 0.8);
   }
   
   .nav-tab:hover {
