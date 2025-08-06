@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pomotron - Retro Pomodoro Timer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'neon-pink': '#FF0080',
+                        'neon-cyan': '#00FFFF',
+                        'neon-purple': '#8A2BE2',
+                        'dark-bg': '#0A0A0F',
+                        'dark-surface': '#1A1A2E',
+                        'neon-green': '#39FF14',
+                        'neon-gold': '#FFD700'
+                    },
+                    fontFamily: {
+                        'retro': ['Orbitron', 'monospace'],
+                        'modern': ['Inter', 'sans-serif']
+                    },
+                    animation: {
+                        'pulse-neon': 'pulse-neon 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'glow': 'glow 2s ease-in-out infinite alternate',
+                        'flicker': 'flicker 3s linear infinite'
+                    }
+                }
+            }
+        };
+    </script>
+    <style>
+        @keyframes pulse-neon {
+            0%, 100% { box-shadow: 0 0 5px #FF0080, 0 0 10px #FF0080, 0 0 15px #FF0080; }
+            50% { box-shadow: 0 0 10px #FF0080, 0 0 20px #FF0080, 0 0 30px #FF0080; }
+        }
+        
+        @keyframes glow {
+            from { text-shadow: 0 0 5px #00FFFF, 0 0 10px #00FFFF; }
+            to { text-shadow: 0 0 10px #00FFFF, 0 0 20px #00FFFF, 0 0 30px #00FFFF; }
+        }
+        
+        @keyframes flicker {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+        
+        .retro-grid {
+            background-image: 
+                linear-gradient(rgba(255, 0, 128, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 0, 128, 0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        
+        .neon-border {
+            border: 1px solid #FF0080;
+            box-shadow: 0 0 10px rgba(255, 0, 128, 0.5), inset 0 0 10px rgba(255, 0, 128, 0.1);
+        }
+        
+        .neon-text {
+            text-shadow: 0 0 5px currentColor, 0 0 10px currentColor;
+        }
+        
+        .retro-button {
+            background: linear-gradient(45deg, #FF0080, #8A2BE2);
+            border: 2px solid #00FFFF;
+            box-shadow: 0 0 15px rgba(255, 0, 128, 0.5);
+            transition: all 0.3s ease;
+        }
+        
+        .retro-button:hover {
+            box-shadow: 0 0 25px rgba(255, 0, 128, 0.8), 0 0 35px rgba(138, 43, 226, 0.6);
+            transform: translateY(-2px);
+        }
+        
+        .timer-display {
+            background: radial-gradient(circle at center, rgba(0, 255, 255, 0.1), rgba(255, 0, 128, 0.1));
+            border: 3px solid #00FFFF;
+            box-shadow: 
+                0 0 20px rgba(0, 255, 255, 0.5),
+                inset 0 0 20px rgba(0, 255, 255, 0.1);
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, rgba(26, 26, 46, 0.8), rgba(10, 10, 15, 0.9));
+            border: 1px solid rgba(255, 0, 128, 0.3);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .theme-minimal {
+            --primary: #6366f1;
+            --secondary: #8b5cf6;
+            --bg: #ffffff;
+            --surface: #f8fafc;
+            --text: #1e293b;
+        }
+        
+        .theme-ghibli {
+            --primary: #4ade80;
+            --secondary: #06b6d4;
+            --bg: #fef3c7;
+            --surface: #fff7ed;
+            --text: #365314;
+        }
+        
+        .glass-effect {
+            background: rgba(26, 26, 46, 0.3);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+    </style>
+</head>
+<body class="bg-dark-bg text-white font-modern min-h-screen retro-grid">
+    <!-- Navigation Header -->
+    <header class="border-b border-neon-pink/30 bg-dark-surface/80 backdrop-blur-sm sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 bg-gradient-to-r from-neon-pink to-neon-purple rounded-lg flex items-center justify-center">
+                        <i class="fas fa-clock text-white text-sm"></i>
+                    </div>
+                    <h1 class="font-retro text-2xl font-bold text-neon-cyan neon-text">POMOTRON</h1>
+                </div>
+                
+                <nav class="flex items-center space-x-6">
+                    <button onclick="showView('timer')" class="nav-btn px-3 py-2 rounded-lg transition-all text-sm hover:bg-neon-pink/20 hover:text-neon-pink" data-view="timer">
+                        <i class="fas fa-play mr-2"></i>Timer
+                    </button>
+                    <button onclick="showView('analytics')" class="nav-btn px-3 py-2 rounded-lg transition-all text-sm hover:bg-neon-cyan/20 hover:text-neon-cyan" data-view="analytics">
+                        <i class="fas fa-chart-line mr-2"></i>Analytics
+                    </button>
+                    <button onclick="showView('intentions')" class="nav-btn px-3 py-2 rounded-lg transition-all text-sm hover:bg-neon-purple/20 hover:text-neon-purple" data-view="intentions">
+                        <i class="fas fa-heart mr-2"></i>Intentions
+                    </button>
+                    <button onclick="showView('settings')" class="nav-btn px-3 py-2 rounded-lg transition-all text-sm hover:bg-neon-gold/20 hover:text-neon-gold" data-view="settings">
+                        <i class="fas fa-cog mr-2"></i>Settings
+                    </button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 py-8">
+        <!-- Timer View -->
+        <div id="timer-view" class="view-section">
+            <!-- Current Intention Display -->
+            <div class="mb-6">
+                <div class="glass-effect rounded-lg p-4 neon-border">
+                    <div class="flex items-center space-x-3">
+                        <i class="fas fa-bullseye text-neon-pink"></i>
+                        <div>
+                            <p class="text-sm text-gray-300">Current Focus</p>
+                            <p class="font-medium text-neon-cyan" id="current-task" data-mock="true">Complete project documentation</p>
+                            <p class="text-xs text-gray-400" id="current-reason" data-mock="true">To help my team understand the new features better</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid lg:grid-cols-3 gap-8">
+                <!-- Main Timer Section -->
+                <div class="lg:col-span-2">
+                    <div class="timer-display rounded-2xl p-8 text-center mb-6">
+                        <!-- Session Progress -->
+                        <div class="mb-4">
+                            <p class="text-sm text-neon-cyan mb-2">Focus Time</p>
+                            <p class="text-xs text-gray-300" data-mock="true">Cycle 2 of 4 • Long break after 4 cycles</p>
+                        </div>
+
+                        <!-- Timer Display -->
+                        <div class="mb-8">
+                            <div class="font-retro text-6xl md:text-8xl font-bold text-neon-pink neon-text mb-2" id="timer-display" data-mock="true">
+                                23:45
+                            </div>
+                            <div class="text-lg text-gray-300" id="timer-status" data-mock="true">
+                                Focus Session
+                            </div>
+                        </div>
+
+                        <!-- Timer Controls -->
+                        <div class="flex justify-center space-x-4">
+                            <button class="retro-button px-8 py-3 rounded-lg font-semibold text-white" id="start-btn" data-event="click:startTimer">
+                                <i class="fas fa-play mr-2"></i>START
+                            </button>
+                            <button class="retro-button px-6 py-3 rounded-lg font-semibold text-white opacity-50" id="pause-btn" data-event="click:pauseTimer">
+                                <i class="fas fa-pause mr-2"></i>PAUSE
+                            </button>
+                            <button class="border-2 border-neon-cyan text-neon-cyan px-6 py-3 rounded-lg font-semibold hover:bg-neon-cyan hover:text-dark-bg transition-all" id="reset-btn" data-event="click:resetTimer">
+                                <i class="fas fa-undo mr-2"></i>RESET
+                            </button>
+                            <button class="border-2 border-red-500 text-red-500 px-6 py-3 rounded-lg font-semibold hover:bg-red-500 hover:text-white transition-all" id="end-btn" data-event="click:endSession">
+                                <i class="fas fa-stop mr-2"></i>END SESSION
+                            </button>
+                        </div>
+
+                        <!-- Progress Bar -->
+                        <div class="mt-6">
+                            <div class="bg-dark-surface rounded-full h-2 overflow-hidden">
+                                <div class="bg-gradient-to-r from-neon-pink to-neon-purple h-full transition-all duration-1000" style="width: 65%" data-mock="true"></div>
+                            </div>
+                        </div>
+
+                        <!-- Session Cycles Indicator -->
+                        <div class="flex justify-center space-x-2 mt-4">
+                            <!-- @MAP: cycles.map((cycle, index) => ( -->
+                            <div class="w-3 h-3 rounded-full bg-neon-pink shadow-lg shadow-neon-pink/50" data-mock="true"></div>
+                            <div class="w-3 h-3 rounded-full bg-neon-pink shadow-lg shadow-neon-pink/50" data-mock="true"></div>
+                            <div class="w-3 h-3 rounded-full border-2 border-neon-pink bg-transparent" data-mock="true"></div>
+                            <div class="w-3 h-3 rounded-full border-2 border-gray-600 bg-transparent" data-mock="true"></div>
+                            <!-- @END_MAP )) -->
+                        </div>
+                    </div>
+
+                    <!-- Quick Stats -->
+                    <div class="grid grid-cols-3 gap-4">
+                        <div class="stat-card rounded-lg p-4 text-center">
+                            <div class="text-2xl font-bold text-neon-green" data-bind="todaysSessions" data-mock="true">4</div>
+                            <div class="text-xs text-gray-400">Today</div>
+                        </div>
+                        <div class="stat-card rounded-lg p-4 text-center">
+                            <div class="text-2xl font-bold text-neon-cyan" data-bind="currentStreak" data-mock="true">7</div>
+                            <div class="text-xs text-gray-400">Day Streak</div>
+                        </div>
+                        <div class="stat-card rounded-lg p-4 text-center">
+                            <div class="text-2xl font-bold text-neon-purple" data-bind="weeklyHours" data-mock="true">12.5</div>
+                            <div class="text-xs text-gray-400">This Week</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sidebar -->
+                <div class="space-y-6">
+                    <!-- Motivational Quote -->
+                    <div class="stat-card rounded-lg p-6">
+                        <div class="flex items-start justify-between mb-3">
+                            <h3 class="font-semibold text-neon-cyan">Daily Motivation</h3>
+                            <button class="text-gray-400 hover:text-neon-pink transition-colors" data-event="click:newQuote">
+                                <i class="fas fa-refresh text-sm"></i>
+                            </button>
+                        </div>
+                        <blockquote class="text-sm text-gray-300 italic mb-3" data-mock="true">
+                            "You have power over your mind - not outside events. Realize this, and you will find strength."
+                        </blockquote>
+                        <div class="text-xs text-gray-500 cursor-pointer" onclick="toggleQuoteAuthor()" id="quote-author" data-mock="true">
+                            — Marcus Aurelius
+                        </div>
+                    </div>
+
+                    <!-- Website Blocker Status -->
+                    <div class="stat-card rounded-lg p-6">
+                        <div class="flex items-center justify-between mb-3">
+                            <h3 class="font-semibold text-neon-cyan">Focus Shield</h3>
+                            <div class="w-3 h-3 rounded-full bg-neon-green animate-pulse" data-mock="true"></div>
+                        </div>
+                        <p class="text-sm text-gray-400 mb-3">
+                            <span data-bind="blockedSitesCount" data-mock="true">5</span> sites blocked
+                        </p>
+                        <div class="space-y-1">
+                            <!-- @MAP: blockedSites.map(site => ( -->
+                            <div class="flex items-center space-x-2 text-xs" data-mock="true">
+                                <i class="fas fa-shield-alt text-red-500"></i>
+                                <span class="text-gray-400">youtube.com</span>
+                            </div>
+                            <div class="flex items-center space-x-2 text-xs" data-mock="true">
+                                <i class="fas fa-shield-alt text-red-500"></i>
+                                <span class="text-gray-400">reddit.com</span>
+                            </div>
+                            <div class="flex items-center space-x-2 text-xs" data-mock="true">
+                                <i class="fas fa-shield-alt text-red-500"></i>
+                                <span class="text-gray-400">twitter.com</span>
+                            </div>
+                            <!-- @END_MAP )) -->
+                        </div>
+                        <button class="w-full mt-3 px-3 py-2 border border-neon-cyan text-neon-cyan rounded text-xs hover:bg-neon-cyan hover:text-dark-bg transition-all" onclick="showView('settings')">
+                            Manage Sites
+                        </button>
+                    </div>
+
+                    <!-- Session History Preview -->
+                    <div class="stat-card rounded-lg p-6">
+                        <div class="flex items-center justify-between mb-3">
+                            <h3 class="font-semibold text-neon-cyan">Recent Sessions</h3>
+                            <button class="text-xs text-neon-purple hover:text-neon-pink transition-colors" onclick="showView('intentions')">
+                                View All
+                            </button>
+                        </div>
+                        <div class="space-y-3">
+                            <!-- @MAP: recentSessions.slice(0, 3).map(session => ( -->
+                            <div class="text-xs" data-mock="true">
+                                <div class="text-gray-300 font-medium">Code review tasks</div>
+                                <div class="text-gray-500">2 hours ago</div>
+                            </div>
+                            <div class="text-xs" data-mock="true">
+                                <div class="text-gray-300 font-medium">Write documentation</div>
+                                <div class="text-gray-500">4 hours ago</div>
+                            </div>
+                            <div class="text-xs" data-mock="true">
+                                <div class="text-gray-300 font-medium">Design mockups</div>
+                                <div class="text-gray-500">Yesterday</div>
+                            </div>
+                            <!-- @END_MAP )) -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytics View -->
+        <div id="analytics-view" class="view-section hidden">
+            <div class="mb-8">
+                <h2 class="font-retro text-3xl font-bold text-neon-cyan mb-2">Analytics Dashboard</h2>
+                <p class="text-gray-400">Track your focus journey and productivity insights</p>
+            </div>
+
+            <!-- Key Metrics -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="stat-card rounded-lg p-6 text-center">
+                    <div class="text-3xl font-bold text-neon-pink mb-2" data-bind="totalSessions" data-mock="true">127</div>
+                    <div class="text-sm text-gray-400">Total Focus Sessions</div>
+                    <div class="text-xs text-neon-green mt-1">+8 this week</div>
+                </div>
+                <div class="stat-card rounded-lg p-6 text-center">
+                    <div class="text-3xl font-bold text-neon-cyan mb-2" data-bind="successRate" data-mock="true">87%</div>
+                    <div class="text-sm text-gray-400">Success Rate</div>
+                    <div class="text-xs text-neon-green mt-1">+3% vs last week</div>
+                </div>
+                <div class="stat-card rounded-lg p-6 text-center">
+                    <div class="text-3xl font-bold text-neon-purple mb-2" data-bind="totalFocusTime" data-mock="true">52.5</div>
+                    <div class="text-sm text-gray-400">Total Focus Hours</div>
+                    <div class="text-xs text-gray-500 mt-1">This month</div>
+                </div>
+                <div class="stat-card rounded-lg p-6 text-center">
+                    <div class="text-3xl font-bold text-neon-gold mb-2" data-bind="currentStreak" data-mock="true">14</div>
+                    <div class="text-sm text-gray-400">Current Streak</div>
+                    <div class="text-xs text-gray-500 mt-1">Days</div>
+                </div>
+            </div>
+
+            <!-- Charts Section -->
+            <div class="grid lg:grid-cols-2 gap-8 mb-8">
+                <div class="stat-card rounded-lg p-6">
+                    <h3 class="font-semibold text-neon-cyan mb-4">Weekly Focus Trends</h3>
+                    <div class="h-64 flex items-end space-x-2" data-mock="true">
+                        <!-- Simple bar chart representation -->
+                        <div class="flex-1 bg-gradient-to-t from-neon-pink to-neon-purple rounded-t" style="height: 60%"></div>
+                        <div class="flex-1 bg-gradient-to-t from-neon-pink to-neon-purple rounded-t" style="height: 80%"></div>
+                        <div class="flex-1 bg-gradient-to-t from-neon-pink to-neon-purple rounded-t" style="height: 45%"></div>
+                        <div class="flex-1 bg-gradient-to-t from-neon-pink to-neon-purple rounded-t" style="height: 90%"></div>
+                        <div class="flex-1 bg-gradient-to-t from-neon-pink to-neon-purple rounded-t" style="height: 70%"></div>
+                        <div class="flex-1 bg-gradient-to-t from-neon-pink to-neon-purple rounded-t" style="height: 55%"></div>
+                        <div class="flex-1 bg-gradient-to-t from-neon-pink to-neon-purple rounded-t" style="height: 85%"></div>
+                    </div>
+                    <div class="flex justify-between text-xs text-gray-500 mt-2">
+                        <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+                    </div>
+                </div>
+
+                <div class="stat-card rounded-lg p-6">
+                    <h3 class="font-semibold text-neon-cyan mb-4">Focus vs Break Time</h3>
+                    <div class="flex items-center justify-center h-64">
+                        <!-- Simple donut chart representation -->
+                        <div class="relative w-40 h-40">
+                            <div class="absolute inset-0 rounded-full" style="background: conic-gradient(#FF0080 0deg 280deg, #00FFFF 280deg 360deg)"></div>
+                            <div class="absolute inset-4 bg-dark-surface rounded-full flex items-center justify-center">
+                                <div class="text-center">
+                                    <div class="text-2xl font-bold text-neon-pink" data-mock="true">78%</div>
+                                    <div class="text-xs text-gray-400">Focus</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex justify-center space-x-4 mt-4">
+                        <div class="flex items-center space-x-2">
+                            <div class="w-3 h-3 bg-neon-pink rounded"></div>
+                            <span class="text-xs text-gray-400">Focus Time</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <div class="w-3 h-3 bg-neon-cyan rounded"></div>
+                            <span class="text-xs text-gray-400">Break Time</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Performance -->
+            <div class="stat-card rounded-lg p-6">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="font-semibold text-neon-cyan">Recent Performance</h3>
+                    <div class="flex space-x-2">
+                        <button class="px-3 py-1 text-xs border border-neon-purple text-neon-purple rounded hover:bg-neon-purple hover:text-white transition-all">
+                            Export Data
+                        </button>
+                        <button class="px-3 py-1 text-xs border border-red-500 text-red-500 rounded hover:bg-red-500 hover:text-white transition-all">
+                            Clear All
+                        </button>
+                    </div>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="text-gray-400 border-b border-gray-700">
+                                <th class="text-left py-2">Date</th>
+                                <th class="text-left py-2">Sessions</th>
+                                <th class="text-left py-2">Focus Time</th>
+                                <th class="text-left py-2">Success Rate</th>
+                            </tr>
+                        </thead>
+                        <tbody class="text-gray-300">
+                            <!-- @MAP: performanceData.map(day => ( -->
+                            <tr class="border-b border-gray-800" data-mock="true">
+                                <td class="py-2">Today</td>
+                                <td class="py-2">4</td>
+                                <td class="py-2">1h 40m</td>
+                                <td class="py-2"><span class="text-neon-green">100%</span></td>
+                            </tr>
+                            <tr class="border-b border-gray-800" data-mock="true">
+                                <td class="py-2">Yesterday</td>
+                                <td class="py-2">6</td>
+                                <td class="py-2">2h 15m</td>
+                                <td class="py-2"><span class="text-neon-green">83%</span></td>
+                            </tr>
+                            <tr class="border-b border-gray-800" data-mock="true">
+                                <td class="py-2">Dec 15</td>
+                                <td class="py-2">3</td>
+                                <td class="py-2">1h 15m</td>
+                                <td class="py-2"><span class="text-neon-gold">75%</span></td>
+                            </tr>
+                            <!-- @END_MAP )) -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Intentions View -->
+        <div id="intentions-view" class="view-section hidden">
+            <div class="mb-8">
+                <h2 class="font-retro text-3xl font-bold text-neon-cyan mb-2">Recent Intentions</h2>
+                <p class="text-gray-400">Your focus journey and the why behind your work</p>
+            </div>
+
+            <div class="space-y-4">
+                <!-- @MAP: intentions.map(intention => ( -->
+                <div class="stat-card rounded-lg p-6" data-mock="true">
+                    <div class="flex items-start justify-between mb-3">
+                        <div class="flex-1">
+                            <div class="flex items-center space-x-3 mb-2">
+                                <i class="fas fa-bullseye text-neon-pink"></i>
+                                <h3 class="font-semibold text-white">Complete API documentation</h3>
+                                <span class="text-xs bg-neon-green/20 text-neon-green px-2 py-1 rounded-full">Completed</span>
+                            </div>
+                            <p class="text-sm text-gray-400 mb-3">So the development team can integrate faster and reduce onboarding time</p>
+                            <div class="flex items-center space-x-4 text-xs text-gray-500">
+                                <span><i class="fas fa-clock mr-1"></i>2 hours ago</span>
+                                <span><i class="fas fa-stopwatch mr-1"></i>50 minutes</span>
+                                <span><i class="fas fa-check-circle text-neon-green mr-1"></i>4/4 cycles</span>
+                            </div>
+                        </div>
+                        <button class="text-gray-400 hover:text-red-500 transition-colors ml-4">
+                            <i class="fas fa-trash text-sm"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="stat-card rounded-lg p-6" data-mock="true">
+                    <div class="flex items-start justify-between mb-3">
+                        <div class="flex-1">
+                            <div class="flex items-center space-x-3 mb-2">
+                                <i class="fas fa-bullseye text-neon-pink"></i>
+                                <h3 class="font-semibold text-white">Design system updates</h3>
+                                <span class="text-xs bg-yellow-500/20 text-yellow-500 px-2 py-1 rounded-full">Partial</span>
+                            </div>
+                            <p class="text-sm text-gray-400 mb-3">To maintain consistency across all our products and improve designer efficiency</p>
+                            <div class="flex items-center space-x-4 text-xs text-gray-500">
+                                <span><i class="fas fa-clock mr-1"></i>4 hours ago</span>
+                                <span><i class="fas fa-stopwatch mr-1"></i>25 minutes</span>
+                                <span><i class="fas fa-times-circle text-yellow-500 mr-1"></i>2/4 cycles</span>
+                            </div>
+                        </div>
+                        <button class="text-gray-400 hover:text-red-500 transition-colors ml-4">
+                            <i class="fas fa-trash text-sm"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="stat-card rounded-lg p-6" data-mock="true">
+                    <div class="flex items-start justify-between mb-3">
+                        <div class="flex-1">
+                            <div class="flex items-center space-x-3 mb-2">
+                                <i class="fas fa-bullseye text-neon-pink"></i>
+                                <h3 class="font-semibold text-white">Code review for authentication feature</h3>
+                                <span class="text-xs bg-neon-green/20 text-neon-green px-2 py-1 rounded-full">Completed</span>
+                            </div>
+                            <p class="text-sm text-gray-400 mb-3">Critical security review to ensure user data protection before launch</p>
+                            <div class="flex items-center space-x-4 text-xs text-gray-500">
+                                <span><i class="fas fa-clock mr-1"></i>Yesterday</span>
+                                <span><i class="fas fa-stopwatch mr-1"></i>75 minutes</span>
+                                <span><i class="fas fa-check-circle text-neon-green mr-1"></i>4/4 cycles</span>
+                            </div>
+                        </div>
+                        <button class="text-gray-400 hover:text-red-500 transition-colors ml-4">
+                            <i class="fas fa-trash text-sm"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="stat-card rounded-lg p-6" data-mock="true">
+                    <div class="flex items-start justify-between mb-3">
+                        <div class="flex-1">
+                            <div class="flex items-center space-x-3 mb-2">
+                                <i class="fas fa-bullseye text-neon-pink"></i>
+                                <h3 class="font-semibold text-white">User research synthesis</h3>
+                                <span class="text-xs bg-neon-green/20 text-neon-green px-2 py-1 rounded-full">Completed</span>
+                            </div>
+                            <p class="text-sm text-gray-400 mb-3">To identify key pain points and inform the next product iteration roadmap</p>
+                            <div class="flex items-center space-x-4 text-xs text-gray-500">
+                                <span><i class="fas fa-clock mr-1"></i>2 days ago</span>
+                                <span><i class="fas fa-stopwatch mr-1"></i>100 minutes</span>
+                                <span><i class="fas fa-check-circle text-neon-green mr-1"></i>4/4 cycles</span>
+                            </div>
+                        </div>
+                        <button class="text-gray-400 hover:text-red-500 transition-colors ml-4">
+                            <i class="fas fa-trash text-sm"></i>
+                        </button>
+                    </div>
+                </div>
+                <!-- @END_MAP )) -->
+            </div>
+
+            <!-- Load More / Pagination -->
+            <div class="flex justify-center mt-8">
+                <button class="px-6 py-2 border border-neon-cyan text-neon-cyan rounded-lg hover:bg-neon-cyan hover:text-dark-bg transition-all">
+                    Load More Intentions
+                </button>
+            </div>
+        </div>
+
+        <!-- Settings/Admin View -->
+        <div id="settings-view" class="view-section hidden">
+            <div class="mb-8">
+                <h2 class="font-retro text-3xl font-bold text-neon-cyan mb-2">Settings</h2>
+                <p class="text-gray-400">Customize your Pomotron experience</p>
+            </div>
+
+            <div class="grid lg:grid-cols-2 gap-8">
+                <!-- Timer Configuration -->
+                <div class="stat-card rounded-lg p-6">
+                    <h3 class="font-semibold text-neon-cyan mb-4 flex items-center">
+                        <i class="fas fa-clock mr-2"></i>Timer Configuration
+                    </h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-2">Focus Duration (minutes)</label>
+                            <input type="number" value="25" class="w-full bg-dark-bg border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-neon-pink focus:outline-none" data-mock="true">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-2">Short Break Duration (minutes)</label>
+                            <input type="number" value="5" class="w-full bg-dark-bg border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-neon-pink focus:outline-none" data-mock="true">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-2">Long Break Duration (minutes)</label>
+                            <input type="number" value="15" class="w-full bg-dark-bg border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-neon-pink focus:outline-none" data-mock="true">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-2">Cycles Before Long Break</label>
+                            <input type="number" value="4" class="w-full bg-dark-bg border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-neon-pink focus:outline-none" data-mock="true">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-2">Idle Time Nudge (minutes)</label>
+                            <input type="number" value="5" class="w-full bg-dark-bg border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-neon-pink focus:outline-none" data-mock="true">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Visual Themes -->
+                <div class="stat-card rounded-lg p-6">
+                    <h3 class="font-semibold text-neon-cyan mb-4 flex items-center">
+                        <i class="fas fa-palette mr-2"></i>Visual Themes
+                    </h3>
+                    <div class="space-y-3">
+                        <div class="flex items-center p-3 border-2 border-neon-pink rounded-lg bg-neon-pink/10">
+                            <input type="radio" name="theme" value="starcourt" checked class="mr-3" data-mock="true">
+                            <div class="flex-1">
+                                <div class="font-medium">Starcourt Retro</div>
+                                <div class="text-xs text-gray-400">80s neon vibes with electric aesthetics</div>
+                            </div>
+                            <div class="flex space-x-1">
+                                <div class="w-4 h-4 bg-neon-pink rounded"></div>
+                                <div class="w-4 h-4 bg-neon-cyan rounded"></div>
+                                <div class="w-4 h-4 bg-neon-purple rounded"></div>
+                            </div>
+                        </div>
+                        <div class="flex items-center p-3 border border-gray-600 rounded-lg hover:border-gray-400 transition-colors">
+                            <input type="radio" name="theme" value="minimal" class="mr-3" data-mock="true">
+                            <div class="flex-1">
+                                <div class="font-medium">Minimal</div>
+                                <div class="text-xs text-gray-400">Clean and focused design</div>
+                            </div>
+                            <div class="flex space-x-1">
+                                <div class="w-4 h-4 bg-indigo-500 rounded"></div>
+                                <div class="w-4 h-4 bg-white rounded"></div>
+                                <div class="w-4 h-4 bg-gray-300 rounded"></div>
+                            </div>
+                        </div>
+                        <div class="flex items-center p-3 border border-gray-600 rounded-lg hover:border-gray-400 transition-colors">
+                            <input type="radio" name="theme" value="ghibli" class="mr-3" data-mock="true">
+                            <div class="flex-1">
+                                <div class="font-medium">Studio Ghibli</div>
+                                <div class="text-xs text-gray-400">Warm and nature-inspired colors</div>
+                            </div>
+                            <div class="flex space-x-1">
+                                <div class="w-4 h-4 bg-green-400 rounded"></div>
+                                <div class="w-4 h-4 bg-amber-200 rounded"></div>
+                                <div class="w-4 h-4 bg-orange-300 rounded"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Website Blocker -->
+                <div class="stat-card rounded-lg p-6">
+                    <h3 class="font-semibold text-neon-cyan mb-4 flex items-center">
+                        <i class="fas fa-shield-alt mr-2"></i>Website Blocker
+                    </h3>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-400">Enable Website Blocking</span>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" checked class="sr-only peer" data-mock="true">
+                                <div class="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-neon-pink"></div>
+                            </label>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-400">Friction Override</span>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" class="sr-only peer" data-mock="true">
+                                <div class="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-neon-pink"></div>
+                            </label>
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-2">Add Website to Block</label>
+                            <div class="flex space-x-2">
+                                <input type="text" placeholder="example.com" class="flex-1 bg-dark-bg border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-neon-pink focus:outline-none">
+                                <button class="retro-button px-4 py-2 rounded-lg">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="space-y-2 max-h-32 overflow-y-auto">
+                            <!-- @MAP: blockedSites.map(site => ( -->
+                            <div class="flex items-center justify-between p-2 bg-dark-bg rounded" data-mock="true">
+                                <span class="text-sm">youtube.com</span>
+                                <button class="text-red-500 hover:text-red-400">
+                                    <i class="fas fa-trash text-sm"></i>
+                                </button>
+                            </div>
+                            <div class="flex items-center justify-between p-2 bg-dark-bg rounded" data-mock="true">
+                                <span class="text-sm">reddit.com</span>
+                                <button class="text-red-500 hover:text-red-400">
+                                    <i class="fas fa-trash text-sm"></i>
+                                </button>
+                            </div>
+                            <div class="flex items-center justify-between p-2 bg-dark-bg rounded" data-mock="true">
+                                <span class="text-sm">twitter.com</span>
+                                <button class="text-red-500 hover:text-red-400">
+                                    <i class="fas fa-trash text-sm"></i>
+                                </button>
+                            </div>
+                            <!-- @END_MAP )) -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sound Settings -->
+                <div class="stat-card rounded-lg p-6">
+                    <h3 class="font-semibold text-neon-cyan mb-4 flex items-center">
+                        <i class="fas fa-volume-up mr-2"></i>Sound Settings
+                    </h3>
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-400">Enable Sound Effects</span>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" checked class="sr-only peer" data-mock="true">
+                                <div class="w-11 h-6 bg-gray-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-neon-pink"></div>
+                            </label>
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-2">Volume</label>
+                            <input type="range" min="0" max="100" value="70" class="w-full h-2 bg-gray-600 rounded-lg appearance-none cursor-pointer slider" data-mock="true">
+                        </div>
+                        <div class="flex space-x-2">
+                            <button class="flex-1 px-3 py-2 border border-neon-cyan text-neon-cyan rounded hover:bg-neon-cyan hover:text-dark-bg transition-all">
+                                <i class="fas fa-play mr-2"></i>Test Start Sound
+                            </button>
+                            <button class="flex-1 px-3 py-2 border border-neon-purple text-neon-purple rounded hover:bg-neon-purple hover:text-white transition-all">
+                                <i class="fas fa-stop mr-2"></i>Test End Sound
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Save Settings -->
+            <div class="flex justify-end mt-8 space-x-4">
+                <button class="px-6 py-3 border border-gray-600 text-gray-400 rounded-lg hover:border-gray-400 hover:text-white transition-all">
+                    Reset to Defaults
+                </button>
+                <button class="retro-button px-6 py-3 rounded-lg">
+                    <i class="fas fa-save mr-2"></i>Save Settings
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Intention Setting Modal -->
+    <div id="intention-modal" class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm hidden items-center justify-center z-50" data-mock="true">
+        <div class="bg-dark-surface border border-neon-pink rounded-lg p-8 max-w-md w-full mx-4 shadow-2xl">
+            <h3 class="font-retro text-xl font-bold text-neon-cyan mb-6">Set Your Intention</h3>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm text-gray-400 mb-2">What are you working on today?</label>
+                    <input type="text" placeholder="e.g., Complete project documentation" class="w-full bg-dark-bg border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-neon-pink focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm text-gray-400 mb-2">Why is this important to you?</label>
+                    <textarea placeholder="e.g., To help my team understand the new features better" rows="3" class="w-full bg-dark-bg border border-gray-600 rounded-lg px-3 py-2 text-white focus:border-neon-pink focus:outline-none resize-none"></textarea>
+                </div>
+            </div>
+            <div class="flex space-x-3 mt-6">
+                <button class="flex-1 px-4 py-2 border border-gray-600 text-gray-400 rounded-lg hover:border-gray-400 hover:text-white transition-all">
+                    Cancel
+                </button>
+                <button class="flex-1 retro-button px-4 py-2 rounded-lg">
+                    Start Focus Session
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Keyboard Shortcuts Help -->
+    <div class="fixed bottom-4 right-4 z-40">
+        <button class="bg-dark-surface border border-neon-cyan text-neon-cyan w-10 h-10 rounded-full flex items-center justify-center hover:bg-neon-cyan hover:text-dark-bg transition-all" title="Keyboard Shortcuts">
+            <i class="fas fa-keyboard text-sm"></i>
+        </button>
+    </div>
+
+    <script>
+        // TODO: Implement localStorage for data persistence
+        // TODO: Implement PWA capabilities
+        // TODO: Implement website blocking functionality
+        // TODO: Implement sound effects and notifications
+        // TODO: Implement keyboard shortcuts (spacebar for start/pause)
+        // TODO: Implement real timer logic and session management
+        
+        (function() {
+            // View Navigation System
+            let currentView = 'timer';
+            
+            function showView(viewName) {
+                // Hide all views
+                document.querySelectorAll('.view-section').forEach(view => {
+                    view.classList.add('hidden');
+                });
+                
+                // Show selected view
+                document.getElementById(viewName + '-view').classList.remove('hidden');
+                
+                // Update navigation buttons
+                document.querySelectorAll('.nav-btn').forEach(btn => {
+                    btn.classList.remove('bg-neon-pink/20', 'text-neon-pink', 'bg-neon-cyan/20', 'text-neon-cyan', 'bg-neon-purple/20', 'text-neon-purple', 'bg-neon-gold/20', 'text-neon-gold');
+                });
+                
+                const activeBtn = document.querySelector(`[data-view="${viewName}"]`);
+                if (activeBtn) {
+                    switch(viewName) {
+                        case 'timer':
+                            activeBtn.classList.add('bg-neon-pink/20', 'text-neon-pink');
+                            break;
+                        case 'analytics':
+                            activeBtn.classList.add('bg-neon-cyan/20', 'text-neon-cyan');
+                            break;
+                        case 'intentions':
+                            activeBtn.classList.add('bg-neon-purple/20', 'text-neon-purple');
+                            break;
+                        case 'settings':
+                            activeBtn.classList.add('bg-neon-gold/20', 'text-neon-gold');
+                            break;
+                    }
+                }
+                
+                currentView = viewName;
+            }
+            
+            // Make showView globally accessible
+            window.showView = showView;
+            
+            // Quote rotation functionality
+            const quotes = [
+                {
+                    text: "You have power over your mind - not outside events. Realize this, and you will find strength.",
+                    author: "Marcus Aurelius"
+                },
+                {
+                    text: "Deep work is the superpower of the 21st century.",
+                    author: "Cal Newport"
+                },
+                {
+                    text: "The way we spend our days is, of course, the way we spend our lives.",
+                    author: "Annie Dillard"
+                },
+                {
+                    text: "Productivity is never an accident. It is always the result of a commitment to excellence.",
+                    author: "Paul J. Meyer"
+                }
+            ];
+            
+            let currentQuoteIndex = 0;
+            
+            function toggleQuoteAuthor() {
+                const authorElement = document.getElementById('quote-author');
+                // TODO: Implement quote author toggle functionality
+            }
+            
+            window.toggleQuoteAuthor = toggleQuoteAuthor;
+            
+            // Initialize default view
+            showView('timer');
+            
+            // Mock timer functionality for demonstration
+            let timerInterval;
+            let timeRemaining = 25 * 60; // 25 minutes in seconds
+            let isRunning = false;
+            
+            function updateTimerDisplay() {
+                const minutes = Math.floor(timeRemaining / 60);
+                const seconds = timeRemaining % 60;
+                const display = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                document.getElementById('timer-display').textContent = display;
+            }
+            
+            // Demo timer controls (visual only)
+            document.addEventListener('click', function(e) {
+                if (e.target.id === 'start-btn' || e.target.closest('#start-btn')) {
+                    // TODO: Show intention modal first, then start timer
+                    console.log('Start timer clicked');
+                }
+                
+                if (e.target.id === 'pause-btn' || e.target.closest('#pause-btn')) {
+                    // TODO: Implement pause functionality
+                    console.log('Pause timer clicked');
+                }
+                
+                if (e.target.id === 'reset-btn' || e.target.closest('#reset-btn')) {
+                    // TODO: Implement reset functionality
+                    console.log('Reset timer clicked');
+                }
+                
+                if (e.target.id === 'end-btn' || e.target.closest('#end-btn')) {
+                    // TODO: Implement end session functionality
+                    console.log('End session clicked');
+                }
+            });
+            
+            // Initialize timer display
+            updateTimerDisplay();
+            
+            // Demo: Update some stats periodically for visual effect
+            setInterval(() => {
+                // TODO: Replace with real data updates from localStorage
+                const statsElements = document.querySelectorAll('[data-bind]');
+                // This is just for visual demo - real implementation would update from actual data
+            }, 5000);
+        })();
+    </script>
+</body>
+</html>

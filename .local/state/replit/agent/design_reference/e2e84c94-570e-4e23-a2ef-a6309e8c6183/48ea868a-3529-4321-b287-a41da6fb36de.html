@@ -1,0 +1,1055 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pomotron - Retro Pomodoro Timer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            'orbitron': ['Orbitron', 'monospace'],
+            'inter': ['Inter', 'sans-serif'],
+          },
+          colors: {
+            'neon-pink': '#FF6B9D',
+            'electric-blue': '#4ECDC4',
+            'synthwave-purple': '#8B5FBF',
+            'sunset-orange': '#FFB347',
+            'lime-green': '#39FF14',
+            'dark-navy': '#1A1B3A',
+            'charcoal': '#2D2D44',
+            'retro-bg': '#0F0F23',
+          },
+          animation: {
+            'glow': 'glow 2s ease-in-out infinite alternate',
+            'pulse-slow': 'pulse 3s ease-in-out infinite',
+            'float': 'float 6s ease-in-out infinite',
+          },
+          keyframes: {
+            glow: {
+              'from': { boxShadow: '0 0 20px #FF6B9D' },
+              'to': { boxShadow: '0 0 30px #FF6B9D, 0 0 40px #FF6B9D' }
+            },
+            float: {
+              '0%, 100%': { transform: 'translateY(0px)' },
+              '50%': { transform: 'translateY(-10px)' }
+            }
+          }
+        }
+      }
+    };
+    </script>
+    
+    <style>
+        .neon-border {
+            border: 2px solid #FF6B9D;
+            box-shadow: 0 0 10px #FF6B9D;
+        }
+        
+        .neon-text {
+            text-shadow: 0 0 10px currentColor;
+        }
+        
+        .retro-gradient {
+            background: linear-gradient(135deg, #FF6B9D 0%, #8B5FBF 50%, #4ECDC4 100%);
+        }
+        
+        .minimal-theme {
+            --primary: #6366f1;
+            --secondary: #f3f4f6;
+            --accent: #10b981;
+            --background: #ffffff;
+            --text: #1f2937;
+        }
+        
+        .ghibli-theme {
+            --primary: #7c9885;
+            --secondary: #f4e4bc;
+            --accent: #d4a574;
+            --background: #fefdf9;
+            --text: #2d3436;
+        }
+        
+        .glass-morphism {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-retro-bg min-h-screen font-inter text-white overflow-x-hidden" data-theme="starcourt">
+
+    <!-- Background Pattern -->
+    <div class="fixed inset-0 opacity-10 pointer-events-none">
+        <div class="absolute inset-0" style="background-image: repeating-linear-gradient(45deg, transparent, transparent 2px, #FF6B9D 2px, #FF6B9D 4px);"></div>
+    </div>
+
+    <!-- @COMPONENT: Header Navigation -->
+    <header class="relative z-10 border-b border-neon-pink/30">
+        <nav class="container mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4">
+                    <div class="text-3xl font-orbitron font-bold neon-text text-neon-pink animate-glow">
+                        POMOTRON
+                    </div>
+                    <div class="hidden md:block text-sm text-electric-blue/80">
+                        v2.1 • Retro Productivity Suite
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-6">
+                    <!-- Theme Selector -->
+                    <div class="relative">
+                        <select class="bg-charcoal border border-neon-pink/50 rounded-lg px-3 py-2 text-sm text-white focus:border-neon-pink focus:outline-none" id="themeSelector">
+                            <option value="starcourt">🌆 Starcourt Retro</option>
+                            <option value="minimal">⚪ Minimal</option>
+                            <option value="ghibli">🌿 Studio Ghibli</option>
+                        </select>
+                    </div>
+                    
+                    <!-- Navigation Tabs -->
+                    <div class="flex space-x-4">
+                        <button class="nav-tab active px-4 py-2 rounded-lg font-medium transition-all duration-300" data-target="timer">
+                            <i class="fas fa-clock mr-2"></i>Timer
+                        </button>
+                        <button class="nav-tab px-4 py-2 rounded-lg font-medium transition-all duration-300" data-target="analytics">
+                            <i class="fas fa-chart-line mr-2"></i>Analytics
+                        </button>
+                        <button class="nav-tab px-4 py-2 rounded-lg font-medium transition-all duration-300" data-target="settings">
+                            <i class="fas fa-cog mr-2"></i>Settings
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <!-- @END_COMPONENT: Header Navigation -->
+
+    <!-- @COMPONENT: Main Content Container -->
+    <main class="container mx-auto px-4 py-8 relative z-10">
+        
+        <!-- @COMPONENT: Timer View -->
+        <div id="timer-view" class="tab-content">
+            <div class="max-w-4xl mx-auto">
+                
+                <!-- Motivational Quote Banner -->
+                <div class="mb-8 p-4 rounded-xl glass-morphism text-center animate-float">
+                    <p class="text-lg italic text-electric-blue mb-2" id="motivationalQuote">
+                        "The way to get started is to quit talking and begin doing." - Walt Disney
+                    </p>
+                    <button class="text-xs text-synthwave-purple hover:text-neon-pink transition-colors" id="nextQuoteBtn">
+                        <i class="fas fa-refresh mr-1"></i>New Quote
+                    </button>
+                </div>
+
+                <div class="grid lg:grid-cols-3 gap-8">
+                    
+                    <!-- Timer Section -->
+                    <div class="lg:col-span-2">
+                        <div class="neon-border rounded-2xl p-8 glass-morphism">
+                            
+                            <!-- Timer Display -->
+                            <div class="text-center mb-8">
+                                <div class="text-6xl md:text-8xl font-orbitron font-bold neon-text text-neon-pink mb-4" id="timerDisplay">
+                                    25:00
+                                </div>
+                                <div class="text-xl text-electric-blue font-medium mb-2" id="sessionType">
+                                    Focus Session
+                                </div>
+                                <div class="text-sm text-white/70" id="sessionInfo">
+                                    Session 1 of 4 • Long break after 4 cycles
+                                </div>
+                            </div>
+
+                            <!-- Progress Bar -->
+                            <div class="mb-8">
+                                <div class="w-full bg-charcoal rounded-full h-3 mb-2">
+                                    <div class="retro-gradient h-3 rounded-full transition-all duration-1000" style="width: 0%" id="progressBar"></div>
+                                </div>
+                                <div class="flex justify-between text-xs text-white/60">
+                                    <span>0:00</span>
+                                    <span id="totalTime">25:00</span>
+                                </div>
+                            </div>
+
+                            <!-- Timer Controls -->
+                            <div class="flex justify-center space-x-4 mb-6">
+                                <button id="startBtn" class="btn-primary px-8 py-4 rounded-xl font-orbitron font-bold text-lg transition-all duration-300 hover:scale-105">
+                                    <i class="fas fa-play mr-2"></i>START
+                                </button>
+                                <button id="pauseBtn" class="btn-secondary px-6 py-4 rounded-xl font-medium transition-all duration-300 hover:scale-105" style="display: none;">
+                                    <i class="fas fa-pause mr-2"></i>PAUSE
+                                </button>
+                                <button id="resetBtn" class="btn-tertiary px-6 py-4 rounded-xl font-medium transition-all duration-300 hover:scale-105">
+                                    <i class="fas fa-redo mr-2"></i>RESET
+                                </button>
+                                <button id="endSessionBtn" class="btn-danger px-6 py-4 rounded-xl font-medium transition-all duration-300 hover:scale-105">
+                                    <i class="fas fa-stop mr-2"></i>END
+                                </button>
+                            </div>
+
+                            <!-- Quick Settings -->
+                            <div class="flex justify-center space-x-4 text-sm">
+                                <label class="flex items-center space-x-2 cursor-pointer">
+                                    <input type="checkbox" class="sr-only" id="autoStartToggle">
+                                    <div class="toggle-switch"></div>
+                                    <span>Auto-start</span>
+                                </label>
+                                <label class="flex items-center space-x-2 cursor-pointer">
+                                    <input type="checkbox" class="sr-only" id="softStartToggle">
+                                    <div class="toggle-switch"></div>
+                                    <span>Soft start</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sidebar -->
+                    <div class="space-y-6">
+                        
+                        <!-- Current Session Intention -->
+                        <div class="neon-border rounded-xl p-6 glass-morphism" id="intentionCard">
+                            <h3 class="text-lg font-semibold mb-4 text-electric-blue">
+                                <i class="fas fa-lightbulb mr-2"></i>Current Intention
+                            </h3>
+                            <div id="currentIntention" class="text-sm text-white/80">
+                                <p class="mb-2"><strong>Task:</strong> <span id="currentTask">Click Start to set your intention</span></p>
+                                <p><strong>Why:</strong> <span id="currentWhy">-</span></p>
+                            </div>
+                        </div>
+
+                        <!-- Today's Stats -->
+                        <div class="neon-border rounded-xl p-6 glass-morphism">
+                            <h3 class="text-lg font-semibold mb-4 text-electric-blue">
+                                <i class="fas fa-chart-bar mr-2"></i>Today's Progress
+                            </h3>
+                            <div class="space-y-3">
+                                <div class="flex justify-between">
+                                    <span class="text-sm text-white/70">Sessions:</span>
+                                    <span class="text-sm font-medium" id="todaySessions">0</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-sm text-white/70">Focus Time:</span>
+                                    <span class="text-sm font-medium" id="todayTime">0h 0m</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-sm text-white/70">Streak:</span>
+                                    <span class="text-sm font-medium text-lime-green" id="currentStreak">0 days</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Website Blocker Status -->
+                        <div class="neon-border rounded-xl p-6 glass-morphism">
+                            <h3 class="text-lg font-semibold mb-4 text-electric-blue">
+                                <i class="fas fa-shield-alt mr-2"></i>Website Blocker
+                            </h3>
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm">Status:</span>
+                                    <span class="text-sm font-medium text-lime-green" id="blockerStatus">Inactive</span>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-sm">Blocked Sites:</span>
+                                    <span class="text-sm font-medium" id="blockedCount">5</span>
+                                </div>
+                                <button class="w-full btn-secondary py-2 rounded-lg text-xs" id="manageBlockedSites">
+                                    Manage Sites
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- @END_COMPONENT: Timer View -->
+
+        <!-- @COMPONENT: Analytics View -->
+        <div id="analytics-view" class="tab-content hidden">
+            <div class="max-w-6xl mx-auto">
+                <div class="mb-8">
+                    <h1 class="text-3xl font-orbitron font-bold text-neon-pink mb-2">Analytics Dashboard</h1>
+                    <p class="text-electric-blue/80">Track your productivity journey and celebrate your progress</p>
+                </div>
+
+                <!-- Key Metrics Cards -->
+                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="neon-border rounded-xl p-6 glass-morphism text-center">
+                        <div class="text-3xl font-bold text-neon-pink mb-2" data-bind="totalSessions">127</div>
+                        <div class="text-sm text-white/70">Total Sessions</div>
+                    </div>
+                    <div class="neon-border rounded-xl p-6 glass-morphism text-center">
+                        <div class="text-3xl font-bold text-electric-blue mb-2" data-bind="successRate">89%</div>
+                        <div class="text-sm text-white/70">Success Rate</div>
+                    </div>
+                    <div class="neon-border rounded-xl p-6 glass-morphism text-center">
+                        <div class="text-3xl font-bold text-synthwave-purple mb-2" data-bind="totalFocusTime">52h</div>
+                        <div class="text-sm text-white/70">Total Focus Time</div>
+                    </div>
+                    <div class="neon-border rounded-xl p-6 glass-morphism text-center">
+                        <div class="text-3xl font-bold text-lime-green mb-2" data-bind="currentStreak">7</div>
+                        <div class="text-sm text-white/70">Day Streak</div>
+                    </div>
+                </div>
+
+                <div class="grid lg:grid-cols-3 gap-8">
+                    
+                    <!-- Weekly Chart -->
+                    <div class="lg:col-span-2 neon-border rounded-xl p-6 glass-morphism">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-lg font-semibold text-electric-blue">Weekly Progress</h3>
+                            <div class="flex space-x-2">
+                                <button class="text-xs px-3 py-1 rounded bg-neon-pink/20 text-neon-pink">Sessions</button>
+                                <button class="text-xs px-3 py-1 rounded bg-white/10 text-white/70 hover:bg-electric-blue/20">Time</button>
+                            </div>
+                        </div>
+                        
+                        <!-- @FUNCTIONALITY: This chart should display real session data using Chart.js or similar -->
+                        <div class="h-64 flex items-end justify-between space-x-2 mb-4">
+                            <div class="flex flex-col items-center">
+                                <div class="w-8 bg-gradient-to-t from-neon-pink to-synthwave-purple rounded-t" style="height: 60%"></div>
+                                <span class="text-xs text-white/60 mt-2">Mon</span>
+                            </div>
+                            <div class="flex flex-col items-center">
+                                <div class="w-8 bg-gradient-to-t from-neon-pink to-synthwave-purple rounded-t" style="height: 80%"></div>
+                                <span class="text-xs text-white/60 mt-2">Tue</span>
+                            </div>
+                            <div class="flex flex-col items-center">
+                                <div class="w-8 bg-gradient-to-t from-neon-pink to-synthwave-purple rounded-t" style="height: 45%"></div>
+                                <span class="text-xs text-white/60 mt-2">Wed</span>
+                            </div>
+                            <div class="flex flex-col items-center">
+                                <div class="w-8 bg-gradient-to-t from-neon-pink to-synthwave-purple rounded-t" style="height: 95%"></div>
+                                <span class="text-xs text-white/60 mt-2">Thu</span>
+                            </div>
+                            <div class="flex flex-col items-center">
+                                <div class="w-8 bg-gradient-to-t from-neon-pink to-synthwave-purple rounded-t" style="height: 70%"></div>
+                                <span class="text-xs text-white/60 mt-2">Fri</span>
+                            </div>
+                            <div class="flex flex-col items-center">
+                                <div class="w-8 bg-gradient-to-t from-neon-pink to-synthwave-purple rounded-t" style="height: 30%"></div>
+                                <span class="text-xs text-white/60 mt-2">Sat</span>
+                            </div>
+                            <div class="flex flex-col items-center">
+                                <div class="w-8 bg-gradient-to-t from-neon-pink to-synthwave-purple rounded-t" style="height: 85%"></div>
+                                <span class="text-xs text-white/60 mt-2">Sun</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Intentions -->
+                    <div class="neon-border rounded-xl p-6 glass-morphism">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-lg font-semibold text-electric-blue">Recent Intentions</h3>
+                            <button class="text-xs text-synthwave-purple hover:text-neon-pink">View All</button>
+                        </div>
+                        
+                        <div class="space-y-4 max-h-96 overflow-y-auto">
+                            <!-- @MAP: recentIntentions.map(intention => ( -->
+                            <div class="border-l-2 border-neon-pink/50 pl-4 pb-4" data-mock="true">
+                                <div class="text-sm font-medium text-white mb-1">📌 Finish project proposal</div>
+                                <div class="text-xs text-white/60 mb-2">💭 Career advancement opportunity</div>
+                                <div class="text-xs text-electric-blue">🕒 Today, 2:30 PM</div>
+                            </div>
+                            
+                            <div class="border-l-2 border-electric-blue/50 pl-4 pb-4" data-mock="true">
+                                <div class="text-sm font-medium text-white mb-1">📌 Study React hooks</div>
+                                <div class="text-xs text-white/60 mb-2">💭 Improve technical skills</div>
+                                <div class="text-xs text-electric-blue">🕒 Today, 10:15 AM</div>
+                            </div>
+                            
+                            <div class="border-l-2 border-synthwave-purple/50 pl-4 pb-4" data-mock="true">
+                                <div class="text-sm font-medium text-white mb-1">📌 Plan weekend trip</div>
+                                <div class="text-xs text-white/60 mb-2">💭 Work-life balance</div>
+                                <div class="text-xs text-electric-blue">🕒 Yesterday, 4:45 PM</div>
+                            </div>
+                            
+                            <div class="border-l-2 border-lime-green/50 pl-4 pb-4" data-mock="true">
+                                <div class="text-sm font-medium text-white mb-1">📌 Write blog post</div>
+                                <div class="text-xs text-white/60 mb-2">💭 Share knowledge with community</div>
+                                <div class="text-xs text-electric-blue">🕒 Yesterday, 1:20 PM</div>
+                            </div>
+                            <!-- @END_MAP )) -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Data Management -->
+                <div class="mt-8 flex justify-center space-x-4">
+                    <button class="btn-secondary px-6 py-3 rounded-xl">
+                        <i class="fas fa-download mr-2"></i>Export Data
+                    </button>
+                    <button class="btn-danger px-6 py-3 rounded-xl">
+                        <i class="fas fa-trash-alt mr-2"></i>Clear All Data
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- @END_COMPONENT: Analytics View -->
+
+        <!-- @COMPONENT: Settings/Admin View -->
+        <div id="settings-view" class="tab-content hidden">
+            <div class="max-w-4xl mx-auto">
+                <div class="mb-8">
+                    <h1 class="text-3xl font-orbitron font-bold text-neon-pink mb-2">Settings & Configuration</h1>
+                    <p class="text-electric-blue/80">Customize your Pomotron experience</p>
+                </div>
+
+                <div class="grid lg:grid-cols-2 gap-8">
+                    
+                    <!-- Timer Configuration -->
+                    <div class="neon-border rounded-xl p-6 glass-morphism">
+                        <h3 class="text-lg font-semibold text-electric-blue mb-6">
+                            <i class="fas fa-clock mr-2"></i>Timer Configuration
+                        </h3>
+                        
+                        <div class="space-y-6">
+                            <div class="grid grid-cols-3 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-white/70 mb-2">Focus (min)</label>
+                                    <input type="number" value="25" class="form-input w-full" id="focusDuration">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-white/70 mb-2">Break (min)</label>
+                                    <input type="number" value="5" class="form-input w-full" id="breakDuration">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-white/70 mb-2">Long Break (min)</label>
+                                    <input type="number" value="15" class="form-input w-full" id="longBreakDuration">
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-white/70 mb-2">Cycles before long break</label>
+                                <input type="number" value="4" class="form-input w-full" id="cyclesBeforeLongBreak">
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-white/70 mb-2">Idle nudge timeout (min)</label>
+                                <input type="number" value="5" class="form-input w-full" id="idleTimeout">
+                            </div>
+                            
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm font-medium text-white/70">Auto-start next session</span>
+                                <label class="toggle-container">
+                                    <input type="checkbox" class="sr-only" id="autoStartSetting">
+                                    <div class="toggle-switch"></div>
+                                </label>
+                            </div>
+                            
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm font-medium text-white/70">Soft start (5s countdown)</span>
+                                <label class="toggle-container">
+                                    <input type="checkbox" class="sr-only" id="softStartSetting">
+                                    <div class="toggle-switch"></div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Visual Themes -->
+                    <div class="neon-border rounded-xl p-6 glass-morphism">
+                        <h3 class="text-lg font-semibold text-electric-blue mb-6">
+                            <i class="fas fa-palette mr-2"></i>Visual Themes
+                        </h3>
+                        
+                        <div class="space-y-4">
+                            <div class="theme-option p-4 rounded-lg border border-neon-pink/50 bg-gradient-to-r from-neon-pink/20 to-synthwave-purple/20">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <div class="font-medium text-white">🌆 Starcourt Retro</div>
+                                        <div class="text-xs text-white/60">80s synthwave vibes</div>
+                                    </div>
+                                    <input type="radio" name="theme" value="starcourt" checked class="theme-radio">
+                                </div>
+                            </div>
+                            
+                            <div class="theme-option p-4 rounded-lg border border-white/20 bg-gradient-to-r from-gray-100 to-gray-200 text-gray-800">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <div class="font-medium">⚪ Minimal</div>
+                                        <div class="text-xs text-gray-600">Clean and distraction-free</div>
+                                    </div>
+                                    <input type="radio" name="theme" value="minimal" class="theme-radio">
+                                </div>
+                            </div>
+                            
+                            <div class="theme-option p-4 rounded-lg border border-green-400/50 bg-gradient-to-r from-green-100 to-yellow-100 text-green-800">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <div class="font-medium">🌿 Studio Ghibli</div>
+                                        <div class="text-xs text-green-600">Peaceful nature aesthetic</div>
+                                    </div>
+                                    <input type="radio" name="theme" value="ghibli" class="theme-radio">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Website Blocker -->
+                    <div class="neon-border rounded-xl p-6 glass-morphism">
+                        <h3 class="text-lg font-semibold text-electric-blue mb-6">
+                            <i class="fas fa-shield-alt mr-2"></i>Website Blocker
+                        </h3>
+                        
+                        <div class="space-y-6">
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm font-medium text-white/70">Enable website blocking</span>
+                                <label class="toggle-container">
+                                    <input type="checkbox" class="sr-only" id="blockerEnabled" checked>
+                                    <div class="toggle-switch"></div>
+                                </label>
+                            </div>
+                            
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm font-medium text-white/70">Friction-based override</span>
+                                <label class="toggle-container">
+                                    <input type="checkbox" class="sr-only" id="frictionOverride">
+                                    <div class="toggle-switch"></div>
+                                </label>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-white/70 mb-2">Blocked Websites</label>
+                                <div class="space-y-2" id="blockedSitesList">
+                                    <div class="flex items-center justify-between p-2 bg-charcoal rounded">
+                                        <span class="text-sm">facebook.com</span>
+                                        <button class="text-red-400 hover:text-red-300 text-xs">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                    <div class="flex items-center justify-between p-2 bg-charcoal rounded">
+                                        <span class="text-sm">twitter.com</span>
+                                        <button class="text-red-400 hover:text-red-300 text-xs">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                    <div class="flex items-center justify-between p-2 bg-charcoal rounded">
+                                        <span class="text-sm">reddit.com</span>
+                                        <button class="text-red-400 hover:text-red-300 text-xs">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex mt-3">
+                                    <input type="text" placeholder="Add website..." class="form-input flex-1 rounded-r-none" id="newSiteInput">
+                                    <button class="btn-primary px-4 rounded-l-none rounded-r-lg" id="addSiteBtn">
+                                        <i class="fas fa-plus"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Keyboard Shortcuts -->
+                    <div class="neon-border rounded-xl p-6 glass-morphism">
+                        <h3 class="text-lg font-semibold text-electric-blue mb-6">
+                            <i class="fas fa-keyboard mr-2"></i>Keyboard Shortcuts
+                        </h3>
+                        
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-white/70">Start/Pause Timer</span>
+                                <kbd class="px-2 py-1 bg-charcoal rounded text-xs">Spacebar</kbd>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-white/70">Reset Timer</span>
+                                <kbd class="px-2 py-1 bg-charcoal rounded text-xs">R</kbd>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-white/70">End Session</span>
+                                <kbd class="px-2 py-1 bg-charcoal rounded text-xs">Esc</kbd>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-white/70">Toggle Analytics</span>
+                                <kbd class="px-2 py-1 bg-charcoal rounded text-xs">A</kbd>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-white/70">Open Settings</span>
+                                <kbd class="px-2 py-1 bg-charcoal rounded text-xs">S</kbd>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Save Settings -->
+                <div class="mt-8 text-center">
+                    <button class="btn-primary px-8 py-3 rounded-xl font-medium">
+                        <i class="fas fa-save mr-2"></i>Save Settings
+                    </button>
+                </div>
+            </div>
+        </div>
+        <!-- @END_COMPONENT: Settings/Admin View -->
+
+    </main>
+    <!-- @END_COMPONENT: Main Content Container -->
+
+    <!-- @COMPONENT: Intention Setting Modal -->
+    <div id="intentionModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 hidden">
+        <div class="neon-border rounded-2xl p-8 glass-morphism max-w-md w-full mx-4">
+            <h2 class="text-xl font-orbitron font-bold text-neon-pink mb-6 text-center">Set Your Intention</h2>
+            
+            <div class="space-y-6">
+                <div>
+                    <label class="block text-sm font-medium text-white/70 mb-2">What are you working on today?</label>
+                    <input type="text" class="form-input w-full" id="intentionTask" placeholder="e.g., Finish project proposal">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-white/70 mb-2">Why is this important to you?</label>
+                    <textarea class="form-input w-full resize-none" rows="3" id="intentionWhy" placeholder="e.g., It will help advance my career"></textarea>
+                </div>
+            </div>
+            
+            <div class="flex space-x-4 mt-8">
+                <button class="btn-secondary flex-1 py-3 rounded-xl" id="skipIntentionBtn">Skip</button>
+                <button class="btn-primary flex-1 py-3 rounded-xl" id="setIntentionBtn">Start Session</button>
+            </div>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: Intention Setting Modal -->
+
+    <!-- @COMPONENT: Notification Toast -->
+    <div id="notificationToast" class="fixed top-4 right-4 neon-border rounded-lg p-4 glass-morphism z-50 transform translate-x-full transition-transform duration-300">
+        <div class="flex items-center space-x-3">
+            <div class="text-neon-pink">
+                <i class="fas fa-bell"></i>
+            </div>
+            <div>
+                <div class="font-medium text-white" id="toastTitle">Idle Detected</div>
+                <div class="text-sm text-white/70" id="toastMessage">You've been idle for 5 minutes. Stay focused!</div>
+            </div>
+            <button class="text-white/50 hover:text-white" id="closeToast">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+    <!-- @END_COMPONENT: Notification Toast -->
+
+    <style>
+        /* Button Styles */
+        .btn-primary {
+            background: linear-gradient(135deg, #FF6B9D, #8B5FBF);
+            color: white;
+            border: none;
+            box-shadow: 0 0 20px rgba(255, 107, 157, 0.5);
+        }
+        
+        .btn-primary:hover {
+            box-shadow: 0 0 30px rgba(255, 107, 157, 0.7);
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: rgba(78, 205, 196, 0.2);
+            color: #4ECDC4;
+            border: 1px solid #4ECDC4;
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(78, 205, 196, 0.3);
+            box-shadow: 0 0 20px rgba(78, 205, 196, 0.3);
+        }
+        
+        .btn-tertiary {
+            background: rgba(139, 95, 191, 0.2);
+            color: #8B5FBF;
+            border: 1px solid #8B5FBF;
+        }
+        
+        .btn-tertiary:hover {
+            background: rgba(139, 95, 191, 0.3);
+            box-shadow: 0 0 20px rgba(139, 95, 191, 0.3);
+        }
+        
+        .btn-danger {
+            background: rgba(255, 23, 68, 0.2);
+            color: #FF1744;
+            border: 1px solid #FF1744;
+        }
+        
+        .btn-danger:hover {
+            background: rgba(255, 23, 68, 0.3);
+            box-shadow: 0 0 20px rgba(255, 23, 68, 0.3);
+        }
+
+        /* Form Styles */
+        .form-input {
+            background: rgba(45, 45, 68, 0.8);
+            border: 1px solid rgba(255, 107, 157, 0.3);
+            color: white;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #FF6B9D;
+            box-shadow: 0 0 0 3px rgba(255, 107, 157, 0.1);
+        }
+        
+        .form-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        /* Toggle Switch */
+        .toggle-switch {
+            width: 48px;
+            height: 24px;
+            background: #2D2D44;
+            border-radius: 12px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+        
+        input:checked + .toggle-switch {
+            background: #FF6B9D;
+            box-shadow: 0 0 10px rgba(255, 107, 157, 0.5);
+        }
+        
+        input:checked + .toggle-switch::after {
+            transform: translateX(24px);
+        }
+
+        /* Navigation Tabs */
+        .nav-tab {
+            background: rgba(78, 205, 196, 0.1);
+            color: #4ECDC4;
+            border: 1px solid transparent;
+        }
+        
+        .nav-tab:hover {
+            background: rgba(78, 205, 196, 0.2);
+            border-color: rgba(78, 205, 196, 0.3);
+        }
+        
+        .nav-tab.active {
+            background: rgba(255, 107, 157, 0.2);
+            color: #FF6B9D;
+            border-color: #FF6B9D;
+            box-shadow: 0 0 15px rgba(255, 107, 157, 0.3);
+        }
+
+        /* Theme Adaptations */
+        .minimal-theme {
+            background: #ffffff;
+            color: #1f2937;
+        }
+        
+        .minimal-theme .neon-border {
+            border-color: #e5e7eb;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .ghibli-theme {
+            background: #fefdf9;
+            color: #2d3436;
+        }
+        
+        .ghibli-theme .neon-border {
+            border-color: #7c9885;
+            box-shadow: 0 2px 8px rgba(124, 152, 133, 0.2);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+            
+            #timerDisplay {
+                font-size: 3rem;
+            }
+            
+            .btn-primary, .btn-secondary, .btn-tertiary, .btn-danger {
+                padding: 0.75rem 1.5rem;
+                font-size: 0.875rem;
+            }
+        }
+    </style>
+
+    <script>
+        // TODO: Implement business logic, API calls, and state management
+        
+        (function() {
+            // App State
+            let currentView = 'timer';
+            let timerState = {
+                isRunning: false,
+                timeLeft: 25 * 60, // 25 minutes in seconds
+                sessionType: 'focus',
+                currentSession: 1,
+                totalSessions: 0,
+                currentIntention: { task: '', why: '' }
+            };
+            
+            let motivationalQuotes = [
+                "The way to get started is to quit talking and begin doing. - Walt Disney",
+                "You don't have to be great to get started, but you have to get started to be great. - Les Brown",
+                "Focus is a matter of deciding what things you're not going to do. - John Carmack",
+                "The successful warrior is the average man with laser-like focus. - Bruce Lee",
+                "Concentrate all your thoughts upon the work at hand. - Alexander Graham Bell",
+                "It is during our darkest moments that we must focus to see the light. - Aristotle",
+                "The art of being wise is knowing what to overlook. - William James"
+            ];
+            
+            // Initialize app
+            function initApp() {
+                setupEventListeners();
+                updateTimerDisplay();
+                loadSettings();
+                showRandomQuote();
+            }
+            
+            // Event Listeners
+            function setupEventListeners() {
+                // Navigation
+                document.querySelectorAll('.nav-tab').forEach(tab => {
+                    tab.addEventListener('click', (e) => {
+                        switchView(e.target.dataset.target);
+                    });
+                });
+                
+                // Timer controls
+                document.getElementById('startBtn').addEventListener('click', startSession);
+                document.getElementById('pauseBtn').addEventListener('click', pauseTimer);
+                document.getElementById('resetBtn').addEventListener('click', resetTimer);
+                document.getElementById('endSessionBtn').addEventListener('click', endSession);
+                
+                // Intention modal
+                document.getElementById('setIntentionBtn').addEventListener('click', setIntentionAndStart);
+                document.getElementById('skipIntentionBtn').addEventListener('click', skipIntentionAndStart);
+                
+                // Quote rotation
+                document.getElementById('nextQuoteBtn').addEventListener('click', showRandomQuote);
+                
+                // Theme switching
+                document.getElementById('themeSelector').addEventListener('change', switchTheme);
+                
+                // Keyboard shortcuts
+                document.addEventListener('keydown', handleKeyboardShortcuts);
+                
+                // Settings
+                document.getElementById('addSiteBtn').addEventListener('click', addBlockedSite);
+                
+                // Toast notification
+                document.getElementById('closeToast').addEventListener('click', hideToast);
+            }
+            
+            // Timer Functions
+            function startSession() {
+                showIntentionModal();
+            }
+            
+            function showIntentionModal() {
+                document.getElementById('intentionModal').classList.remove('hidden');
+            }
+            
+            function hideIntentionModal() {
+                document.getElementById('intentionModal').classList.add('hidden');
+            }
+            
+            function setIntentionAndStart() {
+                const task = document.getElementById('intentionTask').value;
+                const why = document.getElementById('intentionWhy').value;
+                
+                if (task.trim()) {
+                    timerState.currentIntention = { task, why };
+                    updateIntentionDisplay();
+                }
+                
+                hideIntentionModal();
+                startTimer();
+            }
+            
+            function skipIntentionAndStart() {
+                hideIntentionModal();
+                startTimer();
+            }
+            
+            function startTimer() {
+                timerState.isRunning = true;
+                document.getElementById('startBtn').style.display = 'none';
+                document.getElementById('pauseBtn').style.display = 'inline-flex';
+                
+                // TODO: Implement actual timer countdown
+                // TODO: Implement website blocking activation
+                // TODO: Implement idle detection
+                
+                playSound('start');
+            }
+            
+            function pauseTimer() {
+                timerState.isRunning = false;
+                document.getElementById('startBtn').style.display = 'inline-flex';
+                document.getElementById('pauseBtn').style.display = 'none';
+            }
+            
+            function resetTimer() {
+                timerState.isRunning = false;
+                timerState.timeLeft = 25 * 60;
+                document.getElementById('startBtn').style.display = 'inline-flex';
+                document.getElementById('pauseBtn').style.display = 'none';
+                updateTimerDisplay();
+                playSound('reset');
+            }
+            
+            function endSession() {
+                resetTimer();
+                // TODO: Save session data to localStorage
+                // TODO: Update analytics
+            }
+            
+            function updateTimerDisplay() {
+                const minutes = Math.floor(timerState.timeLeft / 60);
+                const seconds = timerState.timeLeft % 60;
+                const display = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                document.getElementById('timerDisplay').textContent = display;
+                
+                // Update progress bar
+                const totalTime = 25 * 60; // TODO: Make this dynamic based on session type
+                const progress = ((totalTime - timerState.timeLeft) / totalTime) * 100;
+                document.getElementById('progressBar').style.width = `${progress}%`;
+            }
+            
+            function updateIntentionDisplay() {
+                document.getElementById('currentTask').textContent = timerState.currentIntention.task || 'Click Start to set your intention';
+                document.getElementById('currentWhy').textContent = timerState.currentIntention.why || '-';
+            }
+            
+            // Navigation
+            function switchView(viewName) {
+                currentView = viewName;
+                
+                // Hide all views
+                document.querySelectorAll('.tab-content').forEach(view => {
+                    view.classList.add('hidden');
+                });
+                
+                // Show selected view
+                document.getElementById(`${viewName}-view`).classList.remove('hidden');
+                
+                // Update navigation
+                document.querySelectorAll('.nav-tab').forEach(tab => {
+                    tab.classList.remove('active');
+                });
+                document.querySelector(`[data-target="${viewName}"]`).classList.add('active');
+            }
+            
+            // Theme Switching
+            function switchTheme(event) {
+                const theme = event.target.value;
+                document.body.dataset.theme = theme;
+                
+                // TODO: Apply theme-specific styles
+                // TODO: Save theme preference to localStorage
+            }
+            
+            // Motivational Quotes
+            function showRandomQuote() {
+                const randomIndex = Math.floor(Math.random() * motivationalQuotes.length);
+                document.getElementById('motivationalQuote').textContent = motivationalQuotes[randomIndex];
+            }
+            
+            // Website Blocking
+            function addBlockedSite() {
+                const input = document.getElementById('newSiteInput');
+                const site = input.value.trim();
+                
+                if (site) {
+                    // TODO: Add site to blocked list in localStorage
+                    // TODO: Update blocked sites display
+                    input.value = '';
+                }
+            }
+            
+            // Notifications
+            function showToast(title, message) {
+                document.getElementById('toastTitle').textContent = title;
+                document.getElementById('toastMessage').textContent = message;
+                document.getElementById('notificationToast').classList.remove('translate-x-full');
+                
+                setTimeout(hideToast, 5000);
+            }
+            
+            function hideToast() {
+                document.getElementById('notificationToast').classList.add('translate-x-full');
+            }
+            
+            // Sound Effects
+            function playSound(type) {
+                // TODO: Implement retro sound effects
+                console.log(`Playing ${type} sound effect`);
+            }
+            
+            // Keyboard Shortcuts
+            function handleKeyboardShortcuts(event) {
+                if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') return;
+                
+                switch(event.key.toLowerCase()) {
+                    case ' ':
+                        event.preventDefault();
+                        if (timerState.isRunning) {
+                            pauseTimer();
+                        } else {
+                            startSession();
+                        }
+                        break;
+                    case 'r':
+                        event.preventDefault();
+                        resetTimer();
+                        break;
+                    case 'escape':
+                        event.preventDefault();
+                        endSession();
+                        break;
+                    case 'a':
+                        event.preventDefault();
+                        switchView('analytics');
+                        break;
+                    case 's':
+                        event.preventDefault();
+                        switchView('settings');
+                        break;
+                }
+            }
+            
+            // Settings Management
+            function loadSettings() {
+                // TODO: Load settings from localStorage
+                // TODO: Apply saved settings to UI
+            }
+            
+            function saveSettings() {
+                // TODO: Save current settings to localStorage
+            }
+            
+            // Initialize the app
+            initApp();
+        })();
+    </script>
+</body>
+</html>
