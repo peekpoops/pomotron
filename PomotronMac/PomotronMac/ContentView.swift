@@ -30,7 +30,7 @@ struct ContentView: View {
                 VStack(spacing: 32) {
                     // Logo with exact web styling
                     Text("POMOTRON")
-                        .font(.system(size: 36, weight: .black, design: .monospaced))
+                        .font(.pomotronTitle())
                         .fontWeight(.black)
                         .foregroundStyle(
                             LinearGradient(
