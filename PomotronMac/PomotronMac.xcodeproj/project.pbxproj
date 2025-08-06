@@ -17,14 +17,16 @@
                 8E4B5F762C645C6000123456 /* IntentionModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E4B5F752C645C6000123456 /* IntentionModal.swift */; };
                 8E4B5F782C645C6500123456 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E4B5F772C645C6500123456 /* Models.swift */; };
                 8E4B5F7A2C645C6A00123456 /* TimerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E4B5F792C645C6A00123456 /* TimerManager.swift */; };
-                8E4B5F7C2C645C6E00123456 /* AudioManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E4B5F7B2C645C6E00123456 /* AudioManager.swift */; };
+                8E4B5F7C2C645C6E00123456 /* SoundManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E4B5F7B2C645C6E00123456 /* SoundManager.swift */; };
                 8E4B5F7E2C645C7200123456 /* WebsiteBlocker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E4B5F7D2C645C7200123456 /* WebsiteBlocker.swift */; };
                 8E4B5F802C645C7600123456 /* FontManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E4B5F7F2C645C7600123456 /* FontManager.swift */; };
                 8E4B5F822C645C7A00123456 /* Font+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E4B5F812C645C7A00123456 /* Font+Extensions.swift */; };
                 8E4B5F8E2C645C8000123456 /* Inter-Variable.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8E4B5F8D2C645C8000123456 /* Inter-Variable.ttf */; };
                 8E4B5F902C645C8100123456 /* Orbitron-Variable.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8E4B5F8F2C645C8100123456 /* Orbitron-Variable.ttf */; };
                 8E4B5F922C645C8200123456 /* ShareTechMono-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8E4B5F912C645C8200123456 /* ShareTechMono-Regular.ttf */; };
-                8E4B5F942C645C8300123456 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8E4B5F932C645C8300123456 /* Info.plist */; };
+                8E4B5F9A2C645C9000123456 /* AudioManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E4B5F992C645C9000123456 /* AudioManager.swift */; };
+                8E4B5F9B2C645C9100123456 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E4B5F9C2C645C9100123456 /* Models.swift */; };
+
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -38,9 +40,9 @@
                 8E4B5F712C645C5500123456 /* AnalyticsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Views/AnalyticsView.swift"; sourceTree = "<group>"; };
                 8E4B5F732C645C5A00123456 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Views/SettingsView.swift"; sourceTree = "<group>"; };
                 8E4B5F752C645C6000123456 /* IntentionModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Views/IntentionModal.swift"; sourceTree = "<group>"; };
-                8E4B5F772C645C6500123456 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Models/Models.swift"; sourceTree = "<group>"; };
+                8E4B5F772C645C6500123456 /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Models/Settings.swift"; sourceTree = "<group>"; };
                 8E4B5F792C645C6A00123456 /* TimerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Managers/TimerManager.swift"; sourceTree = "<group>"; };
-                8E4B5F7B2C645C6E00123456 /* AudioManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Managers/AudioManager.swift"; sourceTree = "<group>"; };
+                8E4B5F7B2C645C6E00123456 /* SoundManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Managers/SoundManager.swift"; sourceTree = "<group>"; };
                 8E4B5F7D2C645C7200123456 /* WebsiteBlocker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Managers/WebsiteBlocker.swift"; sourceTree = "<group>"; };
                 8E4B5F7F2C645C7600123456 /* FontManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Utils/FontManager.swift"; sourceTree = "<group>"; };
                 8E4B5F812C645C7A00123456 /* Font+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Utils/Font+Extensions.swift"; sourceTree = "<group>"; };
@@ -48,6 +50,8 @@
                 8E4B5F8F2C645C8100123456 /* Orbitron-Variable.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Resources/Fonts/Orbitron-Variable.ttf"; sourceTree = "<group>"; };
                 8E4B5F912C645C8200123456 /* ShareTechMono-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Resources/Fonts/ShareTechMono-Regular.ttf"; sourceTree = "<group>"; };
                 8E4B5F932C645C8300123456 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+                8E4B5F992C645C9000123456 /* AudioManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Managers/AudioManager.swift"; sourceTree = "<group>"; };
+                8E4B5F9C2C645C9100123456 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Models/Models.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -223,7 +227,7 @@
                                 8E4B5F8E2C645C8000123456 /* Inter-Variable.ttf in Resources */,
                                 8E4B5F902C645C8100123456 /* Orbitron-Variable.ttf in Resources */,
                                 8E4B5F922C645C8200123456 /* ShareTechMono-Regular.ttf in Resources */,
-                                8E4B5F942C645C8300123456 /* Info.plist in Resources */,
+
                         );
                         runOnlyForDeploymentPostprocessing = 0;
                 };
@@ -240,12 +244,14 @@
                                 8E4B5F722C645C5500123456 /* AnalyticsView.swift in Sources */,
                                 8E4B5F742C645C5A00123456 /* SettingsView.swift in Sources */,
                                 8E4B5F762C645C6000123456 /* IntentionModal.swift in Sources */,
-                                8E4B5F782C645C6500123456 /* Models.swift in Sources */,
+                                8E4B5F782C645C6500123456 /* Settings.swift in Sources */,
                                 8E4B5F7A2C645C6A00123456 /* TimerManager.swift in Sources */,
-                                8E4B5F7C2C645C6E00123456 /* AudioManager.swift in Sources */,
+                                8E4B5F7C2C645C6E00123456 /* SoundManager.swift in Sources */,
                                 8E4B5F7E2C645C7200123456 /* WebsiteBlocker.swift in Sources */,
                                 8E4B5F802C645C7600123456 /* FontManager.swift in Sources */,
                                 8E4B5F822C645C7A00123456 /* Font+Extensions.swift in Sources */,
+                                8E4B5F9A2C645C9000123456 /* AudioManager.swift in Sources */,
+                                8E4B5F9B2C645C9100123456 /* Models.swift in Sources */,
                         );
                         runOnlyForDeploymentPostprocessing = 0;
                 };
