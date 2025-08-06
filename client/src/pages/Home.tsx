@@ -68,12 +68,11 @@ export default function Home() {
       <header className="border-b border-border/30 sticky top-0 z-40 bg-background/80 backdrop-blur-sm">
         <nav className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <div className="text-3xl font-orbitron font-bold neon-text text-primary animate-glow">
-                POMOTRON
-              </div>
-              <div className="hidden md:block text-sm text-secondary/80">
-                v2.1 • Retro Productivity Suite
+            <div className="flex items-center">
+              <div className="text-4xl font-orbitron font-black neon-text text-primary animate-glow tracking-wider">
+                <span className="bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent">
+                  POMOTRON
+                </span>
               </div>
             </div>
             

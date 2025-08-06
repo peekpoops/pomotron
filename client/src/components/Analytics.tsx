@@ -103,9 +103,13 @@ export default function Analytics() {
 
   return (
     <div className="max-w-6xl mx-auto space-y-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-orbitron font-bold text-primary mb-2">Analytics Dashboard</h1>
-        <p className="text-secondary/80">Track your productivity journey and celebrate your progress</p>
+      <div className="mb-8 text-center">
+        <h1 className="text-4xl font-orbitron font-black text-primary mb-2 neon-text tracking-wider">
+          <span className="bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent">
+            ANALYTICS DASHBOARD
+          </span>
+        </h1>
+        <p className="text-secondary font-tech-mono">Track your productivity journey and celebrate your progress</p>
       </div>
 
       {/* Key Metrics Cards */}
@@ -145,9 +149,9 @@ export default function Analytics() {
           <Card className="neon-border glass-morphism">
             <CardHeader>
               <div className="flex items-center justify-between">
-                <CardTitle className="text-lg font-semibold text-secondary">Weekly Progress</CardTitle>
+                <CardTitle className="section-title text-lg text-secondary">Weekly Progress</CardTitle>
                 <div className="flex space-x-2">
-                  <Badge variant="default" className="text-xs">Sessions</Badge>
+                  <Badge variant="default" className="text-xs font-tech-mono">Sessions</Badge>
                 </div>
               </div>
             </CardHeader>
@@ -193,8 +197,8 @@ export default function Analytics() {
         <Card className="neon-border glass-morphism">
           <CardHeader>
             <div className="flex items-center justify-between">
-              <CardTitle className="text-lg font-semibold text-secondary">Recent Intentions</CardTitle>
-              <Button variant="ghost" size="sm" className="text-xs text-accent hover:text-primary">
+              <CardTitle className="section-title text-lg text-secondary">Recent Intentions</CardTitle>
+              <Button variant="ghost" size="sm" className="text-xs text-accent hover:text-primary font-tech-mono">
                 View All
               </Button>
             </div>

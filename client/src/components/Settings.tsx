@@ -96,16 +96,20 @@ export default function Settings() {
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-orbitron font-bold text-primary mb-2">Settings & Configuration</h1>
-        <p className="text-secondary/80">Customize your Pomotron experience</p>
+      <div className="mb-8 text-center">
+        <h1 className="text-4xl font-orbitron font-black text-primary mb-2 neon-text tracking-wider">
+          <span className="bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent">
+            SETTINGS & CONFIGURATION
+          </span>
+        </h1>
+        <p className="text-secondary font-tech-mono">Customize your Pomotron experience</p>
       </div>
 
       <div className="grid lg:grid-cols-2 gap-8">
         {/* Timer Configuration */}
         <Card className="neon-border glass-morphism">
           <CardHeader>
-            <CardTitle className="text-lg font-semibold text-secondary flex items-center">
+            <CardTitle className="section-title text-lg text-secondary flex items-center">
               <Clock className="h-5 w-5 mr-2" />
               Timer Configuration
             </CardTitle>
@@ -234,7 +238,7 @@ export default function Settings() {
         {/* Visual Themes */}
         <Card className="neon-border glass-morphism">
           <CardHeader>
-            <CardTitle className="text-lg font-semibold text-secondary flex items-center">
+            <CardTitle className="section-title text-lg text-secondary flex items-center">
               <Palette className="h-5 w-5 mr-2" />
               Visual Themes
             </CardTitle>
@@ -265,7 +269,7 @@ export default function Settings() {
         {/* Website Blocker */}
         <Card className="neon-border glass-morphism">
           <CardHeader>
-            <CardTitle className="text-lg font-semibold text-secondary flex items-center">
+            <CardTitle className="section-title text-lg text-secondary flex items-center">
               <Shield className="h-5 w-5 mr-2" />
               Website Blocker
             </CardTitle>
@@ -345,7 +349,7 @@ export default function Settings() {
         {/* Keyboard Shortcuts */}
         <Card className="neon-border glass-morphism">
           <CardHeader>
-            <CardTitle className="text-lg font-semibold text-secondary flex items-center">
+            <CardTitle className="section-title text-lg text-secondary flex items-center">
               <Keyboard className="h-5 w-5 mr-2" />
               Keyboard Shortcuts
             </CardTitle>

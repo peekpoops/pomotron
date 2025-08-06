@@ -100,38 +100,58 @@ export default function Timer({ onOpenSettings }: TimerProps) {
 
   return (
     <div className="max-w-6xl mx-auto space-y-8">
+      {/* Current Intention Banner */}
+      <Card className="glass-morphism animate-float">
+        <CardContent className="p-6">
+          <h3 className="section-title text-lg mb-4 text-secondary flex items-center justify-center">
+            <Clock className="h-5 w-5 mr-2" />
+            Current Intention
+          </h3>
+          <div className="text-center space-y-2">
+            <div className="text-sm text-muted-foreground">
+              <span className="text-primary font-medium">Task:</span>{' '}
+              <span className="text-foreground">{timerState.currentIntention.task || 'Click Start to set your intention'}</span>
+            </div>
+            <div className="text-sm text-muted-foreground">
+              <span className="text-primary font-medium">Why:</span>{' '}
+              <span className="text-foreground">{timerState.currentIntention.why || '-'}</span>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Motivational Quote Banner */}
       <Card className="glass-morphism animate-float">
-        <CardContent className="p-6 text-center">
-          <div className="mb-3">
-            <p className="text-lg italic text-secondary">
-              {showFullQuote ? `"${currentQuote.text}"` : `"${currentQuote.text.substring(0, 60)}..."`}
+        <CardContent className="p-6 relative">
+          <div className="text-center">
+            <p className="text-lg italic text-secondary font-tech-mono">
+              "{showFullQuote ? currentQuote.text : `${currentQuote.text.substring(0, 60)}...`}"
             </p>
             {showFullQuote && (
-              <p className="text-sm text-muted-foreground mt-2">
-                — {currentQuote.author}
-              </p>
+              <div className="mt-4 space-y-3">
+                <p className="text-sm text-accent font-semibold">
+                  — {currentQuote.author}
+                </p>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={getNextQuote}
+                  className="text-xs text-accent hover:text-primary font-tech-mono"
+                >
+                  <RotateCcw className="h-3 w-3 mr-1" />
+                  New Quote
+                </Button>
+              </div>
             )}
           </div>
-          <div className="flex justify-center space-x-4">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setShowFullQuote(!showFullQuote)}
-              className="text-xs text-accent hover:text-primary"
-            >
-              {showFullQuote ? 'Show Less' : 'Show Full Quote'}
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={getNextQuote}
-              className="text-xs text-accent hover:text-primary"
-            >
-              <RotateCcw className="h-3 w-3 mr-1" />
-              New Quote
-            </Button>
-          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setShowFullQuote(!showFullQuote)}
+            className="absolute top-4 right-4 text-accent hover:text-primary p-1"
+          >
+            {showFullQuote ? '↑' : '→'}
+          </Button>
         </CardContent>
       </Card>
 
@@ -250,30 +270,10 @@ export default function Timer({ onOpenSettings }: TimerProps) {
 
         {/* Sidebar */}
         <div className="space-y-6">
-          {/* Current Session Intention */}
-          <Card className="neon-border glass-morphism">
-            <CardContent className="p-6">
-              <h3 className="text-lg font-semibold mb-4 text-secondary flex items-center">
-                <Clock className="h-5 w-5 mr-2" />
-                Current Intention
-              </h3>
-              <div className="text-sm text-muted-foreground space-y-2">
-                <div>
-                  <strong className="text-foreground">Task:</strong>{' '}
-                  <span>{timerState.currentIntention.task || 'Click Start to set your intention'}</span>
-                </div>
-                <div>
-                  <strong className="text-foreground">Why:</strong>{' '}
-                  <span>{timerState.currentIntention.why || '-'}</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
           {/* Today's Stats */}
           <Card className="neon-border glass-morphism">
             <CardContent className="p-6">
-              <h3 className="text-lg font-semibold mb-4 text-secondary">
+              <h3 className="section-title text-lg mb-4 text-secondary">
                 Today's Progress
               </h3>
               <div className="space-y-3">
@@ -302,7 +302,7 @@ export default function Timer({ onOpenSettings }: TimerProps) {
           {/* Website Blocker Status */}
           <Card className="neon-border glass-morphism">
             <CardContent className="p-6">
-              <h3 className="text-lg font-semibold mb-4 text-secondary">
+              <h3 className="section-title text-lg mb-4 text-secondary">
                 Website Blocker
               </h3>
               <div className="space-y-3">

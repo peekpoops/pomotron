@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600&family=Share+Tech+Mono:wght@400&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -94,6 +94,18 @@
   .font-orbitron {
     font-family: 'Orbitron', monospace;
   }
+  
+  .font-tech-mono {
+    font-family: 'Share Tech Mono', monospace;
+  }
+  
+  .section-title {
+    font-family: 'Orbitron', monospace;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    text-shadow: 0 0 10px currentColor;
+  }
 }
 
 @layer components {
@@ -185,16 +197,22 @@
   }
   
   .nav-tab {
-    @apply bg-secondary bg-opacity-10 text-secondary border border-transparent transition-all duration-300;
+    @apply bg-secondary bg-opacity-10 text-foreground border border-transparent transition-all duration-300;
+    font-family: 'Share Tech Mono', monospace;
+    font-weight: 400;
+    text-shadow: 0 0 5px currentColor;
   }
   
   .nav-tab:hover {
-    @apply bg-secondary bg-opacity-20 border-secondary border-opacity-30;
+    @apply bg-secondary bg-opacity-20 border-secondary border-opacity-30 text-secondary;
+    text-shadow: 0 0 8px currentColor;
   }
   
   .nav-tab.active {
     @apply bg-primary bg-opacity-20 text-primary border-primary;
     box-shadow: 0 0 15px rgba(255, 107, 157, 0.3);
+    text-shadow: 0 0 10px currentColor;
+    font-weight: 400;
   }
   
   /* Background pattern for retro theme */
