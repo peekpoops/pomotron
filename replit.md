@@ -6,6 +6,16 @@ Pomotron is a retro-themed Pomodoro timer web application designed to enhance pr
 
 Preferred communication style: Simple, everyday language.
 
+# Recent Changes
+
+## 2025-01-06: macOS Native App Development
+- Created complete macOS version of Pomotron using SwiftUI and Xcode
+- Implemented advanced website blocking using AppleScript, hosts file modification, and browser control
+- Replicated exact UI/UX with retro synthwave aesthetics and animations
+- Added comprehensive analytics with Charts framework
+- Built custom audio system for retro sound effects using AVAudioEngine
+- Included full permission management and setup documentation
+
 # System Architecture
 
 ## Frontend Architecture
