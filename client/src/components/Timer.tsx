@@ -303,34 +303,7 @@ export default function Timer({ onOpenSettings }: TimerProps) {
             </CardContent>
           </Card>
 
-          {/* Website Blocker Status */}
-          <Card className="neon-border glass-morphism">
-            <CardContent className="p-6">
-              <h3 className="section-title text-lg mb-4 text-secondary">
-                Website Blocker
-              </h3>
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm">Status:</span>
-                  <Badge variant={timerState.isRunning && timerState.sessionType === 'focus' ? 'default' : 'secondary'}>
-                    {timerState.isRunning && timerState.sessionType === 'focus' ? 'Active' : 'Inactive'}
-                  </Badge>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-sm">Blocked Sites:</span>
-                  <span className="text-sm font-medium">{settings.blockedSites.length}</span>
-                </div>
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  className="w-full"
-                  onClick={onOpenSettings}
-                >
-                  Manage Sites
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+
         </div>
       </div>
 
