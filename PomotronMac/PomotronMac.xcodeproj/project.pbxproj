@@ -1,453 +1,453 @@
 // !$*UTF8*$!
 {
-	archiveVersion = 1;
-	classes = {
-	};
-	objectVersion = 77;
-	objects = {
+        archiveVersion = 1;
+        classes = {
+        };
+        objectVersion = 77;
+        objects = {
 
 /* Begin PBXBuildFile section */
-		8E4B5F572C645C3000123456 /* PomotronMacApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E4B5F6A2C645C3000123456 /* PomotronMacApp.swift */; };
-		8E4B5F592C645C3000123456 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E4B5F582C645C3000123456 /* ContentView.swift */; };
-		8E4B5F5B2C645C3200123456 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8E4B5F5A2C645C3200123456 /* Assets.xcassets */; };
-		8E4B5F5E2C645C3200123456 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8E4B5F5D2C645C3200123456 /* Preview Assets.xcassets */; };
-		8E4B5F702C645C5000123456 /* TimerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E4B5F6F2C645C5000123456 /* TimerView.swift */; };
-		8E4B5F722C645C5500123456 /* AnalyticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E4B5F712C645C5500123456 /* AnalyticsView.swift */; };
-		8E4B5F742C645C5A00123456 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E4B5F732C645C5A00123456 /* SettingsView.swift */; };
-		8E4B5F762C645C6000123456 /* IntentionModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E4B5F752C645C6000123456 /* IntentionModal.swift */; };
-		8E4B5F782C645C6500123456 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E4B5F772C645C6500123456 /* Models.swift */; };
-		8E4B5F7A2C645C6A00123456 /* TimerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E4B5F792C645C6A00123456 /* TimerManager.swift */; };
-		8E4B5F7C2C645C6E00123456 /* AudioManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E4B5F7B2C645C6E00123456 /* AudioManager.swift */; };
-		8E4B5F7E2C645C7200123456 /* WebsiteBlocker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E4B5F7D2C645C7200123456 /* WebsiteBlocker.swift */; };
-		8E4B5F802C645C7600123456 /* FontManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E4B5F7F2C645C7600123456 /* FontManager.swift */; };
-		8E4B5F822C645C7A00123456 /* Font+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E4B5F812C645C7A00123456 /* Font+Extensions.swift */; };
-		8E4B5F8E2C645C8000123456 /* Inter-Variable.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8E4B5F8D2C645C8000123456 /* Inter-Variable.ttf */; };
-		8E4B5F902C645C8100123456 /* Orbitron-Variable.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8E4B5F8F2C645C8100123456 /* Orbitron-Variable.ttf */; };
-		8E4B5F922C645C8200123456 /* ShareTechMono-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8E4B5F912C645C8200123456 /* ShareTechMono-Regular.ttf */; };
-		8E4B5F942C645C8300123456 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8E4B5F932C645C8300123456 /* Info.plist */; };
+                8E4B5F572C645C3000123456 /* PomotronMacApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E4B5F6A2C645C3000123456 /* PomotronMacApp.swift */; };
+                8E4B5F592C645C3000123456 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E4B5F582C645C3000123456 /* ContentView.swift */; };
+                8E4B5F5B2C645C3200123456 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8E4B5F5A2C645C3200123456 /* Assets.xcassets */; };
+                8E4B5F5E2C645C3200123456 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8E4B5F5D2C645C3200123456 /* Preview Assets.xcassets */; };
+                8E4B5F702C645C5000123456 /* TimerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E4B5F6F2C645C5000123456 /* TimerView.swift */; };
+                8E4B5F722C645C5500123456 /* AnalyticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E4B5F712C645C5500123456 /* AnalyticsView.swift */; };
+                8E4B5F742C645C5A00123456 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E4B5F732C645C5A00123456 /* SettingsView.swift */; };
+                8E4B5F762C645C6000123456 /* IntentionModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E4B5F752C645C6000123456 /* IntentionModal.swift */; };
+                8E4B5F782C645C6500123456 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E4B5F772C645C6500123456 /* Models.swift */; };
+                8E4B5F7A2C645C6A00123456 /* TimerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E4B5F792C645C6A00123456 /* TimerManager.swift */; };
+                8E4B5F7C2C645C6E00123456 /* AudioManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E4B5F7B2C645C6E00123456 /* AudioManager.swift */; };
+                8E4B5F7E2C645C7200123456 /* WebsiteBlocker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E4B5F7D2C645C7200123456 /* WebsiteBlocker.swift */; };
+                8E4B5F802C645C7600123456 /* FontManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E4B5F7F2C645C7600123456 /* FontManager.swift */; };
+                8E4B5F822C645C7A00123456 /* Font+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E4B5F812C645C7A00123456 /* Font+Extensions.swift */; };
+                8E4B5F8E2C645C8000123456 /* Inter-Variable.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8E4B5F8D2C645C8000123456 /* Inter-Variable.ttf */; };
+                8E4B5F902C645C8100123456 /* Orbitron-Variable.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8E4B5F8F2C645C8100123456 /* Orbitron-Variable.ttf */; };
+                8E4B5F922C645C8200123456 /* ShareTechMono-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8E4B5F912C645C8200123456 /* ShareTechMono-Regular.ttf */; };
+                8E4B5F942C645C8300123456 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8E4B5F932C645C8300123456 /* Info.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		8E4B5F542C645C3000123456 /* PomotronMac.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PomotronMac.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		8E4B5F582C645C3000123456 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		8E4B5F5A2C645C3200123456 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		8E4B5F5D2C645C3200123456 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		8E4B5F5F2C645C3200123456 /* PomotronMac.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PomotronMac.entitlements; sourceTree = "<group>"; };
-		8E4B5F6A2C645C3000123456 /* PomotronMacApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PomotronMacApp.swift; sourceTree = "<group>"; };
-		8E4B5F6F2C645C5000123456 /* TimerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerView.swift; sourceTree = "<group>"; };
-		8E4B5F712C645C5500123456 /* AnalyticsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsView.swift; sourceTree = "<group>"; };
-		8E4B5F732C645C5A00123456 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
-		8E4B5F752C645C6000123456 /* IntentionModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntentionModal.swift; sourceTree = "<group>"; };
-		8E4B5F772C645C6500123456 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
-		8E4B5F792C645C6A00123456 /* TimerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerManager.swift; sourceTree = "<group>"; };
-		8E4B5F7B2C645C6E00123456 /* AudioManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioManager.swift; sourceTree = "<group>"; };
-		8E4B5F7D2C645C7200123456 /* WebsiteBlocker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebsiteBlocker.swift; sourceTree = "<group>"; };
-		8E4B5F7F2C645C7600123456 /* FontManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontManager.swift; sourceTree = "<group>"; };
-		8E4B5F812C645C7A00123456 /* Font+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Font+Extensions.swift"; sourceTree = "<group>"; };
-		8E4B5F8D2C645C8000123456 /* Inter-Variable.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Inter-Variable.ttf"; sourceTree = "<group>"; };
-		8E4B5F8F2C645C8100123456 /* Orbitron-Variable.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Orbitron-Variable.ttf"; sourceTree = "<group>"; };
-		8E4B5F912C645C8200123456 /* ShareTechMono-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "ShareTechMono-Regular.ttf"; sourceTree = "<group>"; };
-		8E4B5F932C645C8300123456 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+                8E4B5F542C645C3000123456 /* PomotronMac.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PomotronMac.app; sourceTree = BUILT_PRODUCTS_DIR; };
+                8E4B5F582C645C3000123456 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+                8E4B5F5A2C645C3200123456 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+                8E4B5F5D2C645C3200123456 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+                8E4B5F5F2C645C3200123456 /* PomotronMac.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PomotronMac.entitlements; sourceTree = "<group>"; };
+                8E4B5F6A2C645C3000123456 /* PomotronMacApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PomotronMacApp.swift; sourceTree = "<group>"; };
+                8E4B5F6F2C645C5000123456 /* TimerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Views/TimerView.swift"; sourceTree = "<group>"; };
+                8E4B5F712C645C5500123456 /* AnalyticsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Views/AnalyticsView.swift"; sourceTree = "<group>"; };
+                8E4B5F732C645C5A00123456 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Views/SettingsView.swift"; sourceTree = "<group>"; };
+                8E4B5F752C645C6000123456 /* IntentionModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Views/IntentionModal.swift"; sourceTree = "<group>"; };
+                8E4B5F772C645C6500123456 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Models/Models.swift"; sourceTree = "<group>"; };
+                8E4B5F792C645C6A00123456 /* TimerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Managers/TimerManager.swift"; sourceTree = "<group>"; };
+                8E4B5F7B2C645C6E00123456 /* AudioManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Managers/AudioManager.swift"; sourceTree = "<group>"; };
+                8E4B5F7D2C645C7200123456 /* WebsiteBlocker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Managers/WebsiteBlocker.swift"; sourceTree = "<group>"; };
+                8E4B5F7F2C645C7600123456 /* FontManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Utils/FontManager.swift"; sourceTree = "<group>"; };
+                8E4B5F812C645C7A00123456 /* Font+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Utils/Font+Extensions.swift"; sourceTree = "<group>"; };
+                8E4B5F8D2C645C8000123456 /* Inter-Variable.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Resources/Fonts/Inter-Variable.ttf"; sourceTree = "<group>"; };
+                8E4B5F8F2C645C8100123456 /* Orbitron-Variable.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Resources/Fonts/Orbitron-Variable.ttf"; sourceTree = "<group>"; };
+                8E4B5F912C645C8200123456 /* ShareTechMono-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Resources/Fonts/ShareTechMono-Regular.ttf"; sourceTree = "<group>"; };
+                8E4B5F932C645C8300123456 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		8E4B5F512C645C3000123456 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
+                8E4B5F512C645C3000123456 /* Frameworks */ = {
+                        isa = PBXFrameworksBuildPhase;
+                        buildActionMask = 2147483647;
+                        files = (
+                        );
+                        runOnlyForDeploymentPostprocessing = 0;
+                };
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		8E4B5F4B2C645C3000123456 = {
-			isa = PBXGroup;
-			children = (
-				8E4B5F562C645C3000123456 /* PomotronMac */,
-				8E4B5F552C645C3000123456 /* Products */,
-			);
-			sourceTree = "<group>";
-		};
-		8E4B5F552C645C3000123456 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				8E4B5F542C645C3000123456 /* PomotronMac.app */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		8E4B5F562C645C3000123456 /* PomotronMac */ = {
-			isa = PBXGroup;
-			children = (
-				8E4B5F6A2C645C3000123456 /* PomotronMacApp.swift */,
-				8E4B5F582C645C3000123456 /* ContentView.swift */,
-				8E4B5F6E2C645C4800123456 /* Views */,
-				8E4B5F832C645C7E00123456 /* Models */,
-				8E4B5F842C645C8200123456 /* Managers */,
-				8E4B5F852C645C8600123456 /* Utils */,
-				8E4B5F8C2C645C7000123456 /* Resources */,
-				8E4B5F5A2C645C3200123456 /* Assets.xcassets */,
-				8E4B5F932C645C8300123456 /* Info.plist */,
-				8E4B5F5F2C645C3200123456 /* PomotronMac.entitlements */,
-				8E4B5F5C2C645C3200123456 /* Preview Content */,
-			);
-			path = PomotronMac;
-			sourceTree = "<group>";
-		};
-		8E4B5F5C2C645C3200123456 /* Preview Content */ = {
-			isa = PBXGroup;
-			children = (
-				8E4B5F5D2C645C3200123456 /* Preview Assets.xcassets */,
-			);
-			path = "Preview Content";
-			sourceTree = "<group>";
-		};
-		8E4B5F6E2C645C4800123456 /* Views */ = {
-			isa = PBXGroup;
-			children = (
-				8E4B5F6F2C645C5000123456 /* TimerView.swift */,
-				8E4B5F712C645C5500123456 /* AnalyticsView.swift */,
-				8E4B5F732C645C5A00123456 /* SettingsView.swift */,
-				8E4B5F752C645C6000123456 /* IntentionModal.swift */,
-			);
-			path = Views;
-			sourceTree = "<group>";
-		};
-		8E4B5F832C645C7E00123456 /* Models */ = {
-			isa = PBXGroup;
-			children = (
-				8E4B5F772C645C6500123456 /* Models.swift */,
-			);
-			path = Models;
-			sourceTree = "<group>";
-		};
-		8E4B5F842C645C8200123456 /* Managers */ = {
-			isa = PBXGroup;
-			children = (
-				8E4B5F792C645C6A00123456 /* TimerManager.swift */,
-				8E4B5F7B2C645C6E00123456 /* AudioManager.swift */,
-				8E4B5F7D2C645C7200123456 /* WebsiteBlocker.swift */,
-			);
-			path = Managers;
-			sourceTree = "<group>";
-		};
-		8E4B5F852C645C8600123456 /* Utils */ = {
-			isa = PBXGroup;
-			children = (
-				8E4B5F7F2C645C7600123456 /* FontManager.swift */,
-				8E4B5F812C645C7A00123456 /* Font+Extensions.swift */,
-			);
-			path = Utils;
-			sourceTree = "<group>";
-		};
-		8E4B5F8C2C645C7000123456 /* Resources */ = {
-			isa = PBXGroup;
-			children = (
-				8E4B5F8B2C645C7000123456 /* Fonts */,
-			);
-			path = Resources;
-			sourceTree = "<group>";
-		};
-		8E4B5F8B2C645C7000123456 /* Fonts */ = {
-			isa = PBXGroup;
-			children = (
-				8E4B5F8D2C645C8000123456 /* Inter-Variable.ttf */,
-				8E4B5F8F2C645C8100123456 /* Orbitron-Variable.ttf */,
-				8E4B5F912C645C8200123456 /* ShareTechMono-Regular.ttf */,
-			);
-			path = Fonts;
-			sourceTree = "<group>";
-		};
+                8E4B5F4B2C645C3000123456 = {
+                        isa = PBXGroup;
+                        children = (
+                                8E4B5F562C645C3000123456 /* PomotronMac */,
+                                8E4B5F552C645C3000123456 /* Products */,
+                        );
+                        sourceTree = "<group>";
+                };
+                8E4B5F552C645C3000123456 /* Products */ = {
+                        isa = PBXGroup;
+                        children = (
+                                8E4B5F542C645C3000123456 /* PomotronMac.app */,
+                        );
+                        name = Products;
+                        sourceTree = "<group>";
+                };
+                8E4B5F562C645C3000123456 /* PomotronMac */ = {
+                        isa = PBXGroup;
+                        children = (
+                                8E4B5F6A2C645C3000123456 /* PomotronMacApp.swift */,
+                                8E4B5F582C645C3000123456 /* ContentView.swift */,
+                                8E4B5F6E2C645C4800123456 /* Views */,
+                                8E4B5F832C645C7E00123456 /* Models */,
+                                8E4B5F842C645C8200123456 /* Managers */,
+                                8E4B5F852C645C8600123456 /* Utils */,
+                                8E4B5F8C2C645C7000123456 /* Resources */,
+                                8E4B5F5A2C645C3200123456 /* Assets.xcassets */,
+                                8E4B5F932C645C8300123456 /* Info.plist */,
+                                8E4B5F5F2C645C3200123456 /* PomotronMac.entitlements */,
+                                8E4B5F5C2C645C3200123456 /* Preview Content */,
+                        );
+                        path = PomotronMac;
+                        sourceTree = "<group>";
+                };
+                8E4B5F5C2C645C3200123456 /* Preview Content */ = {
+                        isa = PBXGroup;
+                        children = (
+                                8E4B5F5D2C645C3200123456 /* Preview Assets.xcassets */,
+                        );
+                        path = "Preview Content";
+                        sourceTree = "<group>";
+                };
+                8E4B5F6E2C645C4800123456 /* Views */ = {
+                        isa = PBXGroup;
+                        children = (
+                                8E4B5F6F2C645C5000123456 /* TimerView.swift */,
+                                8E4B5F712C645C5500123456 /* AnalyticsView.swift */,
+                                8E4B5F732C645C5A00123456 /* SettingsView.swift */,
+                                8E4B5F752C645C6000123456 /* IntentionModal.swift */,
+                        );
+                        path = Views;
+                        sourceTree = "<group>";
+                };
+                8E4B5F832C645C7E00123456 /* Models */ = {
+                        isa = PBXGroup;
+                        children = (
+                                8E4B5F772C645C6500123456 /* Models.swift */,
+                        );
+                        path = Models;
+                        sourceTree = "<group>";
+                };
+                8E4B5F842C645C8200123456 /* Managers */ = {
+                        isa = PBXGroup;
+                        children = (
+                                8E4B5F792C645C6A00123456 /* TimerManager.swift */,
+                                8E4B5F7B2C645C6E00123456 /* AudioManager.swift */,
+                                8E4B5F7D2C645C7200123456 /* WebsiteBlocker.swift */,
+                        );
+                        path = Managers;
+                        sourceTree = "<group>";
+                };
+                8E4B5F852C645C8600123456 /* Utils */ = {
+                        isa = PBXGroup;
+                        children = (
+                                8E4B5F7F2C645C7600123456 /* FontManager.swift */,
+                                8E4B5F812C645C7A00123456 /* Font+Extensions.swift */,
+                        );
+                        path = Utils;
+                        sourceTree = "<group>";
+                };
+                8E4B5F8C2C645C7000123456 /* Resources */ = {
+                        isa = PBXGroup;
+                        children = (
+                                8E4B5F8B2C645C7000123456 /* Fonts */,
+                        );
+                        path = Resources;
+                        sourceTree = "<group>";
+                };
+                8E4B5F8B2C645C7000123456 /* Fonts */ = {
+                        isa = PBXGroup;
+                        children = (
+                                8E4B5F8D2C645C8000123456 /* Inter-Variable.ttf */,
+                                8E4B5F8F2C645C8100123456 /* Orbitron-Variable.ttf */,
+                                8E4B5F912C645C8200123456 /* ShareTechMono-Regular.ttf */,
+                        );
+                        path = Fonts;
+                        sourceTree = "<group>";
+                };
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		8E4B5F532C645C3000123456 /* PomotronMac */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 8E4B5F632C645C3200123456 /* Build configuration list for PBXNativeTarget "PomotronMac" */;
-			buildPhases = (
-				8E4B5F502C645C3000123456 /* Sources */,
-				8E4B5F512C645C3000123456 /* Frameworks */,
-				8E4B5F522C645C3000123456 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = PomotronMac;
-			productName = PomotronMac;
-			productReference = 8E4B5F542C645C3000123456 /* PomotronMac.app */;
-			productType = "com.apple.product-type.application";
-		};
+                8E4B5F532C645C3000123456 /* PomotronMac */ = {
+                        isa = PBXNativeTarget;
+                        buildConfigurationList = 8E4B5F632C645C3200123456 /* Build configuration list for PBXNativeTarget "PomotronMac" */;
+                        buildPhases = (
+                                8E4B5F502C645C3000123456 /* Sources */,
+                                8E4B5F512C645C3000123456 /* Frameworks */,
+                                8E4B5F522C645C3000123456 /* Resources */,
+                        );
+                        buildRules = (
+                        );
+                        dependencies = (
+                        );
+                        name = PomotronMac;
+                        productName = PomotronMac;
+                        productReference = 8E4B5F542C645C3000123456 /* PomotronMac.app */;
+                        productType = "com.apple.product-type.application";
+                };
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		8E4B5F4C2C645C3000123456 /* Project object */ = {
-			isa = PBXProject;
-			attributes = {
-				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1600;
-				LastUpgradeCheck = 1600;
-				TargetAttributes = {
-					8E4B5F532C645C3000123456 = {
-						CreatedOnToolsVersion = 16.0;
-					};
-				};
-			};
-			buildConfigurationList = 8E4B5F4F2C645C3000123456 /* Build configuration list for PBXProject "PomotronMac" */;
-			developmentRegion = en;
-			hasScannedForEncodings = 0;
-			knownRegions = (
-				en,
-				Base,
-			);
-			mainGroup = 8E4B5F4B2C645C3000123456;
-			minimizedProjectReferenceProxies = 1;
-			preferredProjectObjectVersion = 77;
-			productRefGroup = 8E4B5F552C645C3000123456 /* Products */;
-			projectDirPath = "";
-			projectRoot = "";
-			targets = (
-				8E4B5F532C645C3000123456 /* PomotronMac */,
-			);
-		};
+                8E4B5F4C2C645C3000123456 /* Project object */ = {
+                        isa = PBXProject;
+                        attributes = {
+                                BuildIndependentTargetsInParallel = 1;
+                                LastSwiftUpdateCheck = 1600;
+                                LastUpgradeCheck = 1600;
+                                TargetAttributes = {
+                                        8E4B5F532C645C3000123456 = {
+                                                CreatedOnToolsVersion = 16.0;
+                                        };
+                                };
+                        };
+                        buildConfigurationList = 8E4B5F4F2C645C3000123456 /* Build configuration list for PBXProject "PomotronMac" */;
+                        developmentRegion = en;
+                        hasScannedForEncodings = 0;
+                        knownRegions = (
+                                en,
+                                Base,
+                        );
+                        mainGroup = 8E4B5F4B2C645C3000123456;
+                        minimizedProjectReferenceProxies = 1;
+                        preferredProjectObjectVersion = 77;
+                        productRefGroup = 8E4B5F552C645C3000123456 /* Products */;
+                        projectDirPath = "";
+                        projectRoot = "";
+                        targets = (
+                                8E4B5F532C645C3000123456 /* PomotronMac */,
+                        );
+                };
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		8E4B5F522C645C3000123456 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				8E4B5F5B2C645C3200123456 /* Assets.xcassets in Resources */,
-				8E4B5F5E2C645C3200123456 /* Preview Assets.xcassets in Resources */,
-				8E4B5F8E2C645C8000123456 /* Inter-Variable.ttf in Resources */,
-				8E4B5F902C645C8100123456 /* Orbitron-Variable.ttf in Resources */,
-				8E4B5F922C645C8200123456 /* ShareTechMono-Regular.ttf in Resources */,
-				8E4B5F942C645C8300123456 /* Info.plist in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
+                8E4B5F522C645C3000123456 /* Resources */ = {
+                        isa = PBXResourcesBuildPhase;
+                        buildActionMask = 2147483647;
+                        files = (
+                                8E4B5F5B2C645C3200123456 /* Assets.xcassets in Resources */,
+                                8E4B5F5E2C645C3200123456 /* Preview Assets.xcassets in Resources */,
+                                8E4B5F8E2C645C8000123456 /* Inter-Variable.ttf in Resources */,
+                                8E4B5F902C645C8100123456 /* Orbitron-Variable.ttf in Resources */,
+                                8E4B5F922C645C8200123456 /* ShareTechMono-Regular.ttf in Resources */,
+                                8E4B5F942C645C8300123456 /* Info.plist in Resources */,
+                        );
+                        runOnlyForDeploymentPostprocessing = 0;
+                };
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		8E4B5F502C645C3000123456 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				8E4B5F572C645C3000123456 /* PomotronMacApp.swift in Sources */,
-				8E4B5F592C645C3000123456 /* ContentView.swift in Sources */,
-				8E4B5F702C645C5000123456 /* TimerView.swift in Sources */,
-				8E4B5F722C645C5500123456 /* AnalyticsView.swift in Sources */,
-				8E4B5F742C645C5A00123456 /* SettingsView.swift in Sources */,
-				8E4B5F762C645C6000123456 /* IntentionModal.swift in Sources */,
-				8E4B5F782C645C6500123456 /* Models.swift in Sources */,
-				8E4B5F7A2C645C6A00123456 /* TimerManager.swift in Sources */,
-				8E4B5F7C2C645C6E00123456 /* AudioManager.swift in Sources */,
-				8E4B5F7E2C645C7200123456 /* WebsiteBlocker.swift in Sources */,
-				8E4B5F802C645C7600123456 /* FontManager.swift in Sources */,
-				8E4B5F822C645C7A00123456 /* Font+Extensions.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
+                8E4B5F502C645C3000123456 /* Sources */ = {
+                        isa = PBXSourcesBuildPhase;
+                        buildActionMask = 2147483647;
+                        files = (
+                                8E4B5F572C645C3000123456 /* PomotronMacApp.swift in Sources */,
+                                8E4B5F592C645C3000123456 /* ContentView.swift in Sources */,
+                                8E4B5F702C645C5000123456 /* TimerView.swift in Sources */,
+                                8E4B5F722C645C5500123456 /* AnalyticsView.swift in Sources */,
+                                8E4B5F742C645C5A00123456 /* SettingsView.swift in Sources */,
+                                8E4B5F762C645C6000123456 /* IntentionModal.swift in Sources */,
+                                8E4B5F782C645C6500123456 /* Models.swift in Sources */,
+                                8E4B5F7A2C645C6A00123456 /* TimerManager.swift in Sources */,
+                                8E4B5F7C2C645C6E00123456 /* AudioManager.swift in Sources */,
+                                8E4B5F7E2C645C7200123456 /* WebsiteBlocker.swift in Sources */,
+                                8E4B5F802C645C7600123456 /* FontManager.swift in Sources */,
+                                8E4B5F822C645C7A00123456 /* Font+Extensions.swift in Sources */,
+                        );
+                        runOnlyForDeploymentPostprocessing = 0;
+                };
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		8E4B5F612C645C3200123456 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_COMMA = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
-				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = dwarf;
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_TESTABILITY = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu17;
-				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MACOSX_DEPLOYMENT_TARGET = 13.0;
-				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
-				MTL_FAST_MATH = YES;
-				ONLY_ACTIVE_ARCH = YES;
-				SDKROOT = macosx;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
-				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-			};
-			name = Debug;
-		};
-		8E4B5F622C645C3200123456 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_COMMA = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
-				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				ENABLE_NS_ASSERTIONS = NO;
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
-				GCC_C_LANGUAGE_STANDARD = gnu17;
-				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MACOSX_DEPLOYMENT_TARGET = 13.0;
-				MTL_ENABLE_DEBUG_INFO = NO;
-				MTL_FAST_MATH = YES;
-				SDKROOT = macosx;
-				SWIFT_COMPILATION_MODE = wholemodule;
-			};
-			name = Release;
-		};
-		8E4B5F642C645C3200123456 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = PomotronMac/PomotronMac.entitlements;
-				CODE_SIGN_STYLE = Automatic;
-				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"PomotronMac/Preview Content\"";
-				ENABLE_PREVIEWS = YES;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = PomotronMac/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "Pomotron";
-				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
-				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-				);
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.pomotron.mac;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 6.0;
-			};
-			name = Debug;
-		};
-		8E4B5F652C645C3200123456 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = PomotronMac/PomotronMac.entitlements;
-				CODE_SIGN_STYLE = Automatic;
-				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"PomotronMac/Preview Content\"";
-				ENABLE_PREVIEWS = YES;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = PomotronMac/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "Pomotron";
-				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
-				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/../Frameworks",
-				);
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.pomotron.mac;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_VERSION = 6.0;
-			};
-			name = Release;
-		};
+                8E4B5F612C645C3200123456 /* Debug */ = {
+                        isa = XCBuildConfiguration;
+                        buildSettings = {
+                                ALWAYS_SEARCH_USER_PATHS = NO;
+                                ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+                                CLANG_ANALYZER_NONNULL = YES;
+                                CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+                                CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+                                CLANG_ENABLE_MODULES = YES;
+                                CLANG_ENABLE_OBJC_ARC = YES;
+                                CLANG_ENABLE_OBJC_WEAK = YES;
+                                CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+                                CLANG_WARN_BOOL_CONVERSION = YES;
+                                CLANG_WARN_COMMA = YES;
+                                CLANG_WARN_CONSTANT_CONVERSION = YES;
+                                CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+                                CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+                                CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+                                CLANG_WARN_EMPTY_BODY = YES;
+                                CLANG_WARN_ENUM_CONVERSION = YES;
+                                CLANG_WARN_INFINITE_RECURSION = YES;
+                                CLANG_WARN_INT_CONVERSION = YES;
+                                CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+                                CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+                                CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+                                CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+                                CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+                                CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+                                CLANG_WARN_STRICT_PROTOTYPES = YES;
+                                CLANG_WARN_SUSPICIOUS_MOVE = YES;
+                                CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+                                CLANG_WARN_UNREACHABLE_CODE = YES;
+                                CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+                                COPY_PHASE_STRIP = NO;
+                                DEBUG_INFORMATION_FORMAT = dwarf;
+                                ENABLE_STRICT_OBJC_MSGSEND = YES;
+                                ENABLE_TESTABILITY = YES;
+                                ENABLE_USER_SCRIPT_SANDBOXING = YES;
+                                GCC_C_LANGUAGE_STANDARD = gnu17;
+                                GCC_DYNAMIC_NO_PIC = NO;
+                                GCC_NO_COMMON_BLOCKS = YES;
+                                GCC_OPTIMIZATION_LEVEL = 0;
+                                GCC_PREPROCESSOR_DEFINITIONS = (
+                                        "DEBUG=1",
+                                        "$(inherited)",
+                                );
+                                GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+                                GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+                                GCC_WARN_UNDECLARED_SELECTOR = YES;
+                                GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+                                GCC_WARN_UNUSED_FUNCTION = YES;
+                                GCC_WARN_UNUSED_VARIABLE = YES;
+                                LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+                                MACOSX_DEPLOYMENT_TARGET = 13.0;
+                                MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+                                MTL_FAST_MATH = YES;
+                                ONLY_ACTIVE_ARCH = YES;
+                                SDKROOT = macosx;
+                                SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+                                SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+                        };
+                        name = Debug;
+                };
+                8E4B5F622C645C3200123456 /* Release */ = {
+                        isa = XCBuildConfiguration;
+                        buildSettings = {
+                                ALWAYS_SEARCH_USER_PATHS = NO;
+                                ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+                                CLANG_ANALYZER_NONNULL = YES;
+                                CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+                                CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+                                CLANG_ENABLE_MODULES = YES;
+                                CLANG_ENABLE_OBJC_ARC = YES;
+                                CLANG_ENABLE_OBJC_WEAK = YES;
+                                CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+                                CLANG_WARN_BOOL_CONVERSION = YES;
+                                CLANG_WARN_COMMA = YES;
+                                CLANG_WARN_CONSTANT_CONVERSION = YES;
+                                CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+                                CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+                                CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+                                CLANG_WARN_EMPTY_BODY = YES;
+                                CLANG_WARN_ENUM_CONVERSION = YES;
+                                CLANG_WARN_INFINITE_RECURSION = YES;
+                                CLANG_WARN_INT_CONVERSION = YES;
+                                CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+                                CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+                                CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+                                CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+                                CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+                                CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+                                CLANG_WARN_STRICT_PROTOTYPES = YES;
+                                CLANG_WARN_SUSPICIOUS_MOVE = YES;
+                                CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+                                CLANG_WARN_UNREACHABLE_CODE = YES;
+                                CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+                                COPY_PHASE_STRIP = NO;
+                                DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+                                ENABLE_NS_ASSERTIONS = NO;
+                                ENABLE_STRICT_OBJC_MSGSEND = YES;
+                                ENABLE_USER_SCRIPT_SANDBOXING = YES;
+                                GCC_C_LANGUAGE_STANDARD = gnu17;
+                                GCC_NO_COMMON_BLOCKS = YES;
+                                GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+                                GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+                                GCC_WARN_UNDECLARED_SELECTOR = YES;
+                                GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+                                GCC_WARN_UNUSED_FUNCTION = YES;
+                                GCC_WARN_UNUSED_VARIABLE = YES;
+                                LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+                                MACOSX_DEPLOYMENT_TARGET = 13.0;
+                                MTL_ENABLE_DEBUG_INFO = NO;
+                                MTL_FAST_MATH = YES;
+                                SDKROOT = macosx;
+                                SWIFT_COMPILATION_MODE = wholemodule;
+                        };
+                        name = Release;
+                };
+                8E4B5F642C645C3200123456 /* Debug */ = {
+                        isa = XCBuildConfiguration;
+                        buildSettings = {
+                                ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+                                ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+                                CODE_SIGN_ENTITLEMENTS = PomotronMac/PomotronMac.entitlements;
+                                CODE_SIGN_STYLE = Automatic;
+                                COMBINE_HIDPI_IMAGES = YES;
+                                CURRENT_PROJECT_VERSION = 1;
+                                DEVELOPMENT_ASSET_PATHS = "\"PomotronMac/Preview Content\"";
+                                ENABLE_PREVIEWS = YES;
+                                GENERATE_INFOPLIST_FILE = YES;
+                                INFOPLIST_FILE = PomotronMac/Info.plist;
+                                INFOPLIST_KEY_CFBundleDisplayName = "Pomotron";
+                                INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
+                                INFOPLIST_KEY_NSHumanReadableCopyright = "";
+                                LD_RUNPATH_SEARCH_PATHS = (
+                                        "$(inherited)",
+                                        "@executable_path/../Frameworks",
+                                );
+                                MARKETING_VERSION = 1.0;
+                                PRODUCT_BUNDLE_IDENTIFIER = com.pomotron.mac;
+                                PRODUCT_NAME = "$(TARGET_NAME)";
+                                SWIFT_EMIT_LOC_STRINGS = YES;
+                                SWIFT_VERSION = 6.0;
+                        };
+                        name = Debug;
+                };
+                8E4B5F652C645C3200123456 /* Release */ = {
+                        isa = XCBuildConfiguration;
+                        buildSettings = {
+                                ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+                                ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+                                CODE_SIGN_ENTITLEMENTS = PomotronMac/PomotronMac.entitlements;
+                                CODE_SIGN_STYLE = Automatic;
+                                COMBINE_HIDPI_IMAGES = YES;
+                                CURRENT_PROJECT_VERSION = 1;
+                                DEVELOPMENT_ASSET_PATHS = "\"PomotronMac/Preview Content\"";
+                                ENABLE_PREVIEWS = YES;
+                                GENERATE_INFOPLIST_FILE = YES;
+                                INFOPLIST_FILE = PomotronMac/Info.plist;
+                                INFOPLIST_KEY_CFBundleDisplayName = "Pomotron";
+                                INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
+                                INFOPLIST_KEY_NSHumanReadableCopyright = "";
+                                LD_RUNPATH_SEARCH_PATHS = (
+                                        "$(inherited)",
+                                        "@executable_path/../Frameworks",
+                                );
+                                MARKETING_VERSION = 1.0;
+                                PRODUCT_BUNDLE_IDENTIFIER = com.pomotron.mac;
+                                PRODUCT_NAME = "$(TARGET_NAME)";
+                                SWIFT_EMIT_LOC_STRINGS = YES;
+                                SWIFT_VERSION = 6.0;
+                        };
+                        name = Release;
+                };
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		8E4B5F4F2C645C3000123456 /* Build configuration list for PBXProject "PomotronMac" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				8E4B5F612C645C3200123456 /* Debug */,
-				8E4B5F622C645C3200123456 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		8E4B5F632C645C3200123456 /* Build configuration list for PBXNativeTarget "PomotronMac" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				8E4B5F642C645C3200123456 /* Debug */,
-				8E4B5F652C645C3200123456 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
+                8E4B5F4F2C645C3000123456 /* Build configuration list for PBXProject "PomotronMac" */ = {
+                        isa = XCConfigurationList;
+                        buildConfigurations = (
+                                8E4B5F612C645C3200123456 /* Debug */,
+                                8E4B5F622C645C3200123456 /* Release */,
+                        );
+                        defaultConfigurationIsVisible = 0;
+                        defaultConfigurationName = Release;
+                };
+                8E4B5F632C645C3200123456 /* Build configuration list for PBXNativeTarget "PomotronMac" */ = {
+                        isa = XCConfigurationList;
+                        buildConfigurations = (
+                                8E4B5F642C645C3200123456 /* Debug */,
+                                8E4B5F652C645C3200123456 /* Release */,
+                        );
+                        defaultConfigurationIsVisible = 0;
+                        defaultConfigurationName = Release;
+                };
 /* End XCConfigurationList section */
-	};
-	rootObject = 8E4B5F4C2C645C3000123456 /* Project object */;
+        };
+        rootObject = 8E4B5F4C2C645C3000123456 /* Project object */;
 }
