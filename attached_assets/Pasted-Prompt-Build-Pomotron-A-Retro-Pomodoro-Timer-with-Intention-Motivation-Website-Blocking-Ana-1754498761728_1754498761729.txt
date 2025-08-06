@@ -1,0 +1,128 @@
+Prompt: Build "Pomotron" – A Retro Pomodoro Timer with Intention, Motivation, Website Blocking & Analytics
+Create a fully functional web app named Pomotron, a whimsical and retro-inspired productivity tool based on the Pomodoro technique. The app should be designed for users who struggle with procrastination and want help staying focused through intention-setting, distraction-blocking, and gentle motivation. It should integrate evidence-based productivity design while maintaining a fun 1980s aesthetic inspired by Stranger Things' Starcourt Mall — without any horror elements.
+
+⏱️ Core Timer Flow
+When the Start Session button is clicked:
+
+Prompt the user to enter:
+
+“What are you working on today?”
+
+“Why is this important to you?”
+
+Save both inputs to session history with timestamp.
+
+Include a Pomodoro timer with:
+
+Default: 25 min focus, 5 min break, 15 min long break.
+
+Custom durations (see Settings).
+
+Auto-start toggle for next session.
+
+Soft start option (5-second countdown).
+
+Number of cycles before long break (customizable).
+
+Add a gentle nudge (notification or toast) if the user is idle for more than 5 minutes during a focus session (configurable).
+
+add an "End Session" option to give users more control over their Pomodoro sessions. This will allow them to manually end a session before the timer completes.
+
+Play unique retro sound effects:
+
+When clicking Start
+
+When clicking Reset
+
+🔒 Website Blocking (Functional)
+Allow users to add/remove websites to a blocklist.
+
+When a blocked website is accessed during a focus session, it should redirect to 127.0.0.1.
+
+Automatically unblock during breaks.
+
+Re-block when a new session starts.
+
+Optional: add "override with friction" confirmation when trying to bypass block.
+
+📊 Analytics Dashboard
+Replace all dummy data with real data from active sessions. Include:
+
+Total Focus Sessions Completed
+
+Focus Success Rate (e.g., completed / started)
+
+Total Focus Time
+
+Current Streak (consecutive days with ≥1 completed cycle)
+
+Data auto-refreshes weekly.
+
+“Recent Intentions” View:
+
+Display the latest 7–10 session logs with:
+
+📌 What task was worked on
+
+💭 Why it mattered
+
+🕒 Timestamp
+
+Optional: scroll or paginate to view full history.
+
+Option to export data or clear all.
+
+🗑️ Remove:
+The Motivation tab (redundant).
+
+Any quotes that directly reference ADHD (to reduce stigma).
+
+💬 Motivational Quotes (Compact UI)
+Display rotating quotes on the Timer screen from:
+
+Philosophers (e.g., Marcus Aurelius)
+
+Productivity experts (e.g., Cal Newport, Mark manson)
+
+Behavioral psychology
+
+Keep layout minimal: small quote card or top banner.
+
+⚙️ Settings Button → Admin Page
+Settings should open a full Admin Page with:
+
+Timer Configuration:
+Custom focus/break/long break durations
+
+Number of cycles before long break
+
+Auto-start toggle
+
+Soft start toggle (5-second countdown)
+
+Idle-time nudge timeout (custom)
+
+Visual Themes:
+Starcourt Retro (default)
+
+Minimal 
+
+Studio Ghibli 
+
+Please create minimal and studio ghibli themes.
+
+Website Blocker Controls:
+Add/remove sites
+
+Enable/disable website blocking
+
+Friction-based override toggle
+
+🧪 Technical Guidelines (Optional if using dev tools)
+Use localStorage to persist data and preferences.
+
+Build as a PWA for cross-platform support.
+
+Ensure accessibility (for cognitive and visual load).
+
+Add keyboard shortcuts (e.g., Spacebar = Start/Pause).
