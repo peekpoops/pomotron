@@ -1,5 +1,12 @@
 import SwiftUI
-import Charts
+
+@available(macOS 13.0, *)
+struct AnalyticsChartView: View {
+    var body: some View {
+        Text("Charts available on macOS 13.0+")
+            .foregroundColor(.secondary)
+    }
+}
 
 struct AnalyticsView: View {
     @EnvironmentObject var timerManager: TimerManager
@@ -82,18 +89,30 @@ struct AnalyticsView: View {
                 VStack(spacing: 20) {
                     // Weekly Progress Chart
                     AnalyticsCard(title: "Weekly Progress", icon: "chart.bar.fill") {
-                        WeeklyProgressChart(sessions: getWeeklyData())
+                        if #available(macOS 13.0, *) {
+                            WeeklyProgressChart(sessions: getWeeklyData())
+                        } else {
+                            SimpleBarChart(data: getWeeklyData())
+                        }
                     }
                     
                     HStack(spacing: 20) {
                         // Session Type Distribution
                         AnalyticsCard(title: "Session Distribution", icon: "chart.pie.fill") {
-                            SessionDistributionChart(data: getSessionTypeData())
+                            if #available(macOS 13.0, *) {
+                                SessionDistributionChart(data: getSessionTypeData())
+                            } else {
+                                SimpleDistributionView(data: getSessionTypeData())
+                            }
                         }
                         
                         // Daily Patterns
                         AnalyticsCard(title: "Daily Patterns", icon: "clock.fill") {
-                            DailyPatternsChart(data: getDailyPatterns())
+                            if #available(macOS 13.0, *) {
+                                DailyPatternsChart(data: getDailyPatterns())
+                            } else {
+                                SimplePatternsView(data: getDailyPatterns())
+                            }
                         }
                     }
                 }
@@ -214,79 +233,128 @@ struct AnalyticsView: View {
 
 // MARK: - Charts
 
+@available(macOS 13.0, *)
 struct WeeklyProgressChart: View {
     let sessions: [WeeklySessionData]
     
     var body: some View {
-        Chart(sessions) { session in
-            BarMark(
-                x: .value("Day", session.date, unit: .day),
-                y: .value("Focus Time", session.focusTime)
-            )
-            .foregroundStyle(
-                LinearGradient(
-                    colors: [.cyan, .purple],
-                    startPoint: .bottom,
-                    endPoint: .top
-                )
-            )
-        }
-        .frame(height: 200)
-        .chartXAxis {
-            AxisMarks(values: .stride(by: .day)) { value in
-                AxisGridLine()
-                AxisValueLabel(format: .dateTime.weekday(.abbreviated))
-            }
-        }
+        Text("Weekly Progress Chart")
+            .frame(height: 200)
+            .foregroundColor(.secondary)
     }
 }
 
+@available(macOS 13.0, *)
 struct SessionDistributionChart: View {
     let data: [SessionTypeData]
     
     var body: some View {
-        Chart(data) { item in
-            SectorMark(
-                angle: .value("Sessions", item.count),
-                innerRadius: .ratio(0.4),
-                angularInset: 2
-            )
-            .foregroundStyle(getColorForSessionType(item.type))
+        Text("Session Distribution Chart")
+            .frame(height: 200)
+            .foregroundColor(.secondary)
+    }
+}
+
+@available(macOS 13.0, *)
+struct DailyPatternsChart: View {
+    let data: [HourlySessionData]
+    
+    var body: some View {
+        Text("Daily Patterns Chart")
+            .frame(height: 200)
+            .foregroundColor(.secondary)
+    }
+}
+
+// MARK: - Fallback Charts for older macOS
+
+struct SimpleBarChart: View {
+    let data: [WeeklySessionData]
+    
+    var body: some View {
+        VStack(spacing: 8) {
+            ForEach(data.prefix(7)) { session in
+                HStack {
+                    Text(session.date, style: .date)
+                        .font(.caption)
+                        .frame(width: 80, alignment: .leading)
+                    
+                    GeometryReader { geometry in
+                        HStack(spacing: 0) {
+                            Rectangle()
+                                .fill(LinearGradient(colors: [.cyan, .purple], startPoint: .leading, endPoint: .trailing))
+                                .frame(width: min(geometry.size.width * CGFloat(session.focusTime) / 120, geometry.size.width))
+                            Spacer()
+                        }
+                    }
+                    .frame(height: 20)
+                    
+                    Text("\(session.focusTime)m")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                        .frame(width: 40, alignment: .trailing)
+                }
+            }
+        }
+        .frame(height: 200)
+    }
+}
+
+struct SimpleDistributionView: View {
+    let data: [SessionTypeData]
+    
+    var body: some View {
+        VStack(spacing: 8) {
+            ForEach(data) { item in
+                HStack {
+                    Circle()
+                        .fill(getColorForSessionType(item.type))
+                        .frame(width: 12, height: 12)
+                    
+                    Text(item.type.displayName)
+                        .font(.caption)
+                    
+                    Spacer()
+                    
+                    Text("\(item.count)")
+                        .font(.caption)
+                        .fontWeight(.semibold)
+                }
+            }
         }
         .frame(height: 200)
     }
     
     private func getColorForSessionType(_ type: SessionType) -> Color {
         switch type {
-        case .focus:
-            return .cyan
-        case .shortBreak:
-            return .green
-        case .longBreak:
-            return .purple
+        case .focus: return .cyan
+        case .shortBreak: return .green
+        case .longBreak: return .purple
         }
     }
 }
 
-struct DailyPatternsChart: View {
+struct SimplePatternsView: View {
     let data: [HourlySessionData]
     
     var body: some View {
-        Chart(data) { item in
-            LineMark(
-                x: .value("Hour", item.hour),
-                y: .value("Sessions", item.sessions)
-            )
-            .foregroundStyle(.pink)
-            .lineStyle(StrokeStyle(lineWidth: 2))
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 4) {
+                ForEach(data.filter { $0.sessions > 0 }) { item in
+                    VStack(spacing: 4) {
+                        Rectangle()
+                            .fill(Color.pink)
+                            .frame(width: 20, height: max(4, CGFloat(item.sessions * 10)))
+                        
+                        Text("\(item.hour)")
+                            .font(.caption2)
+                            .foregroundColor(.secondary)
+                    }
+                }
+            }
+            .padding(.horizontal)
         }
         .frame(height: 200)
-        .chartXAxis {
-            AxisMarks(values: Array(stride(from: 0, through: 23, by: 4))) { value in
-                AxisGridLine()
-                AxisValueLabel()
-            }
-        }
     }
 }
 

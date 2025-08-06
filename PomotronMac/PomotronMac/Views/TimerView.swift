@@ -196,12 +196,12 @@ struct TimerView: View {
             HStack(spacing: 30) {
                 ToggleOption(
                     title: "Auto-start",
-                    isOn: .constant(timerManager.settings.autoStart)
+                    isOn: $timerManager.settings.autoStart
                 )
                 
                 ToggleOption(
                     title: "Soft start",
-                    isOn: .constant(timerManager.settings.softStart)
+                    isOn: $timerManager.settings.softStart
                 )
             }
         }

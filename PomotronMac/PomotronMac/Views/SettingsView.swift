@@ -3,7 +3,7 @@ import SwiftUI
 struct SettingsView: View {
     @EnvironmentObject var websiteBlocker: WebsiteBlocker
     @EnvironmentObject var soundManager: SoundManager
-    @StateObject private var settings = PomotronSettings.shared
+    @ObservedObject private var settings = PomotronSettings.shared
     @State private var newSite = ""
     @State private var showingPermissionAlert = false
     

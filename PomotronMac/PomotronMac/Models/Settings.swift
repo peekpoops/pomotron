@@ -1,16 +1,17 @@
 import Foundation
+import SwiftUI
 
-struct PomotronSettings: Codable, ObservableObject {
-    var focusDuration: Int = 25
-    var breakDuration: Int = 5
-    var longBreakDuration: Int = 15
-    var cyclesBeforeLongBreak: Int = 4
-    var autoStart: Bool = false
-    var softStart: Bool = false
-    var idleTimeout: Int = 5
-    var websiteBlockingEnabled: Bool = true
-    var frictionOverride: Bool = false
-    var blockedSites: [String] = [
+class PomotronSettings: ObservableObject, Codable {
+    @Published var focusDuration: Int = 25
+    @Published var breakDuration: Int = 5
+    @Published var longBreakDuration: Int = 15
+    @Published var cyclesBeforeLongBreak: Int = 4
+    @Published var autoStart: Bool = false
+    @Published var softStart: Bool = false
+    @Published var idleTimeout: Int = 5
+    @Published var websiteBlockingEnabled: Bool = true
+    @Published var frictionOverride: Bool = false
+    @Published var blockedSites: [String] = [
         "facebook.com",
         "twitter.com", 
         "reddit.com",
@@ -25,8 +26,47 @@ struct PomotronSettings: Codable, ObservableObject {
     private let userDefaults = UserDefaults.standard
     private let settingsKey = "PomotronSettings"
     
+    private enum CodingKeys: String, CodingKey {
+        case focusDuration, breakDuration, longBreakDuration, cyclesBeforeLongBreak
+        case autoStart, softStart, idleTimeout, websiteBlockingEnabled, frictionOverride, blockedSites
+    }
+    
     init() {
         loadSettings()
+    }
+    
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        
+        focusDuration = try container.decodeIfPresent(Int.self, forKey: .focusDuration) ?? 25
+        breakDuration = try container.decodeIfPresent(Int.self, forKey: .breakDuration) ?? 5
+        longBreakDuration = try container.decodeIfPresent(Int.self, forKey: .longBreakDuration) ?? 15
+        cyclesBeforeLongBreak = try container.decodeIfPresent(Int.self, forKey: .cyclesBeforeLongBreak) ?? 4
+        autoStart = try container.decodeIfPresent(Bool.self, forKey: .autoStart) ?? false
+        softStart = try container.decodeIfPresent(Bool.self, forKey: .softStart) ?? false
+        idleTimeout = try container.decodeIfPresent(Int.self, forKey: .idleTimeout) ?? 5
+        websiteBlockingEnabled = try container.decodeIfPresent(Bool.self, forKey: .websiteBlockingEnabled) ?? true
+        frictionOverride = try container.decodeIfPresent(Bool.self, forKey: .frictionOverride) ?? false
+        blockedSites = try container.decodeIfPresent([String].self, forKey: .blockedSites) ?? [
+            "facebook.com", "twitter.com", "reddit.com", "youtube.com", "instagram.com", "tiktok.com", "netflix.com"
+        ]
+        
+        loadSettings()
+    }
+    
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        
+        try container.encode(focusDuration, forKey: .focusDuration)
+        try container.encode(breakDuration, forKey: .breakDuration)
+        try container.encode(longBreakDuration, forKey: .longBreakDuration)
+        try container.encode(cyclesBeforeLongBreak, forKey: .cyclesBeforeLongBreak)
+        try container.encode(autoStart, forKey: .autoStart)
+        try container.encode(softStart, forKey: .softStart)
+        try container.encode(idleTimeout, forKey: .idleTimeout)
+        try container.encode(websiteBlockingEnabled, forKey: .websiteBlockingEnabled)
+        try container.encode(frictionOverride, forKey: .frictionOverride)
+        try container.encode(blockedSites, forKey: .blockedSites)
     }
     
     func saveSettings() {

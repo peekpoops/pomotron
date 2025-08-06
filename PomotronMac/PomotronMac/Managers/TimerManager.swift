@@ -5,7 +5,7 @@ import Combine
 
 class TimerManager: ObservableObject {
     @Published var timerState = TimerState()
-    @Published var settings = PomotronSettings.shared
+    @ObservedObject var settings = PomotronSettings.shared
     @Published var sessionHistory: [SessionData] = []
     
     private var timer: Timer?
