@@ -46,9 +46,9 @@
                 8E4B5F7D2C645C7200123456 /* WebsiteBlocker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Managers/WebsiteBlocker.swift"; sourceTree = "<group>"; };
                 8E4B5F7F2C645C7600123456 /* FontManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Utils/FontManager.swift"; sourceTree = "<group>"; };
                 8E4B5F812C645C7A00123456 /* Font+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Utils/Font+Extensions.swift"; sourceTree = "<group>"; };
-                8E4B5F8D2C645C8000123456 /* Inter-Variable.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Resources/Fonts/Inter-Variable.ttf"; sourceTree = "<group>"; };
-                8E4B5F8F2C645C8100123456 /* Orbitron-Variable.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Resources/Fonts/Orbitron-Variable.ttf"; sourceTree = "<group>"; };
-                8E4B5F912C645C8200123456 /* ShareTechMono-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Resources/Fonts/ShareTechMono-Regular.ttf"; sourceTree = "<group>"; };
+                8E4B5F8D2C645C8000123456 /* Inter-Variable.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Inter-Variable.ttf"; path = "Resources/Fonts/Inter-Variable.ttf"; sourceTree = "<group>"; };
+                8E4B5F8F2C645C8100123456 /* Orbitron-Variable.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Orbitron-Variable.ttf"; path = "Resources/Fonts/Orbitron-Variable.ttf"; sourceTree = "<group>"; };
+                8E4B5F912C645C8200123456 /* ShareTechMono-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "ShareTechMono-Regular.ttf"; path = "Resources/Fonts/ShareTechMono-Regular.ttf"; sourceTree = "<group>"; };
                 8E4B5F932C645C8300123456 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
                 8E4B5F992C645C9000123456 /* AudioManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Managers/AudioManager.swift"; sourceTree = "<group>"; };
                 8E4B5F9C2C645C9100123456 /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Models/Models.swift"; sourceTree = "<group>"; };
