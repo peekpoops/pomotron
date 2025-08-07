@@ -105,9 +105,9 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
 
     setTimeLeft(Math.ceil(newTimeLeft));
 
-    // Update jump aura (fades quickly and only while jumping)
+    // Update jump aura (fades quickly regardless of jump state)
     if (jumpAura > 0) {
-      setJumpAura(prev => Math.max(0, prev - 0.1));
+      setJumpAura(prev => Math.max(0, prev - 0.15));
     }
 
     // Update success burst effect
@@ -123,16 +123,19 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
 
     // Update player jump with proper physics
     if (isJumping) {
-      jumpVelocityRef.current += 1.0; // gravity
+      jumpVelocityRef.current += 1.2; // gravity
       const newY = playerY + jumpVelocityRef.current;
+      
+      console.log('Jumping physics - velocity:', jumpVelocityRef.current, 'newY:', newY, 'groundY:', GROUND_Y);
 
       if (newY >= GROUND_Y) {
         setPlayerY(GROUND_Y);
         setIsJumping(false);
-        setJumpAura(0); // Clear aura when landing
         jumpVelocityRef.current = 0;
+        console.log('Landing - playerY set to:', GROUND_Y);
       } else {
         setPlayerY(newY);
+        console.log('In air - playerY set to:', newY);
       }
     }
 
@@ -207,10 +210,12 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
   const handleJump = useCallback(() => {
     if (gameState !== 'playing' || isJumping) return;
 
+    console.log('Jump triggered! Current playerY:', playerY);
+    
     setIsJumping(true);
-    jumpVelocityRef.current = -15; // Stronger jump for better visibility
+    jumpVelocityRef.current = -16; // Strong upward velocity
     setScore(s => s + 5); // Points for jumping
-    setJumpAura(0.8); // Brief aura ring that fades quickly
+    setJumpAura(1.0); // Trigger aura ring once per jump
 
     // Create enhanced jump particles
     const newParticles: Particle[] = [];
@@ -308,18 +313,23 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
     const avatarHeight = PLAYER_SIZE * 1.4;
     const centerX = PLAYER_X + PLAYER_SIZE / 2;
     const centerY = playerY + PLAYER_SIZE / 2;
+    
+    // Debug: log avatar position for troubleshooting
+    if (Math.random() < 0.1) { // Log occasionally to avoid spam
+      console.log('Avatar render - playerY:', playerY, 'centerY:', centerY, 'isJumping:', isJumping);
+    }
 
     ctx.save();
     ctx.translate(centerX, centerY);
     ctx.rotate(rotation);
 
-    // Draw jump aura ring (only when jumping and aura > 0)
-    if (jumpAura > 0 && isJumping) {
-      const auraSize = avatarWidth * 2 * jumpAura;
-      ctx.globalAlpha = jumpAura * 0.6;
+    // Draw jump aura ring (only when aura > 0, not tied to isJumping)
+    if (jumpAura > 0) {
+      const auraSize = avatarWidth * 1.5 * jumpAura;
+      ctx.globalAlpha = jumpAura * 0.8;
       ctx.strokeStyle = '#ff6b9d';
-      ctx.lineWidth = 4;
-      ctx.shadowBlur = 15;
+      ctx.lineWidth = 3;
+      ctx.shadowBlur = 12;
       ctx.shadowColor = '#ff6b9d';
       ctx.beginPath();
       ctx.arc(0, 0, auraSize, 0, Math.PI * 2);
