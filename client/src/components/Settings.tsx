@@ -32,11 +32,29 @@ export default function Settings() {
   const [settings, setSettings] = useLocalStorage<SettingsType>('pomotron-settings', defaultSettings);
   const { theme, setTheme } = useTheme();
   const [localSettings, setLocalSettings] = useState<SettingsType>(settings);
+  const [isInitialized, setIsInitialized] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
     setLocalSettings(settings);
+    setIsInitialized(true);
   }, [settings]);
+
+  // Auto-save functionality
+  useEffect(() => {
+    // Skip saving until component is initialized and settings have actually changed
+    if (!isInitialized || JSON.stringify(localSettings) === JSON.stringify(settings)) return;
+    
+    // Auto-save after a short delay to avoid excessive saves during rapid changes
+    const timeoutId = setTimeout(() => {
+      setSettings(localSettings);
+      if (localSettings.theme !== theme) {
+        setTheme(localSettings.theme);
+      }
+    }, 300);
+
+    return () => clearTimeout(timeoutId);
+  }, [localSettings, isInitialized, settings, setSettings, theme, setTheme]);
 
   const handleSave = () => {
     setSettings(localSettings);
@@ -328,15 +346,12 @@ export default function Settings() {
         </Card>
       </div>
 
-      {/* Save Settings */}
+      {/* Auto-save notification */}
       <div className="text-center">
-        <Button
-          onClick={handleSave}
-          className="btn-primary px-6 sm:px-8 py-3 font-medium w-full sm:w-auto"
-        >
-          <Save className="h-4 w-4 mr-2" />
-          Save Settings
-        </Button>
+        <div className="flex items-center justify-center space-x-2 text-sm text-muted-foreground">
+          <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+          <span>Settings auto-save as you change them</span>
+        </div>
       </div>
     </div>
   );
