@@ -28,6 +28,8 @@ export function useTimer() {
     websiteBlockingEnabled: true,
     frictionOverride: false,
     blockedSites: ['facebook.com', 'twitter.com', 'reddit.com', 'youtube.com', 'instagram.com'],
+    showQuotes: true,
+    soundsEnabled: true,
   });
   const [sessions, setSessions] = useLocalStorage<Session[]>('pomotron-sessions', []);
   
@@ -46,6 +48,9 @@ export function useTimer() {
   // Start idle detection
   const startIdleDetection = useCallback(() => {
     if (idleIntervalRef.current) clearInterval(idleIntervalRef.current);
+    
+    // Skip idle detection if timeout is 0 (disabled)
+    if (settings.idleTimeout === 0) return;
     
     idleIntervalRef.current = setInterval(() => {
       const now = Date.now();
@@ -170,18 +175,62 @@ export function useTimer() {
 
   // Activity listeners for idle detection
   useEffect(() => {
-    const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'];
+    const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click'];
     
+    // Add event listeners to document for current tab activity
     events.forEach(event => {
       document.addEventListener(event, resetIdleDetection, true);
     });
+
+    // Use Page Visibility API to detect when user switches tabs/windows
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        // User returned to this tab, reset idle detection
+        resetIdleDetection();
+      }
+    };
+
+    // Use window focus/blur to detect when user switches windows
+    const handleWindowFocus = () => {
+      resetIdleDetection();
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('focus', handleWindowFocus);
     
     return () => {
       events.forEach(event => {
         document.removeEventListener(event, resetIdleDetection, true);
       });
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('focus', handleWindowFocus);
     };
   }, [resetIdleDetection]);
+
+  // Update timer duration when settings change (only if timer is not running)
+  useEffect(() => {
+    if (!timerState.isRunning && !timerState.isPaused) {
+      let newDuration: number;
+      switch (timerState.sessionType) {
+        case 'focus':
+          newDuration = settings.focusDuration * 60;
+          break;
+        case 'break':
+          newDuration = settings.breakDuration * 60;
+          break;
+        case 'longBreak':
+          newDuration = settings.longBreakDuration * 60;
+          break;
+      }
+      
+      if (timerState.timeLeft !== newDuration) {
+        setTimerState(prev => ({
+          ...prev,
+          timeLeft: newDuration,
+        }));
+      }
+    }
+  }, [settings.focusDuration, settings.breakDuration, settings.longBreakDuration, timerState.isRunning, timerState.isPaused, timerState.sessionType, timerState.timeLeft]);
 
   const startSession = useCallback((intention?: { task: string; why: string }) => {
     const sessionId = crypto.randomUUID();
