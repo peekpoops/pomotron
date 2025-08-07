@@ -125,7 +125,7 @@ const motivationalQuotes = [
 export default function Timer({ onOpenSettings, timerHook: externalTimerHook }: TimerProps) {
   const internalTimerHook = useTimer();
   const timerHook = externalTimerHook || internalTimerHook;
-  const { timerState, startSession, pauseSession, resumeSession, resetSession, endSession, formatTime, getProgress } = timerHook;
+  const { timerState, startSession, pauseSession, resumeSession, resetSession, endSession, formatTime, getProgress, sessions: timerSessions } = timerHook;
   const [settings] = useLocalStorage<Settings>('pomotron-settings', {
     focusDuration: 25,
     breakDuration: 5,
@@ -228,17 +228,15 @@ export default function Timer({ onOpenSettings, timerHook: externalTimerHook }: 
     startSession(intention);
   };
 
-  // Calculate today's completed focus cycles with reactive updates
-  const [sessions] = useLocalStorage<Session[]>('pomotron-sessions', []);
-  
+  // Calculate today's completed focus cycles with reactive updates from timer hook
   const todayCompletedCycles = useMemo(() => {
     const today = new Date().toDateString();
-    return sessions.filter(session => 
+    return (timerSessions || []).filter(session => 
       session.completed && 
       session.sessionType === 'focus' && 
       new Date(session.startTime).toDateString() === today
     ).length;
-  }, [sessions]);
+  }, [timerSessions]);
 
   const getSessionInfo = () => {
     if (timerState.sessionType === 'focus') {

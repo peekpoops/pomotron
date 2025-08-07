@@ -387,6 +387,6 @@ export function useTimer() {
     endSession,
     formatTime,
     getProgress,
-    sessions,
+    sessions, // Expose sessions for reactive updates
   };
 }
