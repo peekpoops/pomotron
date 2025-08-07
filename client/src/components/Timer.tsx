@@ -412,8 +412,39 @@ export default function Timer({ onOpenSettings, timerHook: externalTimerHook }: 
                     {getSessionTypeLabel()}
                   </Badge>
                 </div>
-                <div className="text-xs sm:text-sm text-muted-foreground mobile-text-sm">
-                  {getSessionInfo()}
+                {/* Visual Cycle Progress */}
+                <div className="flex items-center justify-center space-x-2 mb-2">
+                  {Array.from({ length: settings.cyclesBeforeLongBreak }, (_, index) => {
+                    const cycleNumber = index + 1;
+                    const isCompleted = timerState.sessionType === 'break' 
+                      ? cycleNumber <= timerState.currentCycle
+                      : cycleNumber < timerState.currentCycle;
+                    const isCurrent = timerState.sessionType === 'focus' 
+                      ? cycleNumber === timerState.currentCycle
+                      : timerState.sessionType === 'break' && cycleNumber === timerState.currentCycle + 1;
+                    
+                    return (
+                      <div
+                        key={cycleNumber}
+                        className={`w-3 h-3 rounded-full border-2 transition-all duration-300 ${
+                          isCompleted
+                            ? 'bg-primary border-primary shadow-lg shadow-primary/50'
+                            : isCurrent
+                            ? 'bg-primary/30 border-primary animate-pulse'
+                            : 'bg-muted border-muted-foreground/30'
+                        }`}
+                        title={`Cycle ${cycleNumber}${isCompleted ? ' (Completed)' : isCurrent ? ' (Current)' : ''}`}
+                      />
+                    );
+                  })}
+                </div>
+                <div className="text-xs text-muted-foreground mobile-text-sm">
+                  {timerState.sessionType === 'focus' 
+                    ? `Cycle ${timerState.currentCycle} of ${settings.cyclesBeforeLongBreak}`
+                    : timerState.sessionType === 'break'
+                    ? `Break after Cycle ${timerState.currentCycle} • Next: Cycle ${timerState.currentCycle + 1}`
+                    : 'Long break • Starting fresh after this break'
+                  }
                 </div>
               </div>
 
