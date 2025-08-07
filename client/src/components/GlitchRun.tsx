@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { X, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -69,7 +68,7 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
     setParticles([]);
     setScreenGlitch(false);
     setJumpAura(0);
-    setSuccessBurst(null);
+    
     lastObstacleRef.current = 0;
     obstacleIdRef.current = 0;
     particleIdRef.current = 0;
@@ -90,7 +89,7 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
     if (gameLoopRef.current) {
       cancelAnimationFrame(gameLoopRef.current);
     }
-    
+
     // Auto-close after 2 seconds
     setTimeout(() => {
       onClose();
@@ -103,14 +102,14 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
     const now = Date.now();
     const elapsed = (now - gameStartTimeRef.current) / 1000;
     const newTimeLeft = Math.max(0, 10 - elapsed);
-    
+
     setTimeLeft(Math.ceil(newTimeLeft));
-    
+
     // Update jump aura (fades over time)
     if (jumpAura > 0) {
       setJumpAura(prev => Math.max(0, prev - 0.05));
     }
-    
+
     // Update success burst effect
     if (successBurst && now - successBurst.time > 500) {
       setSuccessBurst(null);
@@ -126,7 +125,7 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
     if (isJumping) {
       jumpVelocityRef.current += 0.8; // gravity
       const newY = playerY + jumpVelocityRef.current;
-      
+
       if (newY >= GROUND_Y) {
         setPlayerY(GROUND_Y);
         setIsJumping(false);
@@ -201,12 +200,12 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
       vy: particle.vy + 0.2,
       life: particle.life - 1
     })).filter(particle => particle.life > 0));
-  }, [playerY, isJumping, endGame]);
+  }, [playerY, isJumping, endGame, successBurst]);
 
   // Handle jump
   const handleJump = useCallback(() => {
     if (gameState !== 'playing' || isJumping) return;
-    
+
     setIsJumping(true);
     jumpVelocityRef.current = -13; // Slightly stronger jump
     setScore(s => s + 5); // Points for jumping
@@ -250,7 +249,7 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
   // Canvas rendering
   useEffect(() => {
     if (!isOpen || !canvasRef.current) return;
-    
+
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
@@ -263,7 +262,7 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
     ctx.strokeStyle = screenGlitch ? '#ff00ff' : '#00ffff';
     ctx.lineWidth = screenGlitch ? 2 : 1;
     ctx.globalAlpha = screenGlitch ? 0.8 : 0.3;
-    
+
     // Vertical lines
     for (let x = 0; x < GAME_WIDTH; x += 40) {
       const offset = (Date.now() * 0.1 + x * 0.05) % 20;
@@ -272,7 +271,7 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
       ctx.lineTo(x + offset, GAME_HEIGHT);
       ctx.stroke();
     }
-    
+
     // Horizontal lines
     for (let y = 0; y < GAME_HEIGHT; y += 40) {
       const offset = (Date.now() * 0.05) % 20;
@@ -303,22 +302,22 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
     // Draw enhanced Tron-like avatar
     const pulse = Math.sin(Date.now() * 0.01) * 0.3 + 0.7;
     const jumpProgress = isJumping ? Math.abs(jumpVelocityRef.current) / 13 : 0;
-    
+
     // Squash and stretch effect
     const scaleX = isJumping ? 1.1 + jumpProgress * 0.2 : 1.0;
     const scaleY = isJumping ? 0.9 - jumpProgress * 0.1 : 1.0;
     const rotation = isJumping ? Math.sin(Date.now() * 0.03) * 0.15 : 0;
-    
+
     const avatarWidth = PLAYER_SIZE * 1.4; // Larger avatar
     const avatarHeight = PLAYER_SIZE * 1.4;
     const centerX = PLAYER_X + PLAYER_SIZE / 2;
     const centerY = playerY + PLAYER_SIZE / 2;
-    
+
     ctx.save();
     ctx.translate(centerX, centerY);
     ctx.scale(scaleX, scaleY);
     ctx.rotate(rotation);
-    
+
     // Jump aura ring
     if (jumpAura > 0) {
       ctx.shadowBlur = 20;
@@ -330,11 +329,11 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
       ctx.stroke();
       ctx.shadowBlur = 0;
     }
-    
+
     // Avatar outline glow
     ctx.shadowBlur = 20;
     ctx.shadowColor = '#00ffff';
-    
+
     // Draw head (hexagonal)
     const headSize = avatarWidth * 0.35;
     ctx.fillStyle = `rgba(255, 107, 157, ${pulse})`;
@@ -348,7 +347,7 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
     }
     ctx.closePath();
     ctx.fill();
-    
+
     // Draw energy core in head
     const coreSize = headSize * 0.4;
     const corePulse = Math.sin(Date.now() * 0.02) * 0.5 + 0.5;
@@ -358,14 +357,14 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
     ctx.beginPath();
     ctx.arc(0, -avatarHeight * 0.3, coreSize, 0, Math.PI * 2);
     ctx.fill();
-    
+
     // Draw torso (taller rectangle with rounded corners)
     ctx.shadowColor = '#00ffff';
     ctx.fillStyle = `rgba(0, 255, 255, ${pulse * 0.9})`;
     const torsoWidth = avatarWidth * 0.5;
     const torsoHeight = avatarHeight * 0.6;
     ctx.fillRect(-torsoWidth/2, -avatarHeight * 0.1, torsoWidth, torsoHeight);
-    
+
     // Draw energy core in torso
     const torsoCore = Math.sin(Date.now() * 0.015) * 0.3 + 0.7;
     ctx.shadowBlur = 10;
@@ -374,45 +373,45 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
     ctx.beginPath();
     ctx.arc(0, avatarHeight * 0.1, avatarWidth * 0.1, 0, Math.PI * 2);
     ctx.fill();
-    
+
     // Draw arms (dynamic positioning)
     const armLength = avatarWidth * 0.35;
     const armWidth = avatarWidth * 0.12;
     const armAngle = isJumping ? 0.4 : 0.1;
-    
+
     ctx.fillStyle = `rgba(255, 255, 0, ${pulse * 0.8})`;
-    
+
     // Left arm
     ctx.save();
     ctx.rotate(-armAngle);
     ctx.fillRect(-avatarWidth * 0.4, -avatarHeight * 0.05, armLength, armWidth);
     ctx.restore();
-    
+
     // Right arm
     ctx.save();
     ctx.rotate(armAngle);
     ctx.fillRect(avatarWidth * 0.1, -avatarHeight * 0.05, armLength, armWidth);
     ctx.restore();
-    
+
     // Draw legs (spread when jumping)
     const legSpread = isJumping ? 0.6 : 0.2;
     const legLength = avatarHeight * 0.4;
     const legWidth = avatarWidth * 0.12;
-    
+
     ctx.fillStyle = `rgba(255, 107, 157, ${pulse * 0.8})`;
-    
+
     // Left leg
     ctx.save();
     ctx.rotate(-legSpread);
     ctx.fillRect(-avatarWidth * 0.15, avatarHeight * 0.25, legWidth, legLength);
     ctx.restore();
-    
+
     // Right leg
     ctx.save();
     ctx.rotate(legSpread);
     ctx.fillRect(avatarWidth * 0.05, avatarHeight * 0.25, legWidth, legLength);
     ctx.restore();
-    
+
     // Jump trail effect
     if (isJumping) {
       ctx.globalAlpha = 0.7;
@@ -426,7 +425,7 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
       }
       ctx.globalAlpha = 1;
     }
-    
+
     ctx.restore();
     ctx.shadowBlur = 0;
 
@@ -435,11 +434,11 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
       const glitchIntensity = Math.sin(obstacle.glitchPhase) * 0.5 + 0.5;
       const colors = ['#ff0066', '#00ffff', '#ffff00'];
       const colorIndex = Math.floor(glitchIntensity * colors.length);
-      
+
       ctx.fillStyle = colors[colorIndex] || '#ff0066';
       ctx.shadowBlur = 10;
       ctx.shadowColor = ctx.fillStyle;
-      
+
       // Glitch effect
       const glitchOffset = Math.sin(obstacle.glitchPhase * 2) * 3;
       ctx.fillRect(
@@ -448,7 +447,7 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
         obstacle.width, 
         obstacle.height
       );
-      
+
       // Additional glitch lines
       ctx.fillStyle = '#ffffff';
       ctx.globalAlpha = glitchIntensity;
@@ -461,20 +460,20 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
     particles.forEach(particle => {
       const alpha = particle.life / particle.maxLife;
       const size = 2 + alpha * 3;
-      
+
       ctx.shadowBlur = 8;
       ctx.shadowColor = '#ff6b9d';
       ctx.fillStyle = `rgba(255, 107, 157, ${alpha})`;
-      
+
       // Draw main particle
       ctx.fillRect(particle.x - size/2, particle.y - size/2, size, size);
-      
+
       // Draw particle trail
       ctx.globalAlpha = alpha * 0.5;
       ctx.fillStyle = '#00ffff';
       ctx.fillRect(particle.x - 1, particle.y - 1, 2, 2);
       ctx.globalAlpha = 1;
-      
+
       ctx.shadowBlur = 0;
     });
 
@@ -483,11 +482,11 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
       const burstAge = (Date.now() - successBurst.time) / 500;
       const burstAlpha = Math.max(0, 1 - burstAge);
       const burstSize = 30 + burstAge * 40;
-      
+
       ctx.globalAlpha = burstAlpha;
       ctx.shadowBlur = 25;
       ctx.shadowColor = '#00ff00';
-      
+
       // Draw burst rings
       for (let i = 0; i < 3; i++) {
         ctx.strokeStyle = `rgba(0, 255, 0, ${burstAlpha * (1 - i * 0.3)})`;
@@ -496,18 +495,18 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
         ctx.arc(successBurst.x, successBurst.y, burstSize + i * 15, 0, Math.PI * 2);
         ctx.stroke();
       }
-      
+
       // Draw burst sparkles
       for (let i = 0; i < 8; i++) {
         const angle = (i / 8) * Math.PI * 2;
         const sparkleDistance = burstSize * 0.7;
         const sparkleX = successBurst.x + Math.cos(angle) * sparkleDistance;
         const sparkleY = successBurst.y + Math.sin(angle) * sparkleDistance;
-        
+
         ctx.fillStyle = `rgba(255, 255, 0, ${burstAlpha})`;
         ctx.fillRect(sparkleX - 2, sparkleY - 2, 4, 4);
       }
-      
+
       ctx.globalAlpha = 1;
       ctx.shadowBlur = 0;
     }
@@ -519,7 +518,7 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
       ctx.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
       ctx.globalAlpha = 1;
     }
-  });
+  }, [isOpen, gameState, playerY, isJumping, jumpAura, obstacles, particles, screenGlitch, successBurst, canvasRef]);
 
   // Cleanup
   useEffect(() => {
@@ -595,7 +594,7 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
                 </div>
               </div>
             )}
-            
+
             {gameState === 'playing' && (
               <div>
                 <div className="text-sm font-tech-mono mb-2">
@@ -607,7 +606,7 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
                 </div>
               </div>
             )}
-            
+
             {gameState === 'finished' && (
               <div>
                 <div className="text-xl font-orbitron font-bold text-accent mb-2">
