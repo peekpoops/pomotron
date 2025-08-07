@@ -164,24 +164,30 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
           return false;
         }
 
-        // Check collision (adjusted for avatar center)
+        // Check collision with grace buffer and grounded check
+        const GRACE_MARGIN = 6; // Tweakable grace buffer
         const playerLeft = PLAYER_X - PLAYER_SIZE/4;
         const playerRight = PLAYER_X + PLAYER_SIZE * 0.75;
         const playerTop = playerY;
-        const playerBottom = playerY + PLAYER_SIZE;
+        const playerBottom = playerY + PLAYER_SIZE - GRACE_MARGIN; // Grace buffer
 
         const obsLeft = obstacle.x;
         const obsRight = obstacle.x + obstacle.width;
         const obsTop = obstacle.y - obstacle.height;
         const obsBottom = obstacle.y;
 
-        if (playerRight > obsLeft && 
+        // Only check collision when player is grounded
+        const isGrounded = !isJumping && playerY >= GROUND_Y - 1;
+        
+        if (isGrounded && 
+            playerRight > obsLeft && 
             playerLeft < obsRight && 
             playerBottom > obsTop && 
             playerTop < obsBottom) {
           // Collision detected
           setScreenGlitch(true);
           setTimeout(() => setScreenGlitch(false), 200);
+          endGame(); // End game on collision
           return false; // Remove obstacle
         }
 
