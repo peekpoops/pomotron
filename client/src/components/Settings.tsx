@@ -130,8 +130,7 @@ export default function Settings() {
           <div className="px-4 sm:px-6 pb-4 border-b border-border/20">
             <div className="flex justify-center space-x-2 sm:space-x-4">
               <Button
-                onClick={() => setLocalSettings(settings)}
-                disabled={!hasUnsavedChanges}
+                onClick={() => setLocalSettings(defaultSettings)}
                 className="btn-tertiary px-4 py-2 sm:px-6 sm:py-3 font-medium hover:scale-105 transition-transform timer-control-button"
               >
                 <RotateCcw className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 button-icon" />
@@ -362,8 +361,7 @@ export default function Settings() {
             <div className="pt-4 border-t border-border/20">
               <div className="flex justify-center space-x-2 sm:space-x-4">
                 <Button
-                  onClick={() => setLocalSettings(settings)}
-                  disabled={!hasUnsavedChanges}
+                  onClick={() => setLocalSettings(defaultSettings)}
                   className="btn-tertiary px-4 py-2 sm:px-6 sm:py-3 font-medium hover:scale-105 transition-transform timer-control-button"
                 >
                   <RotateCcw className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 button-icon" />
