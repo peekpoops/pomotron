@@ -153,24 +153,13 @@ function createGameStartSound(): void {
 }
 
 function createGameOverSound(): void {
-  // Low synth fail tone with falling pitch
-  const ctx = getAudioContext();
-  const oscillator = ctx.createOscillator();
-  const gainNode = ctx.createGain();
-  
-  oscillator.connect(gainNode);
-  gainNode.connect(ctx.destination);
-  
-  oscillator.type = 'sawtooth';
-  oscillator.frequency.setValueAtTime(300, ctx.currentTime);
-  oscillator.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + 0.8);
-  
-  gainNode.gain.setValueAtTime(0, ctx.currentTime);
-  gainNode.gain.linearRampToValueAtTime(0.25, ctx.currentTime + 0.05);
-  gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.8);
-  
-  oscillator.start(ctx.currentTime);
-  oscillator.stop(ctx.currentTime + 0.8);
+  // Cheerful win synth tone with rising pitch
+  const frequencies = [523, 659, 784, 1047]; // C, E, G, C (major chord progression)
+  frequencies.forEach((freq, index) => {
+    setTimeout(() => {
+      createRetroBeep(freq, 0.25, 'triangle');
+    }, index * 100);
+  });
 }
 
 export function playSound(type: 'start' | 'reset' | 'sessionComplete' | 'idleNudge' | 'glitch-jump' | 'glitch-land' | 'glitch-score' | 'glitch-collision' | 'glitch-game-start' | 'glitch-game-over'): void {
