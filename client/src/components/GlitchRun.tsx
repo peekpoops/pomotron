@@ -178,6 +178,13 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
         const obsTop = updatedObstacle.y - updatedObstacle.height;
         const obsBottom = updatedObstacle.y;
 
+        console.log('Checking collision for obstacle', updatedObstacle.id, {
+          playerPos: { left: playerLeft, right: playerRight, top: playerTop, bottom: playerBottom },
+          obsPos: { left: obsLeft, right: obsRight, top: obsTop, bottom: obsBottom },
+          GROUND_Y,
+          playerY
+        });
+
         // Check for collision - simplified logic
         const hasHorizontalOverlap = playerRight > obsLeft && playerLeft < obsRight;
         const hasVerticalOverlap = playerBottom > obsTop && playerTop < obsBottom;
