@@ -82,16 +82,66 @@ export default function Analytics() {
   }, [sessions]);
 
   const exportData = () => {
-    const dataStr = JSON.stringify(sessions, null, 2);
-    const dataBlob = new Blob([dataStr], { type: 'application/json' });
-    const url = URL.createObjectURL(dataBlob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `pomotron-data-${format(new Date(), 'yyyy-MM-dd')}.json`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+    // Import XLSX dynamically
+    import('xlsx').then((XLSX) => {
+      // Prepare data for Excel export
+      const exportSessions = sessions.map(session => ({
+        'Date': format(new Date(session.startTime), 'yyyy-MM-dd'),
+        'Time': format(new Date(session.startTime), 'HH:mm:ss'),
+        'Session Type': session.sessionType,
+        'Duration (minutes)': Math.round(session.duration / 60),
+        'Completed': session.completed ? 'Yes' : 'No',
+        'Task': session.task || '',
+        'Why Important': session.why || '',
+        'Cycle': session.cycle || 1
+      }));
+
+      // Create workbook and worksheet
+      const wb = XLSX.utils.book_new();
+      const ws = XLSX.utils.json_to_sheet(exportSessions);
+
+      // Add some styling to headers
+      const range = XLSX.utils.decode_range(ws['!ref'] || 'A1');
+      for (let C = range.s.c; C <= range.e.c; ++C) {
+        const address = XLSX.utils.encode_cell({ r: 0, c: C });
+        if (!ws[address]) continue;
+        ws[address].s = {
+          font: { bold: true },
+          fill: { fgColor: { rgb: "FF6B9D" } }
+        };
+      }
+
+      // Set column widths
+      ws['!cols'] = [
+        { width: 12 }, // Date
+        { width: 10 }, // Time
+        { width: 15 }, // Session Type
+        { width: 18 }, // Duration
+        { width: 12 }, // Completed
+        { width: 30 }, // Task
+        { width: 30 }, // Why Important
+        { width: 8 }   // Cycle
+      ];
+
+      // Add worksheet to workbook
+      XLSX.utils.book_append_sheet(wb, ws, 'Pomotron Sessions');
+
+      // Export file
+      XLSX.writeFile(wb, `pomotron-data-${format(new Date(), 'yyyy-MM-dd')}.xlsx`);
+    }).catch((error) => {
+      console.error('Failed to export Excel file:', error);
+      // Fallback to JSON export
+      const dataStr = JSON.stringify(sessions, null, 2);
+      const dataBlob = new Blob([dataStr], { type: 'application/json' });
+      const url = URL.createObjectURL(dataBlob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `pomotron-data-${format(new Date(), 'yyyy-MM-dd')}.json`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    });
   };
 
   const clearAllData = () => {
@@ -257,7 +307,7 @@ export default function Analytics() {
           className="btn-secondary px-6 py-3"
         >
           <Download className="h-4 w-4 mr-2" />
-          Export Data
+          Export to Excel
         </Button>
         <Button
           onClick={clearAllData}
