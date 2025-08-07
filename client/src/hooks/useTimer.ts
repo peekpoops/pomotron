@@ -12,6 +12,8 @@ const defaultTimerState: TimerState = {
   sessionType: 'focus',
   currentCycle: 1,
   currentIntention: { task: '', why: '' },
+  startTime: null,
+  pausedDuration: 0,
 };
 
 export function useTimer() {
@@ -81,7 +83,28 @@ export function useTimer() {
     if (timerState.isRunning && !timerState.isPaused) {
       intervalRef.current = setInterval(() => {
         setTimerState(prev => {
-          if (prev.timeLeft <= 1) {
+          // Calculate actual time elapsed since start
+          const now = Date.now();
+          const elapsedSinceStart = prev.startTime ? (now - prev.startTime - prev.pausedDuration) / 1000 : 0;
+          
+          // Calculate total session duration
+          let totalDuration: number;
+          switch (prev.sessionType) {
+            case 'focus':
+              totalDuration = settings.focusDuration * 60;
+              break;
+            case 'break':
+              totalDuration = settings.breakDuration * 60;
+              break;
+            case 'longBreak':
+              totalDuration = settings.longBreakDuration * 60;
+              break;
+          }
+          
+          // Calculate accurate time left
+          const accurateTimeLeft = Math.max(0, totalDuration - elapsedSinceStart);
+          
+          if (accurateTimeLeft <= 0) {
             // Timer finished
             const isBreakNext = prev.sessionType === 'focus';
             const isLongBreak = prev.currentCycle >= settings.cyclesBeforeLongBreak && isBreakNext;
@@ -151,10 +174,12 @@ export function useTimer() {
               currentCycle: nextCycle,
               currentSessionId: undefined,
               currentIntention: nextSessionType === 'focus' ? { task: '', why: '' } : prev.currentIntention,
+              startTime: settings.autoStart ? Date.now() : null,
+              pausedDuration: 0,
             };
           }
           
-          return { ...prev, timeLeft: prev.timeLeft - 1 };
+          return { ...prev, timeLeft: Math.round(accurateTimeLeft) };
         });
       }, 1000);
       
@@ -289,6 +314,8 @@ export function useTimer() {
       isPaused: false,
       currentSessionId: sessionId,
       currentIntention: intention || prev.currentIntention,
+      startTime: Date.now(),
+      pausedDuration: 0,
     }));
     
     if (timerState.sessionType === 'focus' && settings.websiteBlockingEnabled) {
@@ -299,11 +326,17 @@ export function useTimer() {
   }, [timerState, settings, setSessions]);
 
   const pauseSession = useCallback(() => {
-    setTimerState(prev => ({
-      ...prev,
-      isRunning: false,
-      isPaused: true,
-    }));
+    setTimerState(prev => {
+      const now = Date.now();
+      const additionalPausedTime = prev.startTime ? now - prev.startTime - prev.pausedDuration : 0;
+      
+      return {
+        ...prev,
+        isRunning: false,
+        isPaused: true,
+        pausedDuration: prev.pausedDuration + additionalPausedTime,
+      };
+    });
     
     deactivateWebsiteBlocking();
   }, []);
@@ -313,6 +346,7 @@ export function useTimer() {
       ...prev,
       isRunning: true,
       isPaused: false,
+      startTime: prev.startTime || Date.now(), // Set start time if not already set
     }));
     
     if (timerState.sessionType === 'focus' && settings.websiteBlockingEnabled) {
@@ -351,6 +385,8 @@ export function useTimer() {
       isPaused: false,
       timeLeft: duration,
       currentSessionId: undefined,
+      startTime: null,
+      pausedDuration: 0,
     }));
     
     deactivateWebsiteBlocking();
@@ -370,6 +406,8 @@ export function useTimer() {
     setTimerState({
       ...defaultTimerState,
       timeLeft: settings.focusDuration * 60,
+      startTime: null,
+      pausedDuration: 0,
     });
     
     deactivateWebsiteBlocking();
