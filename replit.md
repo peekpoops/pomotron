@@ -42,10 +42,11 @@ Preferred communication style: Simple, everyday language.
 
 ## Core Timer Logic
 - **Timer State Management**: Custom useTimer hook managing Pomodoro cycles with focus/break transitions
-- **Settings Integration**: Configurable durations, auto-start, and cycle management
+- **Settings Integration**: Configurable durations, auto-start, and cycle management with real-time settings updates
 - **Intention Setting**: Modal-based workflow for task and motivation capture before sessions
 - **Sound System**: Web Audio API integration for retro-style sound effects and notifications
 - **Idle Detection**: Automatic detection and notification of user inactivity during focus sessions
+- **Real-time Configuration**: Timer automatically refreshes duration when settings change (without requiring reset)
 
 ## Website Blocking System
 - **Implementation**: Service Worker-based URL interception for blocking distracting websites

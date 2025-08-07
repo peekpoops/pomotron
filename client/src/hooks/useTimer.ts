@@ -28,6 +28,8 @@ export function useTimer() {
     websiteBlockingEnabled: true,
     frictionOverride: false,
     blockedSites: ['facebook.com', 'twitter.com', 'reddit.com', 'youtube.com', 'instagram.com'],
+    showQuotes: true,
+    soundsEnabled: true,
   });
   const [sessions, setSessions] = useLocalStorage<Session[]>('pomotron-sessions', []);
   
@@ -167,6 +169,32 @@ export function useTimer() {
       }
     };
   }, [timerState.isRunning, timerState.isPaused, settings, sessions, setSessions, toast, startIdleDetection, stopIdleDetection]);
+
+  // Update timer duration when settings change (only if timer is not running)
+  useEffect(() => {
+    if (!timerState.isRunning && !timerState.isPaused) {
+      let newDuration: number;
+      switch (timerState.sessionType) {
+        case 'focus':
+          newDuration = settings.focusDuration * 60;
+          break;
+        case 'break':
+          newDuration = settings.breakDuration * 60;
+          break;
+        case 'longBreak':
+          newDuration = settings.longBreakDuration * 60;
+          break;
+      }
+      
+      // Only update if the time left doesn't match the new duration (settings changed)
+      if (timerState.timeLeft !== newDuration) {
+        setTimerState(prev => ({
+          ...prev,
+          timeLeft: newDuration
+        }));
+      }
+    }
+  }, [settings.focusDuration, settings.breakDuration, settings.longBreakDuration, timerState.sessionType, timerState.isRunning, timerState.isPaused, timerState.timeLeft]);
 
   // Activity listeners for idle detection
   useEffect(() => {
