@@ -105,31 +105,15 @@ export default function Settings() {
         </h1>
         <p className="text-sm sm:text-base text-secondary font-tech-mono">Customize your Pomotron experience</p>
         
-        {/* Top Save Button */}
-        <div className="flex flex-col items-center mt-4 space-y-2">
-          {isFocusSessionRunning && (
+        {/* Focus Session Warning */}
+        {isFocusSessionRunning && (
+          <div className="flex justify-center mt-4">
             <div className="flex items-center space-x-2 text-xs sm:text-sm text-yellow-600 dark:text-yellow-400">
               <div className="w-2 h-2 bg-yellow-500 rounded-full animate-pulse"></div>
               <span>Settings cannot be changed during a focus session</span>
             </div>
-          )}
-          <Button
-            onClick={handleSave}
-            disabled={!hasUnsavedChanges || isFocusSessionRunning}
-            className="text-xs sm:text-sm px-4 py-2"
-          >
-            <Save className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-            <span>Save Settings</span>
-            {hasUnsavedChanges && !isFocusSessionRunning && (
-              <Badge variant="secondary" className="ml-2 text-xs">
-                {Object.keys(localSettings).filter(key => 
-                  JSON.stringify(localSettings[key as keyof SettingsType]) !== 
-                  JSON.stringify(settings[key as keyof SettingsType])
-                ).length}
-              </Badge>
-            )}
-          </Button>
-        </div>
+          </div>
+        )}
       </div>
 
       <div className="grid lg:grid-cols-2 gap-4 sm:gap-8 settings-grid-mobile">
@@ -141,6 +125,36 @@ export default function Settings() {
               Timer Configuration
             </CardTitle>
           </CardHeader>
+          
+          {/* Top Save Buttons */}
+          <div className="px-4 sm:px-6 pb-4 border-b border-border/20">
+            <div className="flex justify-center space-x-2 sm:space-x-4">
+              <Button
+                onClick={() => setLocalSettings(settings)}
+                disabled={!hasUnsavedChanges}
+                className="btn-tertiary px-4 py-2 sm:px-6 sm:py-3 font-medium hover:scale-105 transition-transform timer-control-button"
+              >
+                <RotateCcw className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 button-icon" />
+                <span className="button-text text-xs sm:text-sm">RESET</span>
+              </Button>
+              <Button
+                onClick={handleSave}
+                disabled={!hasUnsavedChanges || isFocusSessionRunning}
+                className="btn-primary px-4 py-2 sm:px-6 sm:py-3 font-medium hover:scale-105 transition-transform timer-control-button"
+              >
+                <Save className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 button-icon" />
+                <span className="button-text text-xs sm:text-sm">SAVE</span>
+                {hasUnsavedChanges && !isFocusSessionRunning && (
+                  <Badge variant="secondary" className="ml-2 text-xs">
+                    {Object.keys(localSettings).filter(key => 
+                      JSON.stringify(localSettings[key as keyof SettingsType]) !== 
+                      JSON.stringify(settings[key as keyof SettingsType])
+                    ).length}
+                  </Badge>
+                )}
+              </Button>
+            </div>
+          </div>
           <CardContent className="space-y-4 sm:space-y-6 settings-card-mobile">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
               <div>
@@ -344,24 +358,24 @@ export default function Settings() {
               />
             </div>
 
-            {/* Save Button within Timer Configuration */}
+            {/* Bottom Save Buttons */}
             <div className="pt-4 border-t border-border/20">
-              <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 items-center">
+              <div className="flex justify-center space-x-2 sm:space-x-4">
                 <Button
-                  variant="outline"
                   onClick={() => setLocalSettings(settings)}
                   disabled={!hasUnsavedChanges}
-                  className="text-xs sm:text-sm w-full sm:w-auto"
+                  className="btn-tertiary px-4 py-2 sm:px-6 sm:py-3 font-medium hover:scale-105 transition-transform timer-control-button"
                 >
-                  Reset Changes
+                  <RotateCcw className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 button-icon" />
+                  <span className="button-text text-xs sm:text-sm">RESET</span>
                 </Button>
                 <Button
                   onClick={handleSave}
                   disabled={!hasUnsavedChanges || isFocusSessionRunning}
-                  className="text-xs sm:text-sm w-full sm:w-auto"
+                  className="btn-primary px-4 py-2 sm:px-6 sm:py-3 font-medium hover:scale-105 transition-transform timer-control-button"
                 >
-                  <Save className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-                  <span>Save Settings</span>
+                  <Save className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 button-icon" />
+                  <span className="button-text text-xs sm:text-sm">SAVE</span>
                   {hasUnsavedChanges && !isFocusSessionRunning && (
                     <Badge variant="secondary" className="ml-2 text-xs">
                       {Object.keys(localSettings).filter(key => 
