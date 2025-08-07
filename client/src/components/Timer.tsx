@@ -122,7 +122,7 @@ const motivationalQuotes = [
 ];
 
 export default function Timer({ onOpenSettings }: TimerProps) {
-  const { timerState, startSession, pauseSession, resumeSession, resetSession, endSession, formatTime, getProgress } = useTimer();
+  const { timerState, startSession, pauseSession, resumeSession, resetSession, endSession, formatTime, getProgress, sessions } = useTimer();
   const [settings] = useLocalStorage<Settings>('pomotron-settings', {
     focusDuration: 25,
     breakDuration: 5,
@@ -221,6 +221,35 @@ export default function Timer({ onOpenSettings }: TimerProps) {
       case 'longBreak':
         return 'bg-accent';
     }
+  };
+
+  // Calculate completed cycles (focus + break pairs) from today's sessions
+  const getCompletedCyclesToday = (): number => {
+    const today = new Date().toDateString();
+    const todaySessions = sessions.filter((session: any) => 
+      session.startTime && new Date(session.startTime).toDateString() === today && session.completed
+    );
+    
+    // Count focus sessions that have a corresponding completed break session
+    const focusSessions = todaySessions.filter((s: any) => s.sessionType === 'focus');
+    const breakSessions = todaySessions.filter((s: any) => s.sessionType === 'break' || s.sessionType === 'longBreak');
+    
+    // A cycle is complete when we have both a focus and a break session
+    // For simplicity, count the minimum of completed focus and break sessions
+    return Math.min(focusSessions.length, breakSessions.length);
+  };
+
+  // Calculate total focus time from completed sessions today
+  const getTotalFocusTimeToday = (): number => {
+    const today = new Date().toDateString();
+    const todayFocusSessions = sessions.filter((session: any) => 
+      session.startTime && 
+      new Date(session.startTime).toDateString() === today && 
+      session.completed && 
+      session.sessionType === 'focus'
+    );
+    
+    return todayFocusSessions.reduce((total: number, session: any) => total + session.duration, 0);
   };
 
   // GlitchRun logic
@@ -532,10 +561,9 @@ export default function Timer({ onOpenSettings }: TimerProps) {
                   </div>
                   <div className="flex items-center space-x-2">
                     <span className="text-2xl font-orbitron font-black text-primary neon-text">
-                      {new Date().toDateString() === new Date().toDateString() ? 
-                        timerState.currentCycle - 1 : 0}
+                      {getCompletedCyclesToday()}
                     </span>
-                    <span className="text-xs text-muted-foreground font-tech-mono">DONE</span>
+                    <span className="text-xs text-muted-foreground font-tech-mono">CYCLES</span>
                   </div>
                 </div>
 
@@ -552,11 +580,11 @@ export default function Timer({ onOpenSettings }: TimerProps) {
                   </div>
                   <div className="flex items-center space-x-1">
                     <span className="text-xl font-orbitron font-black text-accent">
-                      {Math.floor((timerState.currentCycle - 1) * settings.focusDuration / 60)}
+                      {Math.floor(getTotalFocusTimeToday() / 3600)}
                     </span>
                     <span className="text-xs text-accent font-tech-mono">H</span>
                     <span className="text-xl font-orbitron font-black text-accent ml-2">
-                      {(timerState.currentCycle - 1) * settings.focusDuration % 60}
+                      {Math.floor((getTotalFocusTimeToday() % 3600) / 60)}
                     </span>
                     <span className="text-xs text-accent font-tech-mono">M</span>
                   </div>
