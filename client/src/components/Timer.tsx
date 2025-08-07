@@ -430,7 +430,7 @@ export default function Timer({ onOpenSettings, timerHook: externalTimerHook }: 
                           isCompleted
                             ? 'bg-primary border-primary shadow-lg shadow-primary/50'
                             : isCurrent
-                            ? 'bg-primary/30 border-primary animate-pulse'
+                            ? 'bg-gradient-to-br from-amber-400 to-orange-500 border-amber-400 shadow-md shadow-amber-400/40'
                             : 'bg-muted border-muted-foreground/30'
                         }`}
                         title={`Cycle ${cycleNumber}${isCompleted ? ' (Completed)' : isCurrent ? ' (Current)' : ''}`}
