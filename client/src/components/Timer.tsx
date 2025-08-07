@@ -240,10 +240,21 @@ export default function Timer({ onOpenSettings }: TimerProps) {
       return isToday && hasEnded;
     });
     
+    console.log('=== CYCLE COUNT DEBUG ===');
     console.log('Today:', today);
-    console.log('All sessions:', sessions);
+    console.log('Total sessions:', sessions.length);
+    
+    // Show dates for each session
+    sessions.forEach((session: any, index: number) => {
+      if (session.sessionType === 'focus') {
+        const sessionDate = new Date(session.startTime).toDateString();
+        console.log(`Session ${index}: ${sessionDate}, hasEndTime: ${!!session.endTime}, completed: ${session.completed}, isToday: ${sessionDate === today}`);
+      }
+    });
+    
     console.log('Today\'s completed focus sessions:', todayCompletedFocusSessions);
-    console.log('Count:', todayCompletedFocusSessions.length);
+    console.log('Final count:', todayCompletedFocusSessions.length);
+    console.log('=== END DEBUG ===');
     
     return todayCompletedFocusSessions.length;
   };

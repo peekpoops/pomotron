@@ -126,11 +126,16 @@ export function useTimer() {
             
             // Save completed session
             if (prev.currentSessionId) {
-              setSessions(prevSessions => prevSessions.map(s => 
-                s.id === prev.currentSessionId 
-                  ? { ...s, endTime: new Date(), completed: true }
-                  : s
-              ));
+              console.log('Completing session:', prev.currentSessionId, 'Session type:', prev.sessionType);
+              setSessions(prevSessions => {
+                const updated = prevSessions.map(s => 
+                  s.id === prev.currentSessionId 
+                    ? { ...s, endTime: new Date(), completed: true }
+                    : s
+                );
+                console.log('Sessions after completion:', updated);
+                return updated;
+              });
             }
             
             // Calculate next duration
