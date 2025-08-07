@@ -57,6 +57,7 @@ export function useTimer() {
           description: `You've been idle for ${settings.idleTimeout} minutes. Stay focused!`,
           duration: 5000,
         });
+        playSound('idleNudge');
         resetIdleDetection();
       }
     }, 30000); // Check every 30 seconds
