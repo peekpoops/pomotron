@@ -124,7 +124,7 @@ function createScoreSound(): void {
 }
 
 function createCollisionSound(): void {
-  // Harsh glitch zap with distortion
+  // Soft, gentle impact sound
   const ctx = getAudioContext();
   const oscillator = ctx.createOscillator();
   const gainNode = ctx.createGain();
@@ -132,16 +132,16 @@ function createCollisionSound(): void {
   oscillator.connect(gainNode);
   gainNode.connect(ctx.destination);
   
-  oscillator.type = 'square';
-  oscillator.frequency.setValueAtTime(800, ctx.currentTime);
-  oscillator.frequency.exponentialRampToValueAtTime(50, ctx.currentTime + 0.3);
+  oscillator.type = 'sine'; // Much softer wave type
+  oscillator.frequency.setValueAtTime(220, ctx.currentTime); // Lower, gentler frequency
+  oscillator.frequency.exponentialRampToValueAtTime(110, ctx.currentTime + 0.2); // Gentle downward slide
   
   gainNode.gain.setValueAtTime(0, ctx.currentTime);
-  gainNode.gain.linearRampToValueAtTime(0.2, ctx.currentTime + 0.01);
-  gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+  gainNode.gain.linearRampToValueAtTime(0.08, ctx.currentTime + 0.01); // Much quieter volume
+  gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.2); // Shorter duration
   
   oscillator.start(ctx.currentTime);
-  oscillator.stop(ctx.currentTime + 0.3);
+  oscillator.stop(ctx.currentTime + 0.2);
 }
 
 function createGameStartSound(): void {
