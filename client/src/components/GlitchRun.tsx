@@ -312,17 +312,7 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
     ctx.translate(centerX, centerY);
     ctx.rotate(rotation);
 
-    // Jump aura ring
-    if (jumpAura > 0) {
-      ctx.shadowBlur = 20;
-      ctx.shadowColor = '#ff6b9d';
-      ctx.strokeStyle = `rgba(255, 107, 157, ${jumpAura * 0.8})`;
-      ctx.lineWidth = 3;
-      ctx.beginPath();
-      ctx.arc(0, 0, avatarWidth * 0.8 * jumpAura, 0, Math.PI * 2);
-      ctx.stroke();
-      ctx.shadowBlur = 0;
-    }
+    
 
     // Avatar outline glow
     ctx.shadowBlur = 20;
