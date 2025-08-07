@@ -438,14 +438,6 @@ export default function Timer({ onOpenSettings, timerHook: externalTimerHook }: 
                     );
                   })}
                 </div>
-                <div className="text-xs text-muted-foreground mobile-text-sm">
-                  {timerState.sessionType === 'focus' 
-                    ? `Cycle ${timerState.currentCycle} of ${settings.cyclesBeforeLongBreak}`
-                    : timerState.sessionType === 'break'
-                    ? `Break after Cycle ${timerState.currentCycle} • Next: Cycle ${timerState.currentCycle + 1}`
-                    : 'Long break • Starting fresh after this break'
-                  }
-                </div>
               </div>
 
               {/* Progress Bar */}
