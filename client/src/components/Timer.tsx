@@ -195,7 +195,7 @@ export default function Timer({ onOpenSettings }: TimerProps) {
     if (timerState.sessionType === 'focus') {
       return `Cycle ${timerState.currentCycle} of ${settings.cyclesBeforeLongBreak} • Long break after ${settings.cyclesBeforeLongBreak} cycles`;
     } else if (timerState.sessionType === 'break') {
-      return `Short break • Cycle ${timerState.currentCycle} of ${settings.cyclesBeforeLongBreak}`;
+      return `Short break • Just completed cycle ${timerState.currentCycle} of ${settings.cyclesBeforeLongBreak}`;
     } else {
       return 'Long break • Starting fresh after this break';
     }

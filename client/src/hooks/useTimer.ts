@@ -91,12 +91,13 @@ export function useTimer() {
             
             if (isBreakNext) {
               nextSessionType = isLongBreak ? 'longBreak' : 'break';
+              // Keep the same cycle during breaks - the cycle represents the focus session we just completed
             } else {
               nextSessionType = 'focus';
               if (prev.sessionType === 'longBreak') {
                 nextCycle = 1; // Reset cycle after long break
-              } else {
-                nextCycle = prev.currentCycle + 1;
+              } else if (prev.sessionType === 'break') {
+                nextCycle = prev.currentCycle + 1; // Increment cycle when starting new focus session after break
               }
             }
             
