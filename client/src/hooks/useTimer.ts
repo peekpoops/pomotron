@@ -386,7 +386,6 @@ export function useTimer() {
         isRunning: false,
         isPaused: true,
         timeLeft: Math.round(newTimeLeft),
-        pausedDuration: prev.pausedDuration + (now - prev.startTime - prev.pausedDuration),
       };
     });
     
@@ -397,16 +396,36 @@ export function useTimer() {
     setTimerState(prev => {
       if (!prev.isPaused) return prev; // Can't resume if not paused
       
+      // Calculate how much time should have elapsed based on remaining time
+      let totalDuration: number;
+      switch (prev.sessionType) {
+        case 'focus':
+          totalDuration = settings.focusDuration * 60;
+          break;
+        case 'break':
+          totalDuration = settings.breakDuration * 60;
+          break;
+        case 'longBreak':
+          totalDuration = settings.longBreakDuration * 60;
+          break;
+      }
+      
+      const timeElapsed = totalDuration - prev.timeLeft;
+      const newStartTime = Date.now() - (timeElapsed * 1000);
+      
       console.log('Resuming timer:', {
         currentTimeLeft: prev.timeLeft,
-        pausedDuration: prev.pausedDuration / 1000
+        totalDuration,
+        timeElapsed,
+        newStartTime: new Date(newStartTime).toLocaleTimeString()
       });
       
       return {
         ...prev,
         isRunning: true,
         isPaused: false,
-        startTime: Date.now() - prev.pausedDuration, // Adjust start time to account for paused duration
+        startTime: newStartTime,
+        pausedDuration: 0, // Reset paused duration since we're adjusting start time
       };
     });
     
