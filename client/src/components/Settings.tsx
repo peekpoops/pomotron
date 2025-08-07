@@ -194,12 +194,12 @@ export default function Settings() {
               </Button>
               <Button
                 onClick={handleSave}
-                disabled={!hasUnsavedChanges || isFocusSessionRunning}
+                disabled={!hasUnsavedChanges}
                 className="btn-primary px-4 py-2 sm:px-6 sm:py-3 font-medium hover:scale-105 transition-transform timer-control-button"
               >
                 <Save className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 button-icon" />
                 <span className="button-text text-xs sm:text-sm">SAVE</span>
-                {hasUnsavedChanges && !isFocusSessionRunning && (
+                {hasUnsavedChanges && (
                   <Badge variant="secondary" className="ml-2 text-xs">
                     {Object.keys(localSettings).filter(key => 
                       JSON.stringify(localSettings[key as keyof SettingsType]) !== 
@@ -425,12 +425,12 @@ export default function Settings() {
                 </Button>
                 <Button
                   onClick={handleSave}
-                  disabled={!hasUnsavedChanges || isFocusSessionRunning}
+                  disabled={!hasUnsavedChanges}
                   className="btn-primary px-4 py-2 sm:px-6 sm:py-3 font-medium hover:scale-105 transition-transform timer-control-button"
                 >
                   <Save className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 button-icon" />
                   <span className="button-text text-xs sm:text-sm">SAVE</span>
-                  {hasUnsavedChanges && !isFocusSessionRunning && (
+                  {hasUnsavedChanges && (
                     <Badge variant="secondary" className="ml-2 text-xs">
                       {Object.keys(localSettings).filter(key => 
                         JSON.stringify(localSettings[key as keyof SettingsType]) !== 
