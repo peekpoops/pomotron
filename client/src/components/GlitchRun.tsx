@@ -74,13 +74,6 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
     particleIdRef.current = 0;
     jumpVelocityRef.current = 0;
     gameStartTimeRef.current = Date.now();
-
-    // Start game loop
-    const gameLoop = () => {
-      updateGame();
-      gameLoopRef.current = requestAnimationFrame(gameLoop);
-    };
-    gameLoopRef.current = requestAnimationFrame(gameLoop);
   }, []);
 
   // End game
@@ -105,9 +98,9 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
 
     setTimeLeft(Math.ceil(newTimeLeft));
 
-    // Update jump aura (fades quickly regardless of jump state)
+    // Update jump aura (fades much faster)
     if (jumpAura > 0) {
-      setJumpAura(prev => Math.max(0, prev - 0.15));
+      setJumpAura(prev => Math.max(0, prev - 0.25));
     }
 
     // Update success burst effect
@@ -126,16 +119,16 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
       jumpVelocityRef.current += 1.2; // gravity
       const newY = playerY + jumpVelocityRef.current;
       
-      console.log('Jumping physics - velocity:', jumpVelocityRef.current, 'newY:', newY, 'groundY:', GROUND_Y);
+
 
       if (newY >= GROUND_Y) {
         setPlayerY(GROUND_Y);
         setIsJumping(false);
         jumpVelocityRef.current = 0;
-        console.log('Landing - playerY set to:', GROUND_Y);
+
       } else {
         setPlayerY(newY);
-        console.log('In air - playerY set to:', newY);
+
       }
     }
 
@@ -210,7 +203,7 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
   const handleJump = useCallback(() => {
     if (gameState !== 'playing' || isJumping) return;
 
-    console.log('Jump triggered! Current playerY:', playerY);
+
     
     setIsJumping(true);
     jumpVelocityRef.current = -16; // Strong upward velocity
@@ -252,9 +245,9 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
     }
   }, [isOpen, gameState, startGame, handleJump]);
 
-  // Canvas rendering
-  useEffect(() => {
-    if (!isOpen || !canvasRef.current) return;
+  // Canvas rendering function
+  const renderCanvas = useCallback(() => {
+    if (!canvasRef.current) return;
 
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
@@ -314,10 +307,7 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
     const centerX = PLAYER_X + PLAYER_SIZE / 2;
     const centerY = playerY + PLAYER_SIZE / 2;
     
-    // Debug: log avatar position for troubleshooting
-    if (Math.random() < 0.1) { // Log occasionally to avoid spam
-      console.log('Avatar render - playerY:', playerY, 'centerY:', centerY, 'isJumping:', isJumping);
-    }
+
 
     ctx.save();
     ctx.translate(centerX, centerY);
@@ -526,7 +516,28 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
       ctx.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
       ctx.globalAlpha = 1;
     }
-  }, [isOpen, gameState, playerY, isJumping, jumpAura, obstacles, particles, screenGlitch, successBurst, canvasRef]);
+  }, [playerY, isJumping, jumpAura, obstacles, particles, screenGlitch, successBurst]);
+
+  // Main game loop effect
+  useEffect(() => {
+    if (gameState === 'playing') {
+      const gameLoop = () => {
+        updateGame();
+        renderCanvas();
+        gameLoopRef.current = requestAnimationFrame(gameLoop);
+      };
+      gameLoopRef.current = requestAnimationFrame(gameLoop);
+    } else if (gameState === 'waiting' && isOpen) {
+      // Initial render when game opens
+      renderCanvas();
+    }
+
+    return () => {
+      if (gameLoopRef.current) {
+        cancelAnimationFrame(gameLoopRef.current);
+      }
+    };
+  }, [gameState, isOpen, updateGame, renderCanvas]);
 
   // Cleanup
   useEffect(() => {
