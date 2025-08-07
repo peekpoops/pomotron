@@ -225,15 +225,18 @@ export default function Timer({ onOpenSettings }: TimerProps) {
 
   // GlitchRun logic
   const canPlayGlitchRun = () => {
+    // During focus sessions (active): only once per session
     if (timerState.sessionType === 'focus' && timerState.isRunning) {
       return !glitchRunUsedThisSession;
     }
-    return !timerState.isRunning || timerState.sessionType === 'break' || timerState.sessionType === 'longBreak';
+    // During breaks or when timer is not running: unlimited
+    return timerState.sessionType === 'break' || timerState.sessionType === 'longBreak' || !timerState.isRunning;
   };
 
   const handleGlitchRun = () => {
     if (canPlayGlitchRun()) {
       setShowGlitchRun(true);
+      // Only mark as used if it's during an active focus session
       if (timerState.sessionType === 'focus' && timerState.isRunning) {
         setGlitchRunUsedThisSession(true);
       }
@@ -409,14 +412,18 @@ export default function Timer({ onOpenSettings }: TimerProps) {
                     }`}
                     disabled={!canPlayGlitchRun()}
                     title={
-                      timerState.sessionType === 'focus' && glitchRunUsedThisSession
+                      timerState.sessionType === 'focus' && timerState.isRunning && glitchRunUsedThisSession
                         ? 'GlitchRun used this focus session'
+                        : timerState.sessionType === 'focus' && timerState.isRunning
+                        ? 'Play GlitchRun - Once per focus session!'
                         : 'Play GlitchRun - Quick 10s dopamine boost!'
                     }
                   >
                     <Zap className="h-4 w-4 mr-1" style={{ filter: 'drop-shadow(0 0 4px currentColor)' }} />
                     GlitchRun
-                    {timerState.sessionType === 'focus' && !glitchRunUsedThisSession && (
+                    {((timerState.sessionType === 'focus' && timerState.isRunning && !glitchRunUsedThisSession) || 
+                      (timerState.sessionType === 'break' || timerState.sessionType === 'longBreak') ||
+                      !timerState.isRunning) && (
                       <div className="absolute -top-1 -right-1 w-2 h-2 bg-accent rounded-full animate-ping" />
                     )}
                   </Button>
