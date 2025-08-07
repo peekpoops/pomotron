@@ -198,12 +198,12 @@ export default function Settings() {
               <Input
                 id="idle-timeout"
                 type="number"
-                min="1"
+                min="0"
                 max="60"
                 value={localSettings.idleTimeout}
                 onChange={(e) => setLocalSettings(prev => ({
                   ...prev,
-                  idleTimeout: parseInt(e.target.value) || 5
+                  idleTimeout: parseInt(e.target.value) || 0
                 }))}
                 className="form-input mt-1 text-sm"
               />
