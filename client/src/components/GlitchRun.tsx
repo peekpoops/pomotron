@@ -146,7 +146,7 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
       setObstacles(prev => [...prev, {
         id: obstacleIdRef.current++,
         x: GAME_WIDTH,
-        y: GROUND_Y - OBSTACLE_HEIGHT, // Fix: place obstacle bottom at ground level
+        y: GROUND_Y, // Fix: place obstacle top at ground level
         width: OBSTACLE_WIDTH,
         height: OBSTACLE_HEIGHT,
         glitchPhase: Math.random() * Math.PI * 2,
@@ -181,21 +181,13 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
 
         // Removed excessive logging
 
-        // Check for collision - simplified logic
-        const hasHorizontalOverlap = playerRight > obsLeft && playerLeft < obsRight;
-        const hasVerticalOverlap = playerBottom > obsTop && playerTop < obsBottom;
+        // Check for collision - include boundary touching
+        const hasHorizontalOverlap = playerRight >= obsLeft && playerLeft <= obsRight;
+        const hasVerticalOverlap = playerBottom >= obsTop && playerTop <= obsBottom;
         
         const isCollision = hasHorizontalOverlap && hasVerticalOverlap;
 
-        // Debug: Log collision check for obstacles near player
-        if (Math.abs(updatedObstacle.x - PLAYER_X) < 100) {
-          console.log(`Obstacle ${updatedObstacle.id} collision check:`, {
-            playerBounds: { left: playerLeft, right: playerRight, top: playerTop, bottom: playerBottom },
-            obsBounds: { left: obsLeft, right: obsRight, top: obsTop, bottom: obsBottom },
-            overlaps: { horizontal: hasHorizontalOverlap, vertical: hasVerticalOverlap },
-            collision: isCollision
-          });
-        }
+
 
         // Mark collision if it occurred
         if (isCollision) {
@@ -230,12 +222,7 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
           return;
         }
 
-        // Remove obstacle if it collided (after effects are triggered)
-        if (updatedObstacle.collided) {
-          return;
-        }
-
-        // Obstacle is safe - keep it
+        // Keep all obstacles in the game (don't remove them after collision)
         updatedObstacles.push(updatedObstacle);
       });
 
