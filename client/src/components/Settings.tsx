@@ -169,7 +169,7 @@ export default function Settings() {
                 />
               </div>
             </div>
-            
+
             <div>
               <Label htmlFor="cycles-before-long-break" className="text-sm font-medium text-muted-foreground">
                 Cycles before long break
@@ -187,7 +187,7 @@ export default function Settings() {
                 className="form-input mt-1"
               />
             </div>
-            
+
             <div>
               <Label htmlFor="idle-timeout" className="text-sm font-medium text-muted-foreground">
                 Idle nudge timeout (min)
@@ -205,7 +205,7 @@ export default function Settings() {
                 className="form-input mt-1"
               />
             </div>
-            
+
             <TooltipProvider>
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
@@ -214,11 +214,18 @@ export default function Settings() {
                   </Label>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <button className="text-muted-foreground hover:text-foreground">
+                      <button
+                        className="text-muted-foreground hover:text-foreground"
+                        onClick={(e) => e.preventDefault()}
+                      >
                         <Info className="h-4 w-4" />
                       </button>
                     </TooltipTrigger>
-                    <TooltipContent>
+                    <TooltipContent
+                      side="top"
+                      align="center"
+                      className="z-50"
+                    >
                       <p className="max-w-xs">
                         Automatically starts the next session (break or focus) when the current session ends, without requiring manual intervention.
                       </p>
@@ -234,7 +241,7 @@ export default function Settings() {
                   }))}
                 />
               </div>
-              
+
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
                   <Label htmlFor="soft-start" className="text-sm font-medium text-muted-foreground">
@@ -242,11 +249,18 @@ export default function Settings() {
                   </Label>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <button className="text-muted-foreground hover:text-foreground">
+                      <button
+                        className="text-muted-foreground hover:text-foreground"
+                        onClick={(e) => e.preventDefault()}
+                      >
                         <Info className="h-4 w-4" />
                       </button>
                     </TooltipTrigger>
-                    <TooltipContent>
+                    <TooltipContent
+                      side="top"
+                      align="center"
+                      className="z-50"
+                    >
                       <p className="max-w-xs">
                         Adds a 5-second countdown before starting any session, giving you time to prepare and get into focus mode.
                       </p>
@@ -288,7 +302,7 @@ export default function Settings() {
                 }))}
               />
             </div>
-            
+
             <div className="flex items-center justify-between">
               <Label htmlFor="friction-override" className="text-sm font-medium text-muted-foreground">
                 Friction-based override
@@ -302,7 +316,7 @@ export default function Settings() {
                 }))}
               />
             </div>
-            
+
             <div>
               <Label className="text-sm font-medium text-muted-foreground mb-2 block">
                 Blocked Websites
@@ -322,7 +336,7 @@ export default function Settings() {
                   </div>
                 ))}
               </div>
-              
+
               <div className="flex gap-2">
                 <Input
                   placeholder="Add website..."
