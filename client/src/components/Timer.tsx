@@ -257,13 +257,13 @@ export default function Timer({ onOpenSettings }: TimerProps) {
   }, [timerState.sessionType, timerState.isRunning, timerState.timeLeft, settings.focusDuration]);
 
   return (
-    <div className="max-w-6xl mx-auto space-y-8">
+    <div className="max-w-6xl mx-auto space-y-8 px-4 sm:px-6 lg:px-8">
       {/* Motivational Quote Banner */}
       {settings.showQuotes && (
         <Card className="glass-morphism animate-float">
-          <CardContent className="p-6 relative">
+          <CardContent className="p-4 sm:p-6 relative">
             <div className="text-center">
-              <p className="text-lg italic text-secondary font-tech-mono">
+              <p className="text-sm sm:text-lg italic text-secondary font-tech-mono quote-text-mobile">
                 "{showFullQuote ? currentQuote.text : currentQuote.text.length > 120 ? `${currentQuote.text.substring(0, 120)}...` : currentQuote.text}"
               </p>
               {showFullQuote && (
@@ -295,22 +295,22 @@ export default function Timer({ onOpenSettings }: TimerProps) {
         </Card>
       )}
 
-      <div className="grid lg:grid-cols-3 gap-8">
+      <div className="grid lg:grid-cols-3 gap-4 sm:gap-8 mobile-single-col">
         {/* Timer Section */}
         <div className="lg:col-span-2">
           <Card className="neon-border glass-morphism">
-            <CardContent className="p-8">
+            <CardContent className="p-4 sm:p-6 lg:p-8 mobile-padding-md">
               {/* Timer Display */}
-              <div className="text-center mb-8">
-                <div className="timer-display text-6xl md:text-8xl font-orbitron font-bold neon-text text-primary mb-4">
+              <div className="text-center mb-6 sm:mb-8">
+                <div className="timer-display text-4xl sm:text-6xl md:text-8xl font-orbitron font-bold neon-text text-primary mb-4">
                   {formatTime(timerState.timeLeft)}
                 </div>
                 <div className="flex items-center justify-center space-x-2 mb-2">
-                  <Badge className={`${getSessionTypeColor()} text-primary-foreground`}>
+                  <Badge className={`${getSessionTypeColor()} text-primary-foreground text-xs sm:text-sm`}>
                     {getSessionTypeLabel()}
                   </Badge>
                 </div>
-                <div className="text-sm text-muted-foreground">
+                <div className="text-xs sm:text-sm text-muted-foreground mobile-text-sm">
                   {getSessionInfo()}
                 </div>
               </div>
@@ -340,19 +340,19 @@ export default function Timer({ onOpenSettings }: TimerProps) {
               </div>
 
               {/* Timer Controls */}
-              <div className="flex justify-center space-x-4 mb-6">
+              <div className="flex flex-col sm:flex-row justify-center space-y-3 sm:space-y-0 sm:space-x-4 mb-6 mobile-button-stack">
                 {!timerState.isRunning && !timerState.isPaused ? (
                   <Button
                     onClick={handleStartSession}
-                    className="btn-primary px-8 py-4 text-lg font-orbitron font-bold hover:scale-105 transition-transform"
+                    className="btn-primary px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg font-orbitron font-bold hover:scale-105 transition-transform"
                   >
-                    <Play className="h-5 w-5 mr-2" />
+                    <Play className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
                     START
                   </Button>
                 ) : timerState.isRunning ? (
                   <Button
                     onClick={pauseSession}
-                    className="btn-secondary px-6 py-4 font-medium hover:scale-105 transition-transform"
+                    className="btn-secondary px-4 sm:px-6 py-3 sm:py-4 font-medium hover:scale-105 transition-transform"
                   >
                     <Pause className="h-4 w-4 mr-2" />
                     PAUSE
@@ -360,7 +360,7 @@ export default function Timer({ onOpenSettings }: TimerProps) {
                 ) : (
                   <Button
                     onClick={resumeSession}
-                    className="btn-primary px-6 py-4 font-medium hover:scale-105 transition-transform"
+                    className="btn-primary px-4 sm:px-6 py-3 sm:py-4 font-medium hover:scale-105 transition-transform"
                   >
                     <Play className="h-4 w-4 mr-2" />
                     RESUME
@@ -369,7 +369,7 @@ export default function Timer({ onOpenSettings }: TimerProps) {
                 
                 <Button
                   onClick={resetSession}
-                  className="btn-tertiary px-6 py-4 font-medium hover:scale-105 transition-transform"
+                  className="btn-tertiary px-4 sm:px-6 py-3 sm:py-4 font-medium hover:scale-105 transition-transform"
                 >
                   <RotateCcw className="h-4 w-4 mr-2" />
                   RESET
@@ -377,7 +377,7 @@ export default function Timer({ onOpenSettings }: TimerProps) {
                 
                 <Button
                   onClick={endSession}
-                  className="btn-danger px-6 py-4 font-medium hover:scale-105 transition-transform"
+                  className="btn-danger px-4 sm:px-6 py-3 sm:py-4 font-medium hover:scale-105 transition-transform"
                 >
                   <Square className="h-4 w-4 mr-2" />
                   END
@@ -385,12 +385,12 @@ export default function Timer({ onOpenSettings }: TimerProps) {
               </div>
 
               {/* Quick Settings */}
-              <div className="flex justify-center space-x-4">
+              <div className="flex flex-col sm:flex-row justify-center items-center space-y-2 sm:space-y-0 sm:space-x-4">
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={onOpenSettings}
-                  className="text-muted-foreground hover:text-foreground"
+                  className="text-muted-foreground hover:text-foreground w-full sm:w-auto"
                 >
                   <Settings2 className="h-4 w-4 mr-1" />
                   Settings
@@ -402,7 +402,7 @@ export default function Timer({ onOpenSettings }: TimerProps) {
                     variant="ghost"
                     size="sm"
                     onClick={handleGlitchRun}
-                    className={`relative ${
+                    className={`relative w-full sm:w-auto ${
                       !canPlayGlitchRun() 
                         ? 'text-muted-foreground/50 cursor-not-allowed' 
                         : 'text-muted-foreground hover:text-accent'
@@ -424,14 +424,14 @@ export default function Timer({ onOpenSettings }: TimerProps) {
         </div>
 
         {/* Sidebar */}
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6">
           {/* Current Intention - Enhanced Retro Style */}
           {timerState.currentIntention.task && (
             <Card className="neon-border glass-morphism relative overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-br from-accent/10 via-primary/5 to-secondary/10 opacity-60"></div>
-              <CardContent className="p-6 relative z-10">
-                <div className="mb-6">
-                  <h3 className="section-title text-lg text-secondary flex items-center font-orbitron font-bold">
+              <CardContent className="p-4 sm:p-6 relative z-10 mobile-padding-md">
+                <div className="mb-4 sm:mb-6">
+                  <h3 className="section-title text-base sm:text-lg text-secondary flex items-center font-orbitron font-bold">
                     <div className="relative mr-3">
                       <Lightbulb className="h-6 w-6 text-accent animate-pulse" style={{ filter: 'drop-shadow(0 0 8px currentColor)' }} />
                       <div className="absolute inset-0 animate-ping">
@@ -445,19 +445,19 @@ export default function Timer({ onOpenSettings }: TimerProps) {
                   <div className="h-0.5 w-full bg-gradient-to-r from-transparent via-accent to-transparent mt-2 opacity-60"></div>
                 </div>
                 
-                <div className="space-y-5">
+                <div className="space-y-3 sm:space-y-5">
                   {/* Task Section */}
-                  <div className="relative p-4 rounded-xl bg-gradient-to-r from-primary/15 to-accent/10 border border-primary/20 hover:border-primary/40 transition-all duration-300">
+                  <div className="relative p-3 sm:p-4 rounded-xl bg-gradient-to-r from-primary/15 to-accent/10 border border-primary/20 hover:border-primary/40 transition-all duration-300">
                     <div className="flex items-start space-x-3">
                       <div className="relative mt-1">
                         <Target className="h-5 w-5 text-primary animate-pulse" />
                         <div className="absolute -top-1 -right-1 w-2 h-2 bg-accent rounded-full animate-ping opacity-75"></div>
                       </div>
                       <div className="flex-1">
-                        <div className="text-xs font-tech-mono text-primary font-bold uppercase mb-2 tracking-wider">
+                        <div className="text-xs font-tech-mono text-primary font-bold uppercase mb-2 tracking-wider mobile-xs-text">
                           TARGET OBJECTIVE
                         </div>
-                        <div className="text-sm text-foreground font-medium leading-relaxed bg-black/20 p-3 rounded-lg border border-white/10">
+                        <div className="text-xs sm:text-sm text-foreground font-medium leading-relaxed bg-black/20 p-2 sm:p-3 rounded-lg border border-white/10 mobile-text-sm">
                           {timerState.currentIntention.task}
                         </div>
                       </div>
@@ -466,7 +466,7 @@ export default function Timer({ onOpenSettings }: TimerProps) {
 
                   {/* Why Section */}
                   {timerState.currentIntention.why && (
-                    <div className="relative p-4 rounded-xl bg-gradient-to-r from-secondary/15 to-accent/10 border border-secondary/20 hover:border-secondary/40 transition-all duration-300">
+                    <div className="relative p-3 sm:p-4 rounded-xl bg-gradient-to-r from-secondary/15 to-accent/10 border border-secondary/20 hover:border-secondary/40 transition-all duration-300">
                       <div className="flex items-start space-x-3">
                         <div className="relative mt-1">
                           <Heart className="h-5 w-5 text-secondary animate-pulse" style={{ filter: 'drop-shadow(0 0 6px currentColor)' }} />

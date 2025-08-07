@@ -196,6 +196,73 @@
     transform: translateX(24px);
   }
 
+  /* Mobile Responsive Fixes */
+  @media (max-width: 768px) {
+    .timer-display {
+      font-size: 3rem !important; /* Override md:text-8xl on mobile */
+    }
+    
+    .section-title {
+      font-size: 1.5rem;
+      letter-spacing: 0.05em;
+    }
+    
+    /* Ensure buttons stack nicely on mobile */
+    .mobile-button-stack {
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    
+    .mobile-button-stack > * {
+      width: 100%;
+      justify-content: center;
+    }
+    
+    /* Responsive spacing adjustments */
+    .mobile-padding-sm {
+      padding: 1rem !important;
+    }
+    
+    .mobile-padding-md {
+      padding: 1.5rem !important;
+    }
+    
+    /* Text size adjustments for mobile */
+    .mobile-text-sm {
+      font-size: 0.875rem;
+    }
+    
+    .mobile-text-base {
+      font-size: 1rem;
+    }
+    
+    /* Grid responsive overrides */
+    .mobile-single-col {
+      grid-template-columns: 1fr !important;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .timer-display {
+      font-size: 2.5rem !important;
+    }
+    
+    /* Extra small screens - even more compact */
+    .mobile-xs-padding {
+      padding: 0.75rem !important;
+    }
+    
+    .mobile-xs-text {
+      font-size: 0.75rem;
+    }
+    
+    /* Ensure quote text wraps properly */
+    .quote-text-mobile {
+      word-break: break-word;
+      hyphens: auto;
+    }
+  }
+
   /* Enhanced Navigation Tabs - Retro Style */
   .nav-tab {
     @apply relative border-2 border-transparent rounded-lg px-6 py-3 transition-all duration-500 overflow-hidden;
