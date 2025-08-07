@@ -151,9 +151,9 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
           return false;
         }
 
-        // Check collision
-        const playerLeft = PLAYER_X;
-        const playerRight = PLAYER_X + PLAYER_SIZE;
+        // Check collision (adjusted for avatar center)
+        const playerLeft = PLAYER_X - PLAYER_SIZE/4;
+        const playerRight = PLAYER_X + PLAYER_SIZE * 0.75;
         const playerTop = playerY;
         const playerBottom = playerY + PLAYER_SIZE;
 
@@ -191,20 +191,20 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
     if (gameState !== 'playing' || isJumping) return;
     
     setIsJumping(true);
-    jumpVelocityRef.current = -12;
+    jumpVelocityRef.current = -13; // Slightly stronger jump
     setScore(s => s + 5); // Points for jumping
 
-    // Create jump particles
+    // Create enhanced jump particles
     const newParticles = [];
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 8; i++) {
       newParticles.push({
         id: particleIdRef.current++,
-        x: PLAYER_X + PLAYER_SIZE / 2,
+        x: PLAYER_X + PLAYER_SIZE / 2 + (Math.random() - 0.5) * 10,
         y: playerY + PLAYER_SIZE,
-        vx: (Math.random() - 0.5) * 4,
-        vy: -Math.random() * 3 - 1,
-        life: 20,
-        maxLife: 20
+        vx: (Math.random() - 0.5) * 6,
+        vy: -Math.random() * 4 - 2,
+        life: 25,
+        maxLife: 25
       });
     }
     setParticles(prev => [...prev, ...newParticles]);
@@ -282,12 +282,55 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
     ctx.lineTo(GAME_WIDTH, 50);
     ctx.stroke();
 
-    // Draw player
+    // Draw player (Tron-like figure)
     const pulse = Math.sin(Date.now() * 0.01) * 0.3 + 0.7;
-    ctx.shadowBlur = 20;
+    const jumpScale = isJumping ? 1.2 : 1.0;
+    const avatarWidth = PLAYER_SIZE * jumpScale;
+    const avatarHeight = PLAYER_SIZE * jumpScale;
+    const centerX = PLAYER_X + PLAYER_SIZE / 2;
+    const centerY = playerY + PLAYER_SIZE / 2;
+    
+    ctx.save();
+    ctx.translate(centerX, centerY);
+    if (isJumping) {
+      ctx.rotate(Math.sin(Date.now() * 0.02) * 0.1); // Slight rotation when jumping
+    }
+    
+    // Avatar glow effect
+    ctx.shadowBlur = 15;
     ctx.shadowColor = '#ff6b9d';
+    
+    // Draw head
     ctx.fillStyle = `rgba(255, 107, 157, ${pulse})`;
-    ctx.fillRect(PLAYER_X, playerY, PLAYER_SIZE, PLAYER_SIZE);
+    ctx.fillRect(-avatarWidth/4, -avatarHeight/2, avatarWidth/2, avatarHeight/3);
+    
+    // Draw body
+    ctx.fillStyle = `rgba(0, 255, 255, ${pulse * 0.8})`;
+    ctx.fillRect(-avatarWidth/5, -avatarHeight/4, avatarWidth/2.5, avatarHeight/2);
+    
+    // Draw arms (extended when jumping)
+    const armExtension = isJumping ? 1.3 : 1.0;
+    ctx.fillStyle = `rgba(255, 255, 0, ${pulse * 0.6})`;
+    ctx.fillRect(-avatarWidth/2 * armExtension, -avatarHeight/6, avatarWidth/6, avatarHeight/4);
+    ctx.fillRect(avatarWidth/3 * armExtension, -avatarHeight/6, avatarWidth/6, avatarHeight/4);
+    
+    // Draw legs (bent when jumping)
+    const legBend = isJumping ? -0.2 : 0;
+    ctx.fillStyle = `rgba(255, 107, 157, ${pulse * 0.7})`;
+    ctx.fillRect(-avatarWidth/6, avatarHeight/6 + legBend * avatarHeight, avatarWidth/8, avatarHeight/3);
+    ctx.fillRect(avatarWidth/12, avatarHeight/6 + legBend * avatarHeight, avatarWidth/8, avatarHeight/3);
+    
+    // Energy trail when jumping
+    if (isJumping) {
+      ctx.globalAlpha = 0.6;
+      ctx.fillStyle = '#ff6b9d';
+      for (let i = 0; i < 3; i++) {
+        ctx.fillRect(-avatarWidth/3 + i * 2, avatarHeight/2 + i * 3, avatarWidth/6, 2);
+      }
+      ctx.globalAlpha = 1;
+    }
+    
+    ctx.restore();
     ctx.shadowBlur = 0;
 
     // Draw obstacles
@@ -317,13 +360,24 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
       ctx.shadowBlur = 0;
     });
 
-    // Draw particles
+    // Draw particles with enhanced effects
     particles.forEach(particle => {
       const alpha = particle.life / particle.maxLife;
-      ctx.fillStyle = `rgba(255, 107, 157, ${alpha})`;
-      ctx.shadowBlur = 5;
+      const size = 2 + alpha * 3;
+      
+      ctx.shadowBlur = 8;
       ctx.shadowColor = '#ff6b9d';
-      ctx.fillRect(particle.x, particle.y, 3, 3);
+      ctx.fillStyle = `rgba(255, 107, 157, ${alpha})`;
+      
+      // Draw main particle
+      ctx.fillRect(particle.x - size/2, particle.y - size/2, size, size);
+      
+      // Draw particle trail
+      ctx.globalAlpha = alpha * 0.5;
+      ctx.fillStyle = '#00ffff';
+      ctx.fillRect(particle.x - 1, particle.y - 1, 2, 2);
+      ctx.globalAlpha = 1;
+      
       ctx.shadowBlur = 0;
     });
 
