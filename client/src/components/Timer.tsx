@@ -223,20 +223,17 @@ export default function Timer({ onOpenSettings }: TimerProps) {
     }
   };
 
-  // Calculate completed cycles (focus + break pairs) from today's sessions
+  // Calculate completed cycles (completed focus sessions) from today's sessions
   const getCompletedCyclesToday = (): number => {
     const today = new Date().toDateString();
-    const todaySessions = sessions.filter((session: any) => 
-      session.startTime && new Date(session.startTime).toDateString() === today && session.completed
+    const todayCompletedFocusSessions = sessions.filter((session: any) => 
+      session.startTime && 
+      new Date(session.startTime).toDateString() === today && 
+      session.completed &&
+      session.sessionType === 'focus'
     );
     
-    // Count focus sessions that have a corresponding completed break session
-    const focusSessions = todaySessions.filter((s: any) => s.sessionType === 'focus');
-    const breakSessions = todaySessions.filter((s: any) => s.sessionType === 'break' || s.sessionType === 'longBreak');
-    
-    // A cycle is complete when we have both a focus and a break session
-    // For simplicity, count the minimum of completed focus and break sessions
-    return Math.min(focusSessions.length, breakSessions.length);
+    return todayCompletedFocusSessions.length;
   };
 
   // Calculate total focus time from completed sessions today
