@@ -159,21 +159,41 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
         x: obstacle.x - OBSTACLE_SPEED,
         glitchPhase: obstacle.glitchPhase + 0.2
       })).filter(obstacle => {
-        // Remove obstacles that are off-screen and award points
+        // Remove obstacles that are off-screen and award points only if successfully avoided
         if (obstacle.x < -obstacle.width) {
-          setScore(s => {
-            const newScore = s + 10;
-            // Only play sound when score actually increases
-            playSound('glitch-score');
-            return newScore;
-          });
-          // Create success burst effect
-          setSuccessBurst({
-            x: PLAYER_X + PLAYER_SIZE/2,
-            y: playerY + PLAYER_SIZE/2,
-            time: Date.now()
-          });
-          return false;
+          // Check if obstacle was successfully avoided (no collision occurred)
+          const GRACE_MARGIN = 4;
+          const playerLeft = PLAYER_X;
+          const playerRight = PLAYER_X + PLAYER_SIZE;
+          const playerTop = playerY;
+          const playerBottom = playerY + PLAYER_SIZE;
+
+          const obsLeft = obstacle.x;
+          const obsRight = obstacle.x + obstacle.width;
+          const obsTop = obstacle.y - obstacle.height;
+          const obsBottom = obstacle.y;
+
+          const hasHorizontalOverlap = playerRight > obsLeft + GRACE_MARGIN &&
+                                     playerLeft < obsRight - GRACE_MARGIN;
+          const hasVerticalOverlap = playerBottom > obsTop + GRACE_MARGIN &&
+                                   playerTop < obsBottom - GRACE_MARGIN;
+          const wasCollision = hasHorizontalOverlap && hasVerticalOverlap;
+
+          // Only award score if obstacle passed without collision
+          if (!wasCollision) {
+            setScore(s => {
+              const newScore = s + 10;
+              playSound('glitch-score');
+              return newScore;
+            });
+            // Create success burst effect
+            setSuccessBurst({
+              x: PLAYER_X + PLAYER_SIZE/2,
+              y: playerY + PLAYER_SIZE/2,
+              time: Date.now()
+            });
+          }
+          return false; // Remove obstacle either way
         }
 
         // Check collision with proper positioning
