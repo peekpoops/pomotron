@@ -416,12 +416,8 @@ export default function Timer({ onOpenSettings, timerHook: externalTimerHook }: 
                 <div className="flex items-center justify-center space-x-2 mb-2">
                   {Array.from({ length: settings.cyclesBeforeLongBreak }, (_, index) => {
                     const cycleNumber = index + 1;
-                    const isCompleted = timerState.sessionType === 'break' 
-                      ? cycleNumber <= timerState.currentCycle
-                      : cycleNumber < timerState.currentCycle;
-                    const isCurrent = timerState.sessionType === 'focus' 
-                      ? cycleNumber === timerState.currentCycle
-                      : timerState.sessionType === 'break' && cycleNumber === timerState.currentCycle + 1;
+                    const isCompleted = cycleNumber < timerState.currentCycle;
+                    const isCurrent = cycleNumber === timerState.currentCycle && timerState.sessionType === 'focus';
                     
                     return (
                       <div
@@ -430,10 +426,10 @@ export default function Timer({ onOpenSettings, timerHook: externalTimerHook }: 
                           isCompleted
                             ? 'bg-primary border-primary shadow-lg shadow-primary/50'
                             : isCurrent
-                            ? 'bg-gradient-to-br from-amber-400 to-orange-500 border-amber-400 shadow-md shadow-amber-400/40'
+                            ? 'bg-gradient-to-br from-accent to-secondary border-accent shadow-md shadow-accent/40'
                             : 'bg-muted border-muted-foreground/30'
                         }`}
-                        title={`Cycle ${cycleNumber}${isCompleted ? ' (Completed)' : isCurrent ? ' (Current)' : ''}`}
+                        title={`Focus Cycle ${cycleNumber}${isCompleted ? ' (Completed)' : isCurrent ? ' (Current)' : ''}`}
                       />
                     );
                   })}
