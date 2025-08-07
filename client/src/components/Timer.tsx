@@ -134,6 +134,7 @@ export default function Timer({ onOpenSettings }: TimerProps) {
     websiteBlockingEnabled: true,
     frictionOverride: false,
     blockedSites: [],
+    showQuotes: true,
   });
   
   const [showIntentionModal, setShowIntentionModal] = useState(false);
@@ -221,39 +222,41 @@ export default function Timer({ onOpenSettings }: TimerProps) {
   return (
     <div className="max-w-6xl mx-auto space-y-8">
       {/* Motivational Quote Banner */}
-      <Card className="glass-morphism animate-float">
-        <CardContent className="p-6 relative">
-          <div className="text-center">
-            <p className="text-lg italic text-secondary font-tech-mono">
-              "{showFullQuote ? currentQuote.text : currentQuote.text.length > 120 ? `${currentQuote.text.substring(0, 120)}...` : currentQuote.text}"
-            </p>
-            {showFullQuote && (
-              <div className="mt-4 space-y-3">
-                <p className="text-sm text-accent font-semibold">
-                  — {currentQuote.author}
-                </p>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={getNextQuote}
-                  className="text-xs text-accent hover:text-primary font-tech-mono"
-                >
-                  <RotateCcw className="h-3 w-3 mr-1" />
-                  New Quote
-                </Button>
-              </div>
-            )}
-          </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setShowFullQuote(!showFullQuote)}
-            className="absolute top-4 right-4 text-accent hover:text-primary p-1"
-          >
-            {showFullQuote ? '↑' : '↓'}
-          </Button>
-        </CardContent>
-      </Card>
+      {settings.showQuotes && (
+        <Card className="glass-morphism animate-float">
+          <CardContent className="p-6 relative">
+            <div className="text-center">
+              <p className="text-lg italic text-secondary font-tech-mono">
+                "{showFullQuote ? currentQuote.text : currentQuote.text.length > 120 ? `${currentQuote.text.substring(0, 120)}...` : currentQuote.text}"
+              </p>
+              {showFullQuote && (
+                <div className="mt-4 space-y-3">
+                  <p className="text-sm text-accent font-semibold">
+                    — {currentQuote.author}
+                  </p>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={getNextQuote}
+                    className="text-xs text-accent hover:text-primary font-tech-mono"
+                  >
+                    <RotateCcw className="h-3 w-3 mr-1" />
+                    New Quote
+                  </Button>
+                </div>
+              )}
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowFullQuote(!showFullQuote)}
+              className="absolute top-4 right-4 text-accent hover:text-primary p-1"
+            >
+              {showFullQuote ? '↑' : '↓'}
+            </Button>
+          </CardContent>
+        </Card>
+      )}
 
       <div className="grid lg:grid-cols-3 gap-8">
         {/* Timer Section */}

@@ -24,6 +24,7 @@ const defaultSettings: SettingsType = {
   websiteBlockingEnabled: true,
   frictionOverride: false,
   blockedSites: ['facebook.com', 'twitter.com', 'reddit.com', 'youtube.com', 'instagram.com'],
+  showQuotes: true,
 };
 
 export default function Settings() {
@@ -241,6 +242,34 @@ export default function Settings() {
                 onCheckedChange={(checked) => setLocalSettings(prev => ({
                   ...prev,
                   softStart: checked
+                }))}
+              />
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <Label htmlFor="show-quotes" className="text-sm font-medium text-muted-foreground">
+                  Show motivational quotes
+                </Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <button className="text-muted-foreground hover:text-foreground">
+                      <Info className="h-4 w-4" />
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent side="top" align="center" className="w-80 text-sm">
+                    <p>
+                      Display inspirational quotes at the top of the timer page to keep you motivated during focus sessions.
+                    </p>
+                  </PopoverContent>
+                </Popover>
+              </div>
+              <Switch
+                id="show-quotes"
+                checked={localSettings.showQuotes}
+                onCheckedChange={(checked) => setLocalSettings(prev => ({
+                  ...prev,
+                  showQuotes: checked
                 }))}
               />
             </div>

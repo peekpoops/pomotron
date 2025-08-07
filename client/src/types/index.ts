@@ -16,3 +16,18 @@ export interface NotificationToast {
 export type Theme = 'starcourt' | 'minimal' | 'ghibli';
 
 export type ViewType = 'timer' | 'analytics' | 'settings';
+
+export interface Settings {
+  focusDuration: number;
+  breakDuration: number;
+  longBreakDuration: number;
+  cyclesBeforeLongBreak: number;
+  autoStart: boolean;
+  softStart: boolean;
+  idleTimeout: number;
+  theme: Theme;
+  websiteBlockingEnabled: boolean;
+  frictionOverride: boolean;
+  blockedSites: string[];
+  showQuotes: boolean;
+}
