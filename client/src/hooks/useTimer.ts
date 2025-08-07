@@ -36,11 +36,11 @@ export function useTimer() {
     soundsEnabled: true,
   });
   
-  // Validate timer state on mount and fix any inconsistencies
+  // Clean up timer state on mount to prevent session continuation
   useEffect(() => {
-    // If timer was left in a running state but has no startTime, reset it
-    if (timerState.isRunning && !timerState.startTime) {
-      console.log('Found invalid timer state - running but no startTime, resetting...');
+    // Always reset running state on page load/refresh
+    if (timerState.isRunning || timerState.startTime || timerState.currentSessionId) {
+      console.log('Page loaded with active timer state, resetting to prevent session continuation');
       setTimerState(prev => ({
         ...prev,
         isRunning: false,
@@ -50,18 +50,7 @@ export function useTimer() {
         currentSessionId: undefined,
       }));
     }
-    
-    // If timer has a startTime but isn't running, reset it
-    if (timerState.startTime && !timerState.isRunning) {
-      console.log('Found invalid timer state - has startTime but not running, resetting...');
-      setTimerState(prev => ({
-        ...prev,
-        startTime: null,
-        pausedDuration: 0,
-        currentSessionId: undefined,
-      }));
-    }
-  }, []);
+  }, []); // Only run on mount
   const [sessions, setSessions] = useLocalStorage<Session[]>('pomotron-sessions', []);
   
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -210,19 +199,18 @@ export function useTimer() {
 
             const newState = {
               ...prev,
-              isRunning: settings.autoStart,
+              isRunning: false, // Always stop when session ends, regardless of autoStart
+              isPaused: false,
               timeLeft: nextDuration,
               sessionType: nextSessionType,
               currentCycle: nextCycle,
               currentSessionId: undefined,
               currentIntention: nextSessionType === 'focus' ? { task: '', why: '' } : prev.currentIntention,
-              startTime: settings.autoStart ? Date.now() : null,
+              startTime: null, // Always clear startTime when session ends
               pausedDuration: 0,
             };
             
-            // Save the new state to localStorage to ensure persistence across tabs
-            localStorage.setItem('pomotron-timer-state', JSON.stringify(newState));
-            console.log('Session ended, new timer state saved:', newState);
+            console.log('Session ended, timer stopped, new state:', newState);
             
             return newState;
           }

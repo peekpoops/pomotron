@@ -240,23 +240,12 @@ export default function Timer({ onOpenSettings }: TimerProps) {
       return isToday && hasEnded;
     });
     
-    console.log('=== CYCLE COUNT DEBUG ===');
-    console.log('Today:', today);
-    console.log('Total sessions:', sessions.length);
-    
-    // Show dates for each session
-    sessions.forEach((session: any, index: number) => {
-      if (session.sessionType === 'focus') {
-        const sessionDate = new Date(session.startTime).toDateString();
-        const isToday = sessionDate === today;
-        const hasEnded = session.endTime !== undefined || session.completed === true;
-        console.log(`Session ${index}: ${sessionDate}, hasEndTime: ${!!session.endTime}, completed: ${session.completed}, isToday: ${isToday}, hasEnded: ${hasEnded}, shouldCount: ${isToday && hasEnded}`);
-      }
-    });
-    
-    console.log('Today\'s completed focus sessions:', todayCompletedFocusSessions);
-    console.log('Final count:', todayCompletedFocusSessions.length);
-    console.log('=== END DEBUG ===');
+    // Debug: Only log when there are issues
+    if (todayCompletedFocusSessions.length === 0 && sessions.some(s => s.sessionType === 'focus' && s.endTime)) {
+      console.log('Debug: No today sessions found but completed sessions exist');
+      console.log('Today:', today);
+      console.log('Completed focus sessions found:', sessions.filter(s => s.sessionType === 'focus' && s.endTime).length);
+    }
     
     return todayCompletedFocusSessions.length;
   };
