@@ -186,7 +186,7 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
             playerTop < obsBottom) {
           // Collision detected
           setScreenGlitch(true);
-          setTimeout(() => setScreenGlitch(false), 200);
+          setTimeout(() => setScreenGlitch(false), 400); // Extended duration
           endGame(); // End game on collision
           return false; // Remove obstacle
         }
@@ -633,16 +633,28 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
             )}
 
             {gameState === 'finished' && (
-              <div>
-                <div className="text-xl font-orbitron font-bold text-accent mb-2">
-                  BACK TO FOCUS
-                </div>
-                <div className="text-sm text-white/60">
-                  Final Score: {score}
-                </div>
+              <div className="text-sm text-white/60">
+                Game Over
               </div>
             )}
           </div>
+
+          {/* Game Finished Overlay */}
+          {gameState === 'finished' && (
+            <div className="absolute inset-0 flex items-center justify-center z-20 bg-black/50">
+              <div className="text-center animate-pulse">
+                <div className="text-3xl font-orbitron font-bold text-accent mb-3 neon-text">
+                  BACK TO FOCUS
+                </div>
+                <div className="text-lg text-white/80 font-tech-mono">
+                  Final Score: {score}
+                </div>
+                <div className="text-sm text-white/50 mt-2">
+                  Returning to focus session...
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Animated circuit decoration */}
           <div className="absolute top-2 left-2 opacity-15">
