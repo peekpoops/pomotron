@@ -190,7 +190,7 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
 
 
         // Mark collision if it occurred
-        if (isCollision) {
+        if (isCollision && !updatedObstacle.collided) {
           console.log('🔴 COLLISION! Obstacle', updatedObstacle.id, 'hit player - marking as collided');
           updatedObstacle.collided = true;
           // Collision detected - trigger effects but don't end game
@@ -247,7 +247,6 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
     
     setIsJumping(true);
     jumpVelocityRef.current = -16; // Strong upward velocity
-    setScore(s => s + 5); // Points for jumping
     setJumpAura(1.0); // Trigger aura ring once per jump
     
     // Play jump sound
