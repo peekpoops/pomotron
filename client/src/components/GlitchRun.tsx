@@ -185,21 +185,29 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
         const obsTop = obstacle.y - obstacle.height;
         const obsBottom = obstacle.y;
 
-        // Simple overlap detection with grace margin
-        const hasHorizontalOverlap = playerRight > obsLeft + GRACE_MARGIN && 
-                                   playerLeft < obsRight - GRACE_MARGIN;
-        const hasVerticalOverlap = playerBottom > obsTop + GRACE_MARGIN && 
-                                 playerTop < obsBottom - GRACE_MARGIN;
-        
-        // Collision occurs when both horizontal and vertical overlap exist
-        if (hasHorizontalOverlap && hasVerticalOverlap) {
-          // Collision detected
-          setScreenGlitch(true);
-          setTimeout(() => setScreenGlitch(false), 400); // Extended duration
-          // Play collision sound
-          playSound('glitch-collision');
-          endGame(); // End game on collision
-          return false; // Remove obstacle
+        // Only check collision if player hasn't passed the obstacle yet
+        // This prevents collision on the way down after successful jump
+        const playerCenterX = PLAYER_X + PLAYER_SIZE / 2;
+        const obstacleCenterX = obstacle.x + obstacle.width / 2;
+        const hasPassedObstacle = playerCenterX > obstacleCenterX;
+
+        // Check overlap only if player hasn't passed the obstacle
+        if (!hasPassedObstacle) {
+          const hasHorizontalOverlap = playerRight > obsLeft + GRACE_MARGIN && 
+                                     playerLeft < obsRight - GRACE_MARGIN;
+          const hasVerticalOverlap = playerBottom > obsTop + GRACE_MARGIN && 
+                                   playerTop < obsBottom - GRACE_MARGIN;
+          
+          // Collision occurs when both horizontal and vertical overlap exist
+          if (hasHorizontalOverlap && hasVerticalOverlap) {
+            // Collision detected - trigger effects but don't end game
+            setScreenGlitch(true);
+            setTimeout(() => setScreenGlitch(false), 400);
+            // Play collision sound
+            playSound('glitch-collision');
+            // Remove obstacle but don't end game - player loses score opportunity
+            return false;
+          }
         }
 
         return true;

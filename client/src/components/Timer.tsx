@@ -405,7 +405,7 @@ export default function Timer({ onOpenSettings }: TimerProps) {
                     className={`relative ${
                       !canPlayGlitchRun() 
                         ? 'text-muted-foreground/50 cursor-not-allowed' 
-                        : 'text-accent hover:text-primary animate-pulse'
+                        : 'text-muted-foreground hover:text-accent'
                     }`}
                     disabled={!canPlayGlitchRun()}
                     title={
@@ -414,11 +414,8 @@ export default function Timer({ onOpenSettings }: TimerProps) {
                         : 'Play GlitchRun - Quick 10s dopamine boost!'
                     }
                   >
-                    <Zap className="h-4 w-4 mr-1" style={{ filter: 'drop-shadow(0 0 4px currentColor)' }} />
+                    <Zap className="h-4 w-4 mr-1" />
                     GlitchRun
-                    {timerState.sessionType === 'focus' && !glitchRunUsedThisSession && (
-                      <div className="absolute -top-1 -right-1 w-2 h-2 bg-accent rounded-full animate-ping" />
-                    )}
                   </Button>
                 )}
               </div>
