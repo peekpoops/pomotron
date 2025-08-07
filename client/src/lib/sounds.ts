@@ -124,24 +124,60 @@ function createScoreSound(): void {
 }
 
 function createCollisionSound(): void {
-  // Soft, gentle impact sound
+  // Soft glitch burst - layered digital texture
   const ctx = getAudioContext();
-  const oscillator = ctx.createOscillator();
-  const gainNode = ctx.createGain();
   
-  oscillator.connect(gainNode);
-  gainNode.connect(ctx.destination);
+  // Layer 1: Base soft tone
+  const baseOsc = ctx.createOscillator();
+  const baseGain = ctx.createGain();
+  baseOsc.connect(baseGain);
+  baseGain.connect(ctx.destination);
   
-  oscillator.type = 'sine'; // Much softer wave type
-  oscillator.frequency.setValueAtTime(220, ctx.currentTime); // Lower, gentler frequency
-  oscillator.frequency.exponentialRampToValueAtTime(110, ctx.currentTime + 0.2); // Gentle downward slide
+  baseOsc.type = 'sine';
+  baseOsc.frequency.setValueAtTime(180, ctx.currentTime);
+  baseOsc.frequency.exponentialRampToValueAtTime(90, ctx.currentTime + 0.15);
   
-  gainNode.gain.setValueAtTime(0, ctx.currentTime);
-  gainNode.gain.linearRampToValueAtTime(0.08, ctx.currentTime + 0.01); // Much quieter volume
-  gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.2); // Shorter duration
+  baseGain.gain.setValueAtTime(0, ctx.currentTime);
+  baseGain.gain.linearRampToValueAtTime(0.06, ctx.currentTime + 0.01);
+  baseGain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.15);
   
-  oscillator.start(ctx.currentTime);
-  oscillator.stop(ctx.currentTime + 0.2);
+  baseOsc.start(ctx.currentTime);
+  baseOsc.stop(ctx.currentTime + 0.15);
+  
+  // Layer 2: Glitch texture - quick digital burst
+  const glitchOsc = ctx.createOscillator();
+  const glitchGain = ctx.createGain();
+  glitchOsc.connect(glitchGain);
+  glitchGain.connect(ctx.destination);
+  
+  glitchOsc.type = 'square';
+  glitchOsc.frequency.setValueAtTime(440, ctx.currentTime);
+  glitchOsc.frequency.setValueAtTime(330, ctx.currentTime + 0.02);
+  glitchOsc.frequency.setValueAtTime(220, ctx.currentTime + 0.04);
+  
+  glitchGain.gain.setValueAtTime(0, ctx.currentTime);
+  glitchGain.gain.linearRampToValueAtTime(0.03, ctx.currentTime + 0.005);
+  glitchGain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.06);
+  
+  glitchOsc.start(ctx.currentTime);
+  glitchOsc.stop(ctx.currentTime + 0.06);
+  
+  // Layer 3: Soft high-freq sparkle
+  const sparkleOsc = ctx.createOscillator();
+  const sparkleGain = ctx.createGain();
+  sparkleOsc.connect(sparkleGain);
+  sparkleGain.connect(ctx.destination);
+  
+  sparkleOsc.type = 'triangle';
+  sparkleOsc.frequency.setValueAtTime(880, ctx.currentTime + 0.01);
+  sparkleOsc.frequency.exponentialRampToValueAtTime(440, ctx.currentTime + 0.08);
+  
+  sparkleGain.gain.setValueAtTime(0, ctx.currentTime + 0.01);
+  sparkleGain.gain.linearRampToValueAtTime(0.025, ctx.currentTime + 0.015);
+  sparkleGain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.08);
+  
+  sparkleOsc.start(ctx.currentTime + 0.01);
+  sparkleOsc.stop(ctx.currentTime + 0.08);
 }
 
 function createGameStartSound(): void {
