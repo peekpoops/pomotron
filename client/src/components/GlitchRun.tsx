@@ -70,6 +70,7 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
     setParticles([]);
     setScreenGlitch(false);
     setJumpAura(0);
+    setSuccessBurst(null);
     
     lastObstacleRef.current = 0;
     obstacleIdRef.current = 0;
@@ -145,7 +146,7 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
       setObstacles(prev => [...prev, {
         id: obstacleIdRef.current++,
         x: GAME_WIDTH,
-        y: GROUND_Y,
+        y: GROUND_Y - OBSTACLE_HEIGHT, // Fix: place obstacle bottom at ground level
         width: OBSTACLE_WIDTH,
         height: OBSTACLE_HEIGHT,
         glitchPhase: Math.random() * Math.PI * 2,
@@ -175,15 +176,10 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
 
         const obsLeft = updatedObstacle.x;
         const obsRight = updatedObstacle.x + updatedObstacle.width;
-        const obsTop = updatedObstacle.y - updatedObstacle.height;
-        const obsBottom = updatedObstacle.y;
+        const obsTop = updatedObstacle.y; // y is now the top of obstacle
+        const obsBottom = updatedObstacle.y + updatedObstacle.height; // bottom is y + height
 
-        console.log('Checking collision for obstacle', updatedObstacle.id, {
-          playerPos: { left: playerLeft, right: playerRight, top: playerTop, bottom: playerBottom },
-          obsPos: { left: obsLeft, right: obsRight, top: obsTop, bottom: obsBottom },
-          GROUND_Y,
-          playerY
-        });
+        // Removed excessive logging
 
         // Check for collision - simplified logic
         const hasHorizontalOverlap = playerRight > obsLeft && playerLeft < obsRight;
@@ -501,7 +497,7 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
       const glitchOffset = Math.sin(obstacle.glitchPhase * 2) * 3;
       ctx.fillRect(
         obstacle.x + glitchOffset, 
-        obstacle.y - obstacle.height, 
+        obstacle.y, 
         obstacle.width, 
         obstacle.height
       );
@@ -509,7 +505,7 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
       // Additional glitch lines
       ctx.fillStyle = '#ffffff';
       ctx.globalAlpha = glitchIntensity;
-      ctx.fillRect(obstacle.x, obstacle.y - obstacle.height + glitchIntensity * 10, obstacle.width, 2);
+      ctx.fillRect(obstacle.x, obstacle.y + glitchIntensity * 10, obstacle.width, 2);
       ctx.globalAlpha = 1;
       ctx.shadowBlur = 0;
     });
