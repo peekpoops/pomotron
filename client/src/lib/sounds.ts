@@ -167,7 +167,10 @@ export function playSound(type: 'start' | 'reset' | 'sessionComplete' | 'idleNud
   const settings = localStorage.getItem('pomotron-settings');
   if (settings) {
     const parsedSettings = JSON.parse(settings);
+    // Debug: check what's in settings
+    console.log('Sound settings check:', { soundsEnabled: parsedSettings.soundsEnabled, type });
     if (parsedSettings.soundsEnabled === false) {
+      console.log('Sounds disabled, skipping:', type);
       return;
     }
   }
