@@ -308,6 +308,66 @@
     animation: sparkle-float 1s ease-out forwards;
   }
 
+  /* GlitchRun Game Animations */
+  @keyframes glitch-flicker {
+    0%, 100% { 
+      transform: translateX(0px) scaleX(1);
+      filter: hue-rotate(0deg);
+    }
+    10% { 
+      transform: translateX(-2px) scaleX(0.98);
+      filter: hue-rotate(90deg);
+    }
+    20% { 
+      transform: translateX(2px) scaleX(1.02);
+      filter: hue-rotate(180deg);
+    }
+    30% { 
+      transform: translateX(-1px) scaleX(0.99);
+      filter: hue-rotate(270deg);
+    }
+    40% { 
+      transform: translateX(1px) scaleX(1.01);
+      filter: hue-rotate(360deg);
+    }
+    50% { 
+      transform: translateX(0px) scaleX(1);
+      filter: hue-rotate(0deg);
+    }
+  }
+
+  @keyframes grid-pulse {
+    0%, 100% { 
+      opacity: 0.3;
+      transform: scale(1);
+    }
+    50% { 
+      opacity: 0.6;
+      transform: scale(1.02);
+    }
+  }
+
+  @keyframes neon-pulse {
+    0%, 100% {
+      box-shadow: 0 0 10px currentColor, 0 0 20px currentColor, 0 0 30px currentColor;
+    }
+    50% {
+      box-shadow: 0 0 20px currentColor, 0 0 30px currentColor, 0 0 40px currentColor;
+    }
+  }
+
+  .glitch-run-obstacle {
+    animation: glitch-flicker 0.5s infinite;
+  }
+
+  .glitch-run-grid {
+    animation: grid-pulse 2s ease-in-out infinite;
+  }
+
+  .neon-glow {
+    animation: neon-pulse 2s ease-in-out infinite;
+  }
+
   /* Background pattern for retro theme */
   .retro-bg::before {
     content: '';

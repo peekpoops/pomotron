@@ -10,6 +10,7 @@ import { useTimer } from '@/hooks/useTimer';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { Settings } from '@/types';
 import IntentionModal from './IntentionModal';
+import { GlitchRun } from './GlitchRun';
 
 interface TimerProps {
   onOpenSettings: () => void;
@@ -143,6 +144,8 @@ export default function Timer({ onOpenSettings }: TimerProps) {
   const [showFullQuote, setShowFullQuote] = useState(false);
   const [availableQuotes, setAvailableQuotes] = useLocalStorage<typeof motivationalQuotes>('pomotron-available-quotes', [...motivationalQuotes]);
   const [usedQuotes, setUsedQuotes] = useLocalStorage<typeof motivationalQuotes>('pomotron-used-quotes', []);
+  const [showGlitchRun, setShowGlitchRun] = useState(false);
+  const [glitchRunUsedThisSession, setGlitchRunUsedThisSession] = useLocalStorage<boolean>('glitch-run-used', false);
 
   // Initialize the first quote if we haven't set one yet
   useEffect(() => {
@@ -220,7 +223,38 @@ export default function Timer({ onOpenSettings }: TimerProps) {
     }
   };
 
-  
+  // GlitchRun logic
+  const canPlayGlitchRun = () => {
+    if (timerState.sessionType === 'focus' && timerState.isRunning) {
+      return !glitchRunUsedThisSession;
+    }
+    return !timerState.isRunning || timerState.sessionType === 'break' || timerState.sessionType === 'longBreak';
+  };
+
+  const handleGlitchRun = () => {
+    if (canPlayGlitchRun()) {
+      setShowGlitchRun(true);
+      if (timerState.sessionType === 'focus' && timerState.isRunning) {
+        setGlitchRunUsedThisSession(true);
+      }
+    }
+  };
+
+  const handleGlitchRunClose = () => {
+    setShowGlitchRun(false);
+  };
+
+  // Reset GlitchRun usage when new focus session starts
+  useEffect(() => {
+    if (timerState.sessionType === 'focus' && timerState.isRunning) {
+      // Reset usage at start of new focus session (when time is full)
+      const sessionDurationMinutes = settings.focusDuration;
+      const sessionDurationSeconds = sessionDurationMinutes * 60;
+      if (timerState.timeLeft === sessionDurationSeconds) {
+        setGlitchRunUsedThisSession(false);
+      }
+    }
+  }, [timerState.sessionType, timerState.isRunning, timerState.timeLeft, settings.focusDuration]);
 
   return (
     <div className="max-w-6xl mx-auto space-y-8">
@@ -361,6 +395,32 @@ export default function Timer({ onOpenSettings }: TimerProps) {
                   <Settings2 className="h-4 w-4 mr-1" />
                   Settings
                 </Button>
+                
+                {/* GlitchRun Button */}
+                {canPlayGlitchRun() && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleGlitchRun}
+                    className={`relative ${
+                      !canPlayGlitchRun() 
+                        ? 'text-muted-foreground/50 cursor-not-allowed' 
+                        : 'text-accent hover:text-primary animate-pulse'
+                    }`}
+                    disabled={!canPlayGlitchRun()}
+                    title={
+                      timerState.sessionType === 'focus' && glitchRunUsedThisSession
+                        ? 'GlitchRun used this focus session'
+                        : 'Play GlitchRun - Quick 10s dopamine boost!'
+                    }
+                  >
+                    <Zap className="h-4 w-4 mr-1" style={{ filter: 'drop-shadow(0 0 4px currentColor)' }} />
+                    GlitchRun
+                    {timerState.sessionType === 'focus' && !glitchRunUsedThisSession && (
+                      <div className="absolute -top-1 -right-1 w-2 h-2 bg-accent rounded-full animate-ping" />
+                    )}
+                  </Button>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -550,6 +610,11 @@ export default function Timer({ onOpenSettings }: TimerProps) {
         open={showIntentionModal}
         onOpenChange={setShowIntentionModal}
         onSubmit={handleIntentionSet}
+      />
+
+      <GlitchRun
+        isOpen={showGlitchRun}
+        onClose={handleGlitchRunClose}
       />
     </div>
   );
