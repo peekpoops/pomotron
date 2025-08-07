@@ -219,17 +219,17 @@ export default function Timer({ onOpenSettings }: TimerProps) {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
-      {/* Motivational Quote Banner - Compact at top */}
-      <Card className="glass-morphism animate-float mx-auto max-w-4xl mb-6">
-        <CardContent className="p-4 relative">
+    <div className="max-w-6xl mx-auto space-y-8">
+      {/* Motivational Quote Banner */}
+      <Card className="glass-morphism animate-float">
+        <CardContent className="p-6 relative">
           <div className="text-center">
-            <p className="text-sm italic text-secondary font-tech-mono">
-              "{showFullQuote ? currentQuote.text : `${currentQuote.text.substring(0, 80)}...`}"
+            <p className="text-lg italic text-secondary font-tech-mono">
+              "{showFullQuote ? currentQuote.text : currentQuote.text.length > 120 ? `${currentQuote.text.substring(0, 120)}...` : currentQuote.text}"
             </p>
             {showFullQuote && (
-              <div className="mt-3 space-y-2">
-                <p className="text-xs text-accent font-semibold">
+              <div className="mt-4 space-y-3">
+                <p className="text-sm text-accent font-semibold">
                   — {currentQuote.author}
                 </p>
                 <Button
@@ -248,20 +248,122 @@ export default function Timer({ onOpenSettings }: TimerProps) {
             variant="ghost"
             size="sm"
             onClick={() => setShowFullQuote(!showFullQuote)}
-            className="absolute top-2 right-2 text-accent hover:text-primary p-1"
+            className="absolute top-4 right-4 text-accent hover:text-primary p-1"
           >
             {showFullQuote ? '↑' : '↓'}
           </Button>
         </CardContent>
       </Card>
 
-      {/* Main Content - Full Screen Centered Layout */}
-      <div className="flex-1 flex items-center justify-center px-6">
-        <div className="w-full max-w-7xl grid lg:grid-cols-4 gap-8 items-start">
-          
-          {/* Left Sidebar - Current Intention */}
-          <div className="lg:order-1 space-y-6">
-            {timerState.currentIntention.task && (
+      <div className="grid lg:grid-cols-3 gap-8">
+        {/* Timer Section */}
+        <div className="lg:col-span-2">
+          <Card className="neon-border glass-morphism">
+            <CardContent className="p-8">
+              {/* Timer Display */}
+              <div className="text-center mb-8">
+                <div className="timer-display text-6xl md:text-8xl font-orbitron font-bold neon-text text-primary mb-4">
+                  {formatTime(timerState.timeLeft)}
+                </div>
+                <div className="flex items-center justify-center space-x-2 mb-2">
+                  <Badge className={`${getSessionTypeColor()} text-primary-foreground`}>
+                    {getSessionTypeLabel()}
+                  </Badge>
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  {getSessionInfo()}
+                </div>
+              </div>
+
+              {/* Progress Bar */}
+              <div className="mb-8">
+                <Progress 
+                  value={getProgress()} 
+                  className="h-3 mb-2"
+                />
+                <div className="flex justify-between text-xs text-muted-foreground">
+                  <span>
+                    {formatTime(
+                      (timerState.sessionType === 'focus' ? settings.focusDuration :
+                       timerState.sessionType === 'break' ? settings.breakDuration :
+                       settings.longBreakDuration) * 60 - timerState.timeLeft
+                    )}
+                  </span>
+                  <span>
+                    {formatTime(
+                      (timerState.sessionType === 'focus' ? settings.focusDuration :
+                       timerState.sessionType === 'break' ? settings.breakDuration :
+                       settings.longBreakDuration) * 60
+                    )}
+                  </span>
+                </div>
+              </div>
+
+              {/* Timer Controls */}
+              <div className="flex justify-center space-x-4 mb-6">
+                {!timerState.isRunning && !timerState.isPaused ? (
+                  <Button
+                    onClick={handleStartSession}
+                    className="btn-primary px-8 py-4 text-lg font-orbitron font-bold hover:scale-105 transition-transform"
+                  >
+                    <Play className="h-5 w-5 mr-2" />
+                    START
+                  </Button>
+                ) : timerState.isRunning ? (
+                  <Button
+                    onClick={pauseSession}
+                    className="btn-secondary px-6 py-4 font-medium hover:scale-105 transition-transform"
+                  >
+                    <Pause className="h-4 w-4 mr-2" />
+                    PAUSE
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={resumeSession}
+                    className="btn-primary px-6 py-4 font-medium hover:scale-105 transition-transform"
+                  >
+                    <Play className="h-4 w-4 mr-2" />
+                    RESUME
+                  </Button>
+                )}
+                
+                <Button
+                  onClick={resetSession}
+                  className="btn-tertiary px-6 py-4 font-medium hover:scale-105 transition-transform"
+                >
+                  <RotateCcw className="h-4 w-4 mr-2" />
+                  RESET
+                </Button>
+                
+                <Button
+                  onClick={endSession}
+                  className="btn-danger px-6 py-4 font-medium hover:scale-105 transition-transform"
+                >
+                  <Square className="h-4 w-4 mr-2" />
+                  END
+                </Button>
+              </div>
+
+              {/* Quick Settings */}
+              <div className="flex justify-center">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={onOpenSettings}
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  <Settings2 className="h-4 w-4 mr-1" />
+                  Settings
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Sidebar */}
+        <div className="space-y-6">
+          {/* Current Intention - Enhanced Retro Style */}
+          {timerState.currentIntention.task && (
             <Card className="neon-border glass-morphism relative overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-br from-accent/10 via-primary/5 to-secondary/10 opacity-60"></div>
               <CardContent className="p-6 relative z-10">
@@ -340,114 +442,7 @@ export default function Timer({ onOpenSettings }: TimerProps) {
                 </div>
               </CardContent>
             </Card>
-            )}
-          </div>
-
-          {/* Center - Main Timer (Full Screen Focus) */}
-          <div className="lg:order-2 lg:col-span-2 flex items-center justify-center">
-            <Card className="neon-border glass-morphism w-full max-w-2xl">
-              <CardContent className="p-12">
-                {/* Timer Display - Larger */}
-                <div className="text-center mb-12">
-                  <div className="timer-display text-8xl md:text-9xl lg:text-[12rem] font-orbitron font-bold neon-text text-primary mb-8 leading-none">
-                    {formatTime(timerState.timeLeft)}
-                  </div>
-                  <div className="flex items-center justify-center space-x-3 mb-4">
-                    <Badge className={`${getSessionTypeColor()} text-primary-foreground text-lg px-6 py-2`}>
-                      {getSessionTypeLabel()}
-                    </Badge>
-                  </div>
-                  <div className="text-lg text-muted-foreground font-tech-mono">
-                    {getSessionInfo()}
-                  </div>
-                </div>
-
-                {/* Progress Bar - Enhanced */}
-                <div className="mb-12">
-                  <Progress 
-                    value={getProgress()} 
-                    className="h-4 mb-4"
-                  />
-                  <div className="flex justify-between text-sm text-muted-foreground font-tech-mono">
-                    <span>
-                      {formatTime(
-                        (timerState.sessionType === 'focus' ? settings.focusDuration :
-                         timerState.sessionType === 'break' ? settings.breakDuration :
-                         settings.longBreakDuration) * 60 - timerState.timeLeft
-                      )}
-                    </span>
-                    <span>
-                      {formatTime(
-                        (timerState.sessionType === 'focus' ? settings.focusDuration :
-                         timerState.sessionType === 'break' ? settings.breakDuration :
-                         settings.longBreakDuration) * 60
-                      )}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Timer Controls - Larger */}
-                <div className="flex justify-center space-x-6 mb-8">
-                  {!timerState.isRunning && !timerState.isPaused ? (
-                    <Button
-                      onClick={handleStartSession}
-                      className="btn-primary px-12 py-6 text-2xl font-orbitron font-bold hover:scale-105 transition-transform"
-                    >
-                      <Play className="h-8 w-8 mr-3" />
-                      START
-                    </Button>
-                  ) : timerState.isRunning ? (
-                    <Button
-                      onClick={pauseSession}
-                      className="btn-secondary px-10 py-6 text-xl font-medium hover:scale-105 transition-transform"
-                    >
-                      <Pause className="h-6 w-6 mr-3" />
-                      PAUSE
-                    </Button>
-                  ) : (
-                    <Button
-                      onClick={resumeSession}
-                      className="btn-primary px-10 py-6 text-xl font-medium hover:scale-105 transition-transform"
-                    >
-                      <Play className="h-6 w-6 mr-3" />
-                      RESUME
-                    </Button>
-                  )}
-                  
-                  <Button
-                    onClick={resetSession}
-                    className="btn-tertiary px-8 py-6 text-lg font-medium hover:scale-105 transition-transform"
-                  >
-                    <RotateCcw className="h-6 w-6 mr-2" />
-                    RESET
-                  </Button>
-                  
-                  <Button
-                    onClick={endSession}
-                    className="btn-danger px-8 py-6 text-lg font-medium hover:scale-105 transition-transform"
-                  >
-                    <Square className="h-6 w-6 mr-2" />
-                    END
-                  </Button>
-                </div>
-
-                {/* Settings Button */}
-                <div className="flex justify-center">
-                  <Button
-                    variant="ghost"
-                    onClick={onOpenSettings}
-                    className="text-muted-foreground hover:text-foreground text-lg px-6 py-3"
-                  >
-                    <Settings2 className="h-5 w-5 mr-2" />
-                    Settings
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Right Sidebar - Today's Progress */}
-          <div className="lg:order-3 space-y-6">
+          )}
 
           {/* Today's Progress - Retro Style */}
           <Card className="neon-border glass-morphism relative overflow-hidden">
@@ -540,7 +535,8 @@ export default function Timer({ onOpenSettings }: TimerProps) {
               </div>
             </CardContent>
           </Card>
-          </div>
+
+
         </div>
       </div>
 
