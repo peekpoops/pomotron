@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Clock, Play, Pause, RotateCcw, Square, Settings2, Target, Zap, Flame, TrendingUp, Heart, Lightbulb } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -8,7 +8,7 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { useTimer } from '@/hooks/useTimer';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
-import { Settings } from '@/types';
+import { Settings, Session } from '@/types';
 import IntentionModal from './IntentionModal';
 import { GlitchRun } from './GlitchRun';
 
@@ -228,19 +228,17 @@ export default function Timer({ onOpenSettings, timerHook: externalTimerHook }: 
     startSession(intention);
   };
 
-  // Calculate today's completed focus cycles
-  const getTodayCompletedCycles = () => {
+  // Calculate today's completed focus cycles with reactive updates
+  const [sessions] = useLocalStorage<Session[]>('pomotron-sessions', []);
+  
+  const todayCompletedCycles = useMemo(() => {
     const today = new Date().toDateString();
-    const [sessions] = useLocalStorage<Session[]>('pomotron-sessions', []);
-    
     return sessions.filter(session => 
       session.completed && 
       session.sessionType === 'focus' && 
       new Date(session.startTime).toDateString() === today
     ).length;
-  };
-
-  const todayCompletedCycles = getTodayCompletedCycles();
+  }, [sessions]);
 
   const getSessionInfo = () => {
     if (timerState.sessionType === 'focus') {
