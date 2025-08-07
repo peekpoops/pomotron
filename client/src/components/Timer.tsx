@@ -250,7 +250,7 @@ export default function Timer({ onOpenSettings }: TimerProps) {
             onClick={() => setShowFullQuote(!showFullQuote)}
             className="absolute top-4 right-4 text-accent hover:text-primary p-1"
           >
-            {showFullQuote ? '↑' : '→'}
+            {showFullQuote ? '↑' : '↓'}
           </Button>
         </CardContent>
       </Card>
