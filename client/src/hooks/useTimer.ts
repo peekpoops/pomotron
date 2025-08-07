@@ -391,15 +391,20 @@ export function useTimer() {
         break;
     }
     
-    setTimerState(prev => ({
-      ...prev,
+    const newTimerState = {
+      ...timerState,
       isRunning: false,
       isPaused: false,
       timeLeft: duration,
       currentSessionId: undefined,
       startTime: null,
       pausedDuration: 0,
-    }));
+    };
+    
+    setTimerState(newTimerState);
+    
+    // Clear localStorage timer state immediately to prevent restoration
+    localStorage.setItem('pomotron-timer-state', JSON.stringify(newTimerState));
     
     deactivateWebsiteBlocking();
     playSound('reset');
@@ -427,12 +432,21 @@ export function useTimer() {
       localStorage.removeItem('pomotron-pending-timer-config');
     }
     
-    setTimerState({
+    // Clear timer state completely and reset to focus session
+    const newTimerState = {
       ...defaultTimerState,
       timeLeft: settings.focusDuration * 60,
       startTime: null,
       pausedDuration: 0,
-    });
+      sessionType: 'focus' as const,
+      currentCycle: 1,
+      currentSessionId: undefined,
+    };
+    
+    setTimerState(newTimerState);
+    
+    // Clear localStorage timer state immediately to prevent restoration
+    localStorage.setItem('pomotron-timer-state', JSON.stringify(newTimerState));
     
     deactivateWebsiteBlocking();
     playSound('reset');
