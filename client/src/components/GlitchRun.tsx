@@ -17,7 +17,6 @@ interface Obstacle {
   height: number;
   glitchPhase: number;
   collided: boolean;
-  collided: boolean;
 }
 
 interface Particle {
@@ -179,20 +178,20 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
         const obsTop = updatedObstacle.y - updatedObstacle.height;
         const obsBottom = updatedObstacle.y;
 
-        // Check for collision
-        const hasHorizontalOverlap = playerRight > obsLeft + GRACE_MARGIN && 
-                                   playerLeft < obsRight - GRACE_MARGIN;
-        const hasVerticalOverlap = playerBottom > obsTop + GRACE_MARGIN && 
-                                 playerTop < obsBottom - GRACE_MARGIN;
+        // Check for collision - simplified logic
+        const hasHorizontalOverlap = playerRight > obsLeft && playerLeft < obsRight;
+        const hasVerticalOverlap = playerBottom > obsTop && playerTop < obsBottom;
         
-        const playerRightEdge = PLAYER_X + PLAYER_SIZE;
-        const obstacleLeftEdge = updatedObstacle.x;
-        const hasPassedObstacle = playerRightEdge < obstacleLeftEdge;
-        
-        const isCollision = hasHorizontalOverlap && hasVerticalOverlap && !hasPassedObstacle;
+        const isCollision = hasHorizontalOverlap && hasVerticalOverlap;
 
         // Mark collision if it occurred
         if (isCollision && !updatedObstacle.collided) {
+          console.log('COLLISION DETECTED - marking obstacle as collided', {
+            obstacleId: updatedObstacle.id,
+            playerPos: { left: playerLeft, right: playerRight, top: playerTop, bottom: playerBottom },
+            obsPos: { left: obsLeft, right: obsRight, top: obsTop, bottom: obsBottom },
+            overlaps: { horizontal: hasHorizontalOverlap, vertical: hasVerticalOverlap }
+          });
           updatedObstacle.collided = true;
           // Collision detected - trigger effects but don't end game
           setScreenGlitch(true);
@@ -202,10 +201,16 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
 
         // Handle obstacle that went off-screen
         if (updatedObstacle.x < -updatedObstacle.width) {
+          console.log('OBSTACLE OFF-SCREEN - checking if should score', {
+            obstacleId: updatedObstacle.id,
+            collided: updatedObstacle.collided,
+            willScore: !updatedObstacle.collided
+          });
           // Award score only if no collision occurred during the obstacle's lifetime
           if (!updatedObstacle.collided) {
             setScore(s => {
               const newScore = s + 10;
+              console.log('SCORING! New score:', newScore);
               playSound('glitch-score');
               return newScore;
             });
@@ -215,6 +220,8 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
               y: playerY + PLAYER_SIZE/2,
               time: Date.now()
             });
+          } else {
+            console.log('NO SCORE - obstacle was collided with');
           }
           // Don't add to updatedObstacles (remove it)
           return;
