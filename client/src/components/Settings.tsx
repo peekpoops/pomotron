@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Clock, Palette, Keyboard, Save, Info, Target } from 'lucide-react';
+import { Clock, Palette, Keyboard, Save, Info, Target, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -49,6 +49,14 @@ export default function Settings() {
     });
   };
 
+  const handleResetToDefaults = () => {
+    setLocalSettings(defaultSettings);
+    toast({
+      title: "Settings Reset",
+      description: "All settings have been reset to default values.",
+    });
+  };
+
   
 
   const themeOptions = [
@@ -95,9 +103,30 @@ export default function Settings() {
         {/* Timer Configuration */}
         <Card className="neon-border glass-morphism">
           <CardHeader className="settings-card-mobile">
-            <CardTitle className="section-title text-base sm:text-lg text-secondary flex items-center">
-              <Clock className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
-              Timer Configuration
+            <CardTitle className="section-title text-base sm:text-lg text-secondary flex items-center justify-between">
+              <div className="flex items-center">
+                <Clock className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
+                Timer Configuration
+              </div>
+              <div className="flex space-x-1 sm:space-x-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleResetToDefaults}
+                  className="p-2 sm:px-3 sm:py-2 text-xs sm:text-sm"
+                >
+                  <RotateCcw className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-2" />
+                  <span className="hidden sm:inline">Reset</span>
+                </Button>
+                <Button
+                  onClick={handleSave}
+                  size="sm"
+                  className="btn-primary p-2 sm:px-3 sm:py-2 text-xs sm:text-sm"
+                >
+                  <Save className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-2" />
+                  <span className="hidden sm:inline">Save</span>
+                </Button>
+              </div>
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4 sm:space-y-6 settings-card-mobile">
@@ -180,15 +209,16 @@ export default function Settings() {
               <Input
                 id="idle-timeout"
                 type="number"
-                min="1"
+                min="0"
                 max="60"
                 value={localSettings.idleTimeout}
                 onChange={(e) => setLocalSettings(prev => ({
                   ...prev,
-                  idleTimeout: parseInt(e.target.value) || 5
+                  idleTimeout: parseInt(e.target.value) || 0
                 }))}
                 className="form-input mt-1 text-sm"
               />
+              <p className="text-xs text-muted-foreground/70 mt-1">Set to 0 to disable idle detection</p>
             </div>
 
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
@@ -301,6 +331,25 @@ export default function Settings() {
                   soundsEnabled: checked
                 }))}
               />
+            </div>
+
+            {/* Bottom action buttons */}
+            <div className="flex justify-center sm:justify-end space-x-2 pt-4 border-t border-border/20">
+              <Button
+                variant="outline"
+                onClick={handleResetToDefaults}
+                className="px-4 sm:px-6 py-2 text-xs sm:text-sm"
+              >
+                <RotateCcw className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
+                Reset to Defaults
+              </Button>
+              <Button
+                onClick={handleSave}
+                className="btn-primary px-4 sm:px-6 py-2 text-xs sm:text-sm"
+              >
+                <Save className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
+                Save Changes
+              </Button>
             </div>
           </CardContent>
         </Card>

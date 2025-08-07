@@ -195,9 +195,9 @@ export default function Timer({ onOpenSettings }: TimerProps) {
     if (timerState.sessionType === 'focus') {
       return `Cycle ${timerState.currentCycle} of ${settings.cyclesBeforeLongBreak} • Long break after ${settings.cyclesBeforeLongBreak} cycles`;
     } else if (timerState.sessionType === 'break') {
-      return `Short break • Cycle ${timerState.currentCycle} of ${settings.cyclesBeforeLongBreak}`;
+      return `Short break after completing Cycle ${timerState.currentCycle - 1} • Next: Cycle ${timerState.currentCycle}`;
     } else {
-      return 'Long break • Starting fresh after this break';
+      return `Long break after completing ${settings.cyclesBeforeLongBreak} cycles • Starting fresh after this break`;
     }
   };
 
@@ -518,21 +518,20 @@ export default function Timer({ onOpenSettings }: TimerProps) {
                 </span>
               </h3>
               <div className="space-y-4">
-                {/* Sessions completed */}
+                {/* Cycles completed */}
                 <div className="flex items-center justify-between p-3 rounded-lg bg-gradient-to-r from-primary/10 to-accent/10 border border-primary/20 hover:border-primary/40 transition-all duration-300">
                   <div className="flex items-center space-x-3">
                     <div className="relative">
                       <Target className="h-6 w-6 text-primary animate-pulse" />
                       <div className="absolute -top-1 -right-1 w-3 h-3 bg-accent rounded-full animate-ping opacity-75"></div>
                     </div>
-                    <span className="text-sm font-tech-mono text-secondary font-medium">SESSIONS</span>
+                    <span className="text-sm font-tech-mono text-secondary font-medium">CYCLES COMPLETED</span>
                   </div>
-                  <div className="flex items-center space-x-2">
+                  <div className="flex items-center">
                     <span className="text-2xl font-orbitron font-black text-primary neon-text">
                       {new Date().toDateString() === new Date().toDateString() ? 
                         timerState.currentCycle - 1 : 0}
                     </span>
-                    <span className="text-xs text-muted-foreground font-tech-mono">DONE</span>
                   </div>
                 </div>
 

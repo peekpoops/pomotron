@@ -49,6 +49,9 @@ export function useTimer() {
   const startIdleDetection = useCallback(() => {
     if (idleIntervalRef.current) clearInterval(idleIntervalRef.current);
     
+    // Don't start idle detection if it's disabled (idleTimeout = 0)
+    if (settings.idleTimeout === 0) return;
+    
     idleIntervalRef.current = setInterval(() => {
       const now = Date.now();
       const timeSinceActivity = (now - lastActivityRef.current) / 1000 / 60; // minutes
