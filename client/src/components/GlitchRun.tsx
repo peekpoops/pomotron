@@ -146,7 +146,7 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
       setObstacles(prev => [...prev, {
         id: obstacleIdRef.current++,
         x: GAME_WIDTH,
-        y: GROUND_Y, // Fix: place obstacle top at ground level
+        y: GROUND_Y - OBSTACLE_HEIGHT, // Place obstacle bottom at ground level (obstacle extends upward)
         width: OBSTACLE_WIDTH,
         height: OBSTACLE_HEIGHT,
         glitchPhase: Math.random() * Math.PI * 2,
@@ -176,7 +176,7 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
 
         const obsLeft = updatedObstacle.x;
         const obsRight = updatedObstacle.x + updatedObstacle.width;
-        const obsTop = updatedObstacle.y; // y is now the top of obstacle
+        const obsTop = updatedObstacle.y; // y is the top of obstacle
         const obsBottom = updatedObstacle.y + updatedObstacle.height; // bottom is y + height
 
         // Removed excessive logging
