@@ -15,14 +15,14 @@ export default function Home() {
   useEffect(() => {
     // Initialize audio on first user interaction
     initializeAudio();
-
+    
     // Add retro background for starcourt theme
     if (theme === 'starcourt') {
       document.body.classList.add('retro-bg');
     } else {
       document.body.classList.remove('retro-bg');
     }
-
+    
     return () => {
       document.body.classList.remove('retro-bg');
     };
@@ -35,7 +35,7 @@ export default function Home() {
       if (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement) {
         return;
       }
-
+      
       switch (event.key.toLowerCase()) {
         case 'a':
           event.preventDefault();
@@ -78,7 +78,7 @@ export default function Home() {
                 </span>
               </div>
             </div>
-
+            
             <div className="flex items-center space-x-4">
               {/* Navigation Tabs */}
               <div className="flex space-x-3 p-2 rounded-xl bg-black/20 backdrop-blur-sm border border-white/10">
@@ -114,7 +114,7 @@ export default function Home() {
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 container mx-auto px-2 md:px-4 py-4 md:py-8">
+      <main className="container mx-auto px-4 py-8 relative">
         {currentView === 'timer' && <Timer onOpenSettings={() => setCurrentView('settings')} />}
         {currentView === 'analytics' && <Analytics />}
         {currentView === 'settings' && <SettingsComponent />}

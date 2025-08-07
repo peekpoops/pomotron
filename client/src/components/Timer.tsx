@@ -54,7 +54,7 @@ const motivationalQuotes = [
   { text: "For every minute you are angry you lose sixty seconds of happiness.", author: "Ralph Waldo Emerson" },
   { text: "Love is that condition in which the happiness of another person is essential to your own.", author: "Robert A. Heinlein" },
   { text: "Folks are usually about as happy as they make their minds up to be.", author: "Abraham Lincoln" },
-  { text: "Time you enjoy wasting is not wasted time.", author: "Marthe Troly-Curtin" },
+  { text: "Time you enjoy wasting is not wasted time.", author: "Marthe Troly‑Curtin" },
   { text: "Happiness in intelligent people is the rarest thing I know.", author: "Ernest Hemingway" },
   { text: "Happiness is when what you think, what you say, and what you do are in harmony.", author: "Mahatma Gandhi" },
   { text: "Let us be grateful to the people who make us happy; they are the charming gardeners who make our souls blossom.", author: "Marcel Proust" },
@@ -138,7 +138,7 @@ export default function Timer({ onOpenSettings }: TimerProps) {
     showQuotes: true,
     soundsEnabled: true,
   });
-
+  
   const [showIntentionModal, setShowIntentionModal] = useState(false);
   const [currentQuote, setCurrentQuote] = useState(motivationalQuotes[0]);
   const [showFullQuote, setShowFullQuote] = useState(false);
@@ -167,11 +167,11 @@ export default function Timer({ onOpenSettings }: TimerProps) {
       setUsedQuotes([selectedQuote]);
       return;
     }
-
+    
     // Select random quote from available quotes
     const randomIndex = Math.floor(Math.random() * availableQuotes.length);
     const selectedQuote = availableQuotes[randomIndex];
-
+    
     // Update state
     setCurrentQuote(selectedQuote);
     setAvailableQuotes(prev => prev.filter((_, index) => index !== randomIndex));
@@ -257,365 +257,349 @@ export default function Timer({ onOpenSettings }: TimerProps) {
   }, [timerState.sessionType, timerState.isRunning, timerState.timeLeft, settings.focusDuration]);
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="max-w-4xl mx-auto space-y-4 md:space-y-8">
-        {/* Motivational Quote Banner */}
-        {settings.showQuotes && (
-          <Card className="glass-morphism animate-float">
-            <CardContent className="p-4 md:p-6 relative">
-              <div className="text-center">
-                <p className="text-sm md:text-lg italic text-secondary font-tech-mono">
-                  "{showFullQuote ? currentQuote.text : currentQuote.text.length > 120 ? `${currentQuote.text.substring(0, 120)}...` : currentQuote.text}"
-                </p>
-                {showFullQuote && (
-                  <div className="mt-3 md:mt-4 space-y-3">
-                    <p className="text-xs md:text-sm text-accent font-semibold">
-                      — {currentQuote.author}
-                    </p>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={getNextQuote}
-                      className="text-xs text-accent hover:text-primary font-tech-mono"
-                    >
-                      <RotateCcw className="h-3 w-3 mr-1" />
-                      New Quote
-                    </Button>
-                  </div>
-                )}
-              </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setShowFullQuote(!showFullQuote)}
-                className="absolute top-2 right-2 md:top-4 md:right-4 text-accent hover:text-primary p-1"
-              >
-                {showFullQuote ? '↑' : '↓'}
-              </Button>
-            </CardContent>
-          </Card>
-        )}
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-8">
-          {/* Timer Section */}
-          <div className="lg:col-span-2">
-            <Card className="neon-border glass-morphism">
-              <CardContent className="p-4 md:p-8 text-center relative">
-                <div className="space-y-4 md:space-y-6">
-                  {/* Quote Section */}
-                  <div className="p-4 md:p-6 rounded-lg bg-gradient-to-r from-muted/10 to-accent/5 border border-accent/20 min-h-[100px] md:min-h-[120px] flex items-center justify-center">
-                    <blockquote className="text-sm md:text-lg font-medium text-muted-foreground italic font-tech-mono leading-relaxed">
-                      "{currentQuote.text}"
-                    </blockquote>
-                  </div>
-
-                  {/* Timer Display */}
-                  <div className="relative">
-                    <div className="text-6xl md:text-8xl font-orbitron font-black text-primary neon-text tracking-wider">
-                      {formatTime(timerState.timeLeft)}
-                    </div>
-                    <div className="absolute inset-0 text-6xl md:text-8xl font-orbitron font-black text-primary blur-sm opacity-30 animate-pulse">
-                      {formatTime(timerState.timeLeft)}
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-center space-x-2 mb-2">
-                    <Badge className={`${getSessionTypeColor()} text-primary-foreground`}>
-                      {getSessionTypeLabel()}
-                    </Badge>
-                  </div>
-                  <div className="text-xs md:text-sm text-muted-foreground">
-                    {getSessionInfo()}
-                  </div>
-                </div>
-
-                {/* Progress Bar */}
-                <div className="space-y-2">
-                  <div className="flex justify-between text-xs md:text-sm text-muted-foreground font-tech-mono">
-                    <span>{formatTime(
-                      (timerState.sessionType === 'focus' ? settings.focusDuration :
-                       timerState.sessionType === 'break' ? settings.breakDuration :
-                       settings.longBreakDuration) * 60 - timerState.timeLeft
-                    )}</span>
-                    <span className="text-primary font-medium text-xs md:text-sm">{getSessionTypeLabel()}</span>
-                    <span>{formatTime(
-                      (timerState.sessionType === 'focus' ? settings.focusDuration :
-                       timerState.sessionType === 'break' ? settings.breakDuration :
-                       settings.longBreakDuration) * 60
-                    )}</span>
-                  </div>
-                  <div className="w-full bg-muted rounded-full h-2 md:h-3 overflow-hidden">
-                    <div
-                      className="h-full bg-gradient-to-r from-primary to-accent transition-all duration-1000 ease-out"
-                      style={{ width: `${getProgress()}%` }}
-                    >
-                      <div className="h-full bg-white/20 animate-pulse"></div>
-                    </div>
-                  </div>
-                  <p className="text-xs md:text-sm text-center text-muted-foreground font-tech-mono">
-                    Cycle {timerState.currentCycle} of {settings.cyclesBeforeLongBreak} • Long break after {settings.cyclesBeforeLongBreak} cycles
+    <div className="max-w-6xl mx-auto space-y-8">
+      {/* Motivational Quote Banner */}
+      {settings.showQuotes && (
+        <Card className="glass-morphism animate-float">
+          <CardContent className="p-6 relative">
+            <div className="text-center">
+              <p className="text-lg italic text-secondary font-tech-mono">
+                "{showFullQuote ? currentQuote.text : currentQuote.text.length > 120 ? `${currentQuote.text.substring(0, 120)}...` : currentQuote.text}"
+              </p>
+              {showFullQuote && (
+                <div className="mt-4 space-y-3">
+                  <p className="text-sm text-accent font-semibold">
+                    — {currentQuote.author}
                   </p>
-                </div>
-
-                {/* Controls */}
-                <div className="flex flex-col sm:flex-row justify-center space-y-2 sm:space-y-0 sm:space-x-4">
-                  {!timerState.isRunning && !timerState.isPaused ? (
-                    <Button
-                      onClick={handleStartSession}
-                      className="btn-primary px-4 md:px-8 py-3 md:py-4 text-sm md:text-lg font-orbitron font-bold uppercase tracking-wider hover:scale-105 transition-transform"
-                    >
-                      <Play className="h-4 md:h-5 w-4 md:w-5 mr-2" />
-                      START
-                    </Button>
-                  ) : timerState.isRunning ? (
-                    <Button
-                      onClick={pauseSession}
-                      className="btn-secondary px-4 md:px-6 py-3 md:py-4 text-sm md:text-lg font-medium hover:scale-105 transition-transform"
-                    >
-                      <Pause className="h-4 md:h-4 w-4 md:w-4 mr-2" />
-                      PAUSE
-                    </Button>
-                  ) : (
-                    <Button
-                      onClick={resumeSession}
-                      className="btn-primary px-4 md:px-6 py-3 md:py-4 text-sm md:text-lg font-medium hover:scale-105 transition-transform"
-                    >
-                      <Play className="h-4 md:h-4 w-4 md:w-4 mr-2" />
-                      RESUME
-                    </Button>
-                  )}
-
-                  <Button
-                    onClick={resetSession}
-                    className="btn-tertiary px-4 md:px-8 py-3 md:py-4 text-sm md:text-lg font-medium hover:scale-105 transition-transform"
-                  >
-                    <RotateCcw className="h-4 md:h-5 w-4 md:w-5 mr-2" />
-                    RESET
-                  </Button>
-
-                  <Button
-                    onClick={endSession}
-                    className="btn-danger px-4 md:px-8 py-3 md:py-4 text-sm md:text-lg font-medium hover:scale-105 transition-transform"
-                  >
-                    <Square className="h-4 md:h-5 w-4 md:w-5 mr-2" />
-                    END
-                  </Button>
-                </div>
-
-                {/* Quick Settings */}
-                <div className="flex justify-center space-x-4 mt-4">
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={onOpenSettings}
-                    className="text-muted-foreground hover:text-foreground"
+                    onClick={getNextQuote}
+                    className="text-xs text-accent hover:text-primary font-tech-mono"
                   >
-                    <Settings2 className="h-4 w-4 mr-1" />
-                    Settings
+                    <RotateCcw className="h-3 w-3 mr-1" />
+                    New Quote
                   </Button>
-
-                  {/* GlitchRun Button */}
-                  {canPlayGlitchRun() && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={handleGlitchRun}
-                      className={`relative ${
-                        !canPlayGlitchRun()
-                          ? 'text-muted-foreground/50 cursor-not-allowed'
-                          : 'text-muted-foreground hover:text-accent'
-                      }`}
-                      disabled={!canPlayGlitchRun()}
-                      title={
-                        timerState.sessionType === 'focus' && glitchRunUsedThisSession
-                          ? 'GlitchRun used this focus session'
-                          : 'Play GlitchRun - Quick 10s dopamine boost!'
-                      }
-                    >
-                      <Zap className="h-4 w-4 mr-1" />
-                      GlitchRun
-                    </Button>
-                  )}
                 </div>
-              </CardContent>
-            </Card>
-          </div>
+              )}
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowFullQuote(!showFullQuote)}
+              className="absolute top-4 right-4 text-accent hover:text-primary p-1"
+            >
+              {showFullQuote ? '↑' : '↓'}
+            </Button>
+          </CardContent>
+        </Card>
+      )}
 
-          {/* Sidebar */}
-          <div className="space-y-4 md:space-y-6">
-            {/* Current Intention - Enhanced Retro Style */}
-            {timerState.currentIntention.task && (
-              <Card className="neon-border glass-morphism relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-accent/10 via-primary/5 to-secondary/10 opacity-60"></div>
-                <CardContent className="p-4 md:p-6 relative z-10">
-                  <div className="mb-4 md:mb-6">
-                    <h3 className="section-title text-base md:text-lg flex items-center font-orbitron font-bold">
-                      <div className="relative mr-2 md:mr-3">
-                        <Lightbulb className="h-5 w-5 md:h-6 md:w-6 text-accent animate-pulse" style={{ filter: 'drop-shadow(0 0 8px currentColor)' }} />
-                        <div className="absolute inset-0 animate-ping">
-                          <div className="h-5 w-5 md:h-6 md:w-6 border-2 border-transparent border-t-accent/40 rounded-full animate-spin"></div>
+      <div className="grid lg:grid-cols-3 gap-8">
+        {/* Timer Section */}
+        <div className="lg:col-span-2">
+          <Card className="neon-border glass-morphism">
+            <CardContent className="p-8">
+              {/* Timer Display */}
+              <div className="text-center mb-8">
+                <div className="timer-display text-6xl md:text-8xl font-orbitron font-bold neon-text text-primary mb-4">
+                  {formatTime(timerState.timeLeft)}
+                </div>
+                <div className="flex items-center justify-center space-x-2 mb-2">
+                  <Badge className={`${getSessionTypeColor()} text-primary-foreground`}>
+                    {getSessionTypeLabel()}
+                  </Badge>
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  {getSessionInfo()}
+                </div>
+              </div>
+
+              {/* Progress Bar */}
+              <div className="mb-8">
+                <Progress 
+                  value={getProgress()} 
+                  className="h-3 mb-2"
+                />
+                <div className="flex justify-between text-xs text-muted-foreground">
+                  <span>
+                    {formatTime(
+                      (timerState.sessionType === 'focus' ? settings.focusDuration :
+                       timerState.sessionType === 'break' ? settings.breakDuration :
+                       settings.longBreakDuration) * 60 - timerState.timeLeft
+                    )}
+                  </span>
+                  <span>
+                    {formatTime(
+                      (timerState.sessionType === 'focus' ? settings.focusDuration :
+                       timerState.sessionType === 'break' ? settings.breakDuration :
+                       settings.longBreakDuration) * 60
+                    )}
+                  </span>
+                </div>
+              </div>
+
+              {/* Timer Controls */}
+              <div className="flex justify-center space-x-4 mb-6">
+                {!timerState.isRunning && !timerState.isPaused ? (
+                  <Button
+                    onClick={handleStartSession}
+                    className="btn-primary px-8 py-4 text-lg font-orbitron font-bold hover:scale-105 transition-transform"
+                  >
+                    <Play className="h-5 w-5 mr-2" />
+                    START
+                  </Button>
+                ) : timerState.isRunning ? (
+                  <Button
+                    onClick={pauseSession}
+                    className="btn-secondary px-6 py-4 font-medium hover:scale-105 transition-transform"
+                  >
+                    <Pause className="h-4 w-4 mr-2" />
+                    PAUSE
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={resumeSession}
+                    className="btn-primary px-6 py-4 font-medium hover:scale-105 transition-transform"
+                  >
+                    <Play className="h-4 w-4 mr-2" />
+                    RESUME
+                  </Button>
+                )}
+                
+                <Button
+                  onClick={resetSession}
+                  className="btn-tertiary px-6 py-4 font-medium hover:scale-105 transition-transform"
+                >
+                  <RotateCcw className="h-4 w-4 mr-2" />
+                  RESET
+                </Button>
+                
+                <Button
+                  onClick={endSession}
+                  className="btn-danger px-6 py-4 font-medium hover:scale-105 transition-transform"
+                >
+                  <Square className="h-4 w-4 mr-2" />
+                  END
+                </Button>
+              </div>
+
+              {/* Quick Settings */}
+              <div className="flex justify-center space-x-4">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={onOpenSettings}
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  <Settings2 className="h-4 w-4 mr-1" />
+                  Settings
+                </Button>
+                
+                {/* GlitchRun Button */}
+                {canPlayGlitchRun() && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleGlitchRun}
+                    className={`relative ${
+                      !canPlayGlitchRun() 
+                        ? 'text-muted-foreground/50 cursor-not-allowed' 
+                        : 'text-muted-foreground hover:text-accent'
+                    }`}
+                    disabled={!canPlayGlitchRun()}
+                    title={
+                      timerState.sessionType === 'focus' && glitchRunUsedThisSession
+                        ? 'GlitchRun used this focus session'
+                        : 'Play GlitchRun - Quick 10s dopamine boost!'
+                    }
+                  >
+                    <Zap className="h-4 w-4 mr-1" />
+                    GlitchRun
+                  </Button>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Sidebar */}
+        <div className="space-y-6">
+          {/* Current Intention - Enhanced Retro Style */}
+          {timerState.currentIntention.task && (
+            <Card className="neon-border glass-morphism relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-accent/10 via-primary/5 to-secondary/10 opacity-60"></div>
+              <CardContent className="p-6 relative z-10">
+                <div className="mb-6">
+                  <h3 className="section-title text-lg text-secondary flex items-center font-orbitron font-bold">
+                    <div className="relative mr-3">
+                      <Lightbulb className="h-6 w-6 text-accent animate-pulse" style={{ filter: 'drop-shadow(0 0 8px currentColor)' }} />
+                      <div className="absolute inset-0 animate-ping">
+                        <div className="h-6 w-6 border-2 border-transparent border-t-accent/40 rounded-full animate-spin"></div>
+                      </div>
+                    </div>
+                    <span className="bg-gradient-to-r from-accent to-secondary bg-clip-text text-transparent">
+                      CURRENT FOCUS
+                    </span>
+                  </h3>
+                  <div className="h-0.5 w-full bg-gradient-to-r from-transparent via-accent to-transparent mt-2 opacity-60"></div>
+                </div>
+                
+                <div className="space-y-5">
+                  {/* Task Section */}
+                  <div className="relative p-4 rounded-xl bg-gradient-to-r from-primary/15 to-accent/10 border border-primary/20 hover:border-primary/40 transition-all duration-300">
+                    <div className="flex items-start space-x-3">
+                      <div className="relative mt-1">
+                        <Target className="h-5 w-5 text-primary animate-pulse" />
+                        <div className="absolute -top-1 -right-1 w-2 h-2 bg-accent rounded-full animate-ping opacity-75"></div>
+                      </div>
+                      <div className="flex-1">
+                        <div className="text-xs font-tech-mono text-primary font-bold uppercase mb-2 tracking-wider">
+                          TARGET OBJECTIVE
+                        </div>
+                        <div className="text-sm text-foreground font-medium leading-relaxed bg-black/20 p-3 rounded-lg border border-white/10">
+                          {timerState.currentIntention.task}
                         </div>
                       </div>
-                      <span className="bg-gradient-to-r from-accent to-secondary bg-clip-text text-transparent">
-                        CURRENT FOCUS
-                      </span>
-                    </h3>
-                    <div className="h-0.5 w-full bg-gradient-to-r from-transparent via-accent to-transparent mt-1 md:mt-2 opacity-60"></div>
+                    </div>
                   </div>
 
-                  <div className="space-y-3 md:space-y-5">
-                    {/* Task Section */}
-                    <div className="relative p-3 md:p-4 rounded-xl bg-gradient-to-r from-primary/15 to-accent/10 border border-primary/20 hover:border-primary/40 transition-all duration-300">
-                      <div className="flex items-start space-x-2 md:space-x-3">
+                  {/* Why Section */}
+                  {timerState.currentIntention.why && (
+                    <div className="relative p-4 rounded-xl bg-gradient-to-r from-secondary/15 to-accent/10 border border-secondary/20 hover:border-secondary/40 transition-all duration-300">
+                      <div className="flex items-start space-x-3">
                         <div className="relative mt-1">
-                          <Target className="h-4 w-4 md:h-5 md:w-5 text-primary animate-pulse" />
-                          <div className="absolute -top-1 -right-1 w-2 h-2 bg-accent rounded-full animate-ping opacity-75"></div>
+                          <Heart className="h-5 w-5 text-secondary animate-pulse" style={{ filter: 'drop-shadow(0 0 6px currentColor)' }} />
+                          <div className="absolute -inset-1 bg-secondary/20 rounded-full animate-ping opacity-50"></div>
                         </div>
                         <div className="flex-1">
-                          <div className="text-xs font-tech-mono text-primary font-bold uppercase mb-1 md:mb-2 tracking-wider">
-                            TARGET OBJECTIVE
+                          <div className="text-xs font-tech-mono text-secondary font-bold uppercase mb-2 tracking-wider">
+                            MOTIVATION CORE
                           </div>
-                          <div className="text-sm text-foreground font-medium leading-relaxed bg-black/20 p-2 md:p-3 rounded-lg border border-white/10">
-                            {timerState.currentIntention.task}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Why Section */}
-                    {timerState.currentIntention.why && (
-                      <div className="relative p-3 md:p-4 rounded-xl bg-gradient-to-r from-secondary/15 to-accent/10 border border-secondary/20 hover:border-secondary/40 transition-all duration-300">
-                        <div className="flex items-start space-x-2 md:space-x-3">
-                          <div className="relative mt-1">
-                            <Heart className="h-4 w-4 md:h-5 md:w-5 text-secondary animate-pulse" style={{ filter: 'drop-shadow(0 0 6px currentColor)' }} />
-                            <div className="absolute -inset-1 bg-secondary/20 rounded-full animate-ping opacity-50"></div>
-                          </div>
-                          <div className="flex-1">
-                            <div className="text-xs font-tech-mono text-secondary font-bold uppercase mb-1 md:mb-2 tracking-wider">
-                              MOTIVATION CORE
-                            </div>
-                            <div className="text-sm text-foreground font-medium leading-relaxed bg-black/20 p-2 md:p-3 rounded-lg border border-white/10 italic">
-                              "{timerState.currentIntention.why}"
-                            </div>
+                          <div className="text-sm text-foreground font-medium leading-relaxed bg-black/20 p-3 rounded-lg border border-white/10 italic">
+                            "{timerState.currentIntention.why}"
                           </div>
                         </div>
                       </div>
-                    )}
-                  </div>
-
-                  {/* Animated circuit decoration */}
-                  <div className="absolute top-1 right-1 md:top-2 md:right-2 opacity-15">
-                    <div className="flex space-x-1">
-                      {[...Array(4)].map((_, i) => (
-                        <div
-                          key={i}
-                          className="w-1 h-1 bg-accent rounded-full animate-pulse"
-                          style={{ animationDelay: `${i * 0.3}s` }}
-                        ></div>
-                      ))}
                     </div>
-                  </div>
-
-                  {/* Status indicator */}
-                  <div className="absolute bottom-1 right-1 md:bottom-2 md:right-2 flex items-center space-x-1 md:space-x-2 opacity-60">
-                    <div className="w-2 h-2 bg-accent rounded-full animate-ping"></div>
-                    <span className="text-xs font-tech-mono text-accent uppercase">ACTIVE</span>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* Today's Progress - Retro Style */}
-            <Card className="neon-border glass-morphism relative overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-accent/5 to-secondary/5 opacity-50"></div>
-              <CardContent className="p-4 md:p-6 relative z-10">
-                <h3 className="section-title text-base md:text-lg flex items-center font-orbitron font-bold">
-                  <TrendingUp className="h-5 w-5 md:h-5 md:w-5 mr-2 text-accent animate-pulse" />
-                  <span className="bg-gradient-to-r from-accent to-primary bg-clip-text text-transparent">
-                    TODAY'S PROGRESS
-                  </span>
-                </h3>
-                <div className="space-y-3 md:space-y-4">
-                  {/* Sessions completed */}
-                  <div className="flex items-center justify-between p-2 md:p-3 rounded-lg bg-gradient-to-r from-primary/10 to-accent/10 border border-primary/20 hover:border-primary/40 transition-all duration-300">
-                    <div className="flex items-center space-x-2 md:space-x-3">
-                      <div className="relative">
-                        <Target className="h-5 w-5 md:h-6 md:w-6 text-primary animate-pulse" />
-                        <div className="absolute -top-1 -right-1 w-2 md:w-3 h-2 md:h-3 bg-accent rounded-full animate-ping opacity-75"></div>
-                      </div>
-                      <span className="text-xs md:text-sm font-tech-mono text-secondary font-medium">SESSIONS</span>
-                    </div>
-                    <div className="flex items-center space-x-1 md:space-x-2">
-                      <span className="text-xl md:text-2xl font-orbitron font-black text-primary neon-text">
-                        {timerState.currentCycle - 1}
-                      </span>
-                      <span className="text-xs text-muted-foreground font-tech-mono">DONE</span>
-                    </div>
-                  </div>
-
-                  {/* Focus time */}
-                  <div className="flex items-center justify-between p-2 md:p-3 rounded-lg bg-gradient-to-r from-accent/10 to-secondary/10 border border-accent/20 hover:border-accent/40 transition-all duration-300">
-                    <div className="flex items-center space-x-2 md:space-x-3">
-                      <div className="relative">
-                        <Zap className="h-5 w-5 md:h-6 md:w-6 text-accent animate-bounce" />
-                        <div className="absolute inset-0 animate-spin">
-                          <div className="h-5 w-5 md:h-6 md:w-6 border-2 border-transparent border-t-accent/30 rounded-full"></div>
-                        </div>
-                      </div>
-                      <span className="text-xs md:text-sm font-tech-mono text-secondary font-medium">FOCUS TIME</span>
-                    </div>
-                    <div className="flex items-center space-x-1">
-                      <span className="text-lg md:text-xl font-orbitron font-black text-accent">
-                        {Math.floor((timerState.currentCycle - 1) * settings.focusDuration / 60)}
-                      </span>
-                      <span className="text-xs text-accent font-tech-mono">H</span>
-                      <span className="text-lg md:text-xl font-orbitron font-black text-accent ml-1 md:ml-2">
-                        {(timerState.currentCycle - 1) * settings.focusDuration % 60}
-                      </span>
-                      <span className="text-xs text-accent font-tech-mono">M</span>
-                    </div>
-                  </div>
-
-                  {/* Streak */}
-                  <div className="flex items-center justify-between p-2 md:p-3 rounded-lg bg-gradient-to-r from-secondary/10 to-primary/10 border border-secondary/20 hover:border-secondary/40 transition-all duration-300">
-                    <div className="flex items-center space-x-2 md:space-x-3">
-                      <div className="relative">
-                        <Flame className="h-5 w-5 md:h-6 md:w-6 text-secondary animate-pulse" style={{ filter: 'drop-shadow(0 0 10px currentColor)' }} />
-                        <div className="absolute -inset-1 bg-secondary/20 rounded-full animate-ping opacity-75"></div>
-                      </div>
-                      <span className="text-xs md:text-sm font-tech-mono text-secondary font-medium">STREAK</span>
-                    </div>
-                    <div className="flex items-center space-x-1 md:space-x-2">
-                      <span className="text-xl md:text-2xl font-orbitron font-black text-secondary neon-text">1</span>
-                      <span className="text-xs text-muted-foreground font-tech-mono">DAY</span>
-                      <div className="flex space-x-1 ml-1 md:ml-2">
-                        {[...Array(3)].map((_, i) => (
-                          <div
-                            key={i}
-                            className="w-1 h-3 md:h-4 bg-secondary/60 rounded-full animate-pulse"
-                            style={{ animationDelay: `${i * 0.2}s` }}
-                          ></div>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
+                  )}
                 </div>
 
-                {/* Retro circuit pattern decoration */}
-                <div className="absolute bottom-1 right-1 md:bottom-2 md:right-2 opacity-10">
-                  <div className="grid grid-cols-3 gap-1">
-                    {[...Array(9)].map((_, i) => (
-                      <div
-                        key={i}
-                        className="w-1 h-1 bg-primary rounded-full animate-ping"
-                        style={{ animationDelay: `${i * 0.1}s` }}
+                {/* Animated circuit decoration */}
+                <div className="absolute top-2 right-2 opacity-15">
+                  <div className="flex space-x-1">
+                    {[...Array(4)].map((_, i) => (
+                      <div 
+                        key={i} 
+                        className="w-1 h-1 bg-accent rounded-full animate-pulse"
+                        style={{ animationDelay: `${i * 0.3}s` }}
                       ></div>
                     ))}
                   </div>
                 </div>
+
+                {/* Status indicator */}
+                <div className="absolute bottom-2 right-2 flex items-center space-x-2 opacity-60">
+                  <div className="w-2 h-2 bg-accent rounded-full animate-ping"></div>
+                  <span className="text-xs font-tech-mono text-accent uppercase">ACTIVE</span>
+                </div>
               </CardContent>
             </Card>
-          </div>
+          )}
+
+          {/* Today's Progress - Retro Style */}
+          <Card className="neon-border glass-morphism relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-accent/5 to-secondary/5 opacity-50"></div>
+            <CardContent className="p-6 relative z-10">
+              <h3 className="section-title text-lg mb-6 text-secondary flex items-center font-orbitron font-bold">
+                <TrendingUp className="h-5 w-5 mr-2 text-accent animate-pulse" />
+                <span className="bg-gradient-to-r from-accent to-primary bg-clip-text text-transparent">
+                  TODAY'S PROGRESS
+                </span>
+              </h3>
+              <div className="space-y-4">
+                {/* Sessions completed */}
+                <div className="flex items-center justify-between p-3 rounded-lg bg-gradient-to-r from-primary/10 to-accent/10 border border-primary/20 hover:border-primary/40 transition-all duration-300">
+                  <div className="flex items-center space-x-3">
+                    <div className="relative">
+                      <Target className="h-6 w-6 text-primary animate-pulse" />
+                      <div className="absolute -top-1 -right-1 w-3 h-3 bg-accent rounded-full animate-ping opacity-75"></div>
+                    </div>
+                    <span className="text-sm font-tech-mono text-secondary font-medium">SESSIONS</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-2xl font-orbitron font-black text-primary neon-text">
+                      {new Date().toDateString() === new Date().toDateString() ? 
+                        timerState.currentCycle - 1 : 0}
+                    </span>
+                    <span className="text-xs text-muted-foreground font-tech-mono">DONE</span>
+                  </div>
+                </div>
+
+                {/* Focus time */}
+                <div className="flex items-center justify-between p-3 rounded-lg bg-gradient-to-r from-accent/10 to-secondary/10 border border-accent/20 hover:border-accent/40 transition-all duration-300">
+                  <div className="flex items-center space-x-3">
+                    <div className="relative">
+                      <Zap className="h-6 w-6 text-accent animate-bounce" />
+                      <div className="absolute inset-0 animate-spin">
+                        <div className="h-6 w-6 border-2 border-transparent border-t-accent/30 rounded-full"></div>
+                      </div>
+                    </div>
+                    <span className="text-sm font-tech-mono text-secondary font-medium">FOCUS TIME</span>
+                  </div>
+                  <div className="flex items-center space-x-1">
+                    <span className="text-xl font-orbitron font-black text-accent">
+                      {Math.floor((timerState.currentCycle - 1) * settings.focusDuration / 60)}
+                    </span>
+                    <span className="text-xs text-accent font-tech-mono">H</span>
+                    <span className="text-xl font-orbitron font-black text-accent ml-2">
+                      {(timerState.currentCycle - 1) * settings.focusDuration % 60}
+                    </span>
+                    <span className="text-xs text-accent font-tech-mono">M</span>
+                  </div>
+                </div>
+
+                {/* Streak */}
+                <div className="flex items-center justify-between p-3 rounded-lg bg-gradient-to-r from-secondary/10 to-primary/10 border border-secondary/20 hover:border-secondary/40 transition-all duration-300">
+                  <div className="flex items-center space-x-3">
+                    <div className="relative">
+                      <Flame className="h-6 w-6 text-secondary animate-pulse" style={{ filter: 'drop-shadow(0 0 10px currentColor)' }} />
+                      <div className="absolute -inset-1 bg-secondary/20 rounded-full animate-ping opacity-75"></div>
+                    </div>
+                    <span className="text-sm font-tech-mono text-secondary font-medium">STREAK</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-2xl font-orbitron font-black text-secondary neon-text">1</span>
+                    <span className="text-xs text-muted-foreground font-tech-mono">DAY</span>
+                    <div className="flex space-x-1 ml-2">
+                      {[...Array(3)].map((_, i) => (
+                        <div 
+                          key={i} 
+                          className="w-1 h-4 bg-secondary/60 rounded-full animate-pulse"
+                          style={{ animationDelay: `${i * 0.2}s` }}
+                        ></div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Retro circuit pattern decoration */}
+              <div className="absolute bottom-2 right-2 opacity-10">
+                <div className="grid grid-cols-3 gap-1">
+                  {[...Array(9)].map((_, i) => (
+                    <div 
+                      key={i} 
+                      className="w-1 h-1 bg-primary rounded-full animate-ping"
+                      style={{ animationDelay: `${i * 0.1}s` }}
+                    ></div>
+                  ))}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+
         </div>
       </div>
 

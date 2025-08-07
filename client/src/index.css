@@ -198,7 +198,7 @@
 
   /* Enhanced Navigation Tabs - Retro Style */
   .nav-tab {
-    @apply relative border-2 border-transparent rounded-lg transition-all duration-500 overflow-hidden;
+    @apply relative border-2 border-transparent rounded-lg px-6 py-3 transition-all duration-500 overflow-hidden;
     font-family: 'Orbitron', monospace;
     font-weight: 600;
     text-transform: uppercase;
@@ -208,6 +208,7 @@
     color: rgba(255, 255, 255, 0.8);
     text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
     position: relative;
+    min-width: 120px;
     text-align: center;
   }
 
@@ -467,28 +468,14 @@
 /* Responsive Design */
 @media (max-width: 768px) {
   .container {
-    @apply px-2;
+    @apply px-4;
   }
 
   .timer-display {
-    @apply text-4xl;
+    @apply text-5xl;
   }
 
   .btn-primary, .btn-secondary, .btn-tertiary, .btn-danger {
-    @apply px-4 py-2 text-sm;
-  }
-
-  .nav-tab {
-    @apply px-2 py-2 text-xs;
-    min-width: 60px;
-    letter-spacing: 0.05em;
-  }
-
-  .section-title {
-    @apply text-sm;
-  }
-
-  .glass-morphism {
-    backdrop-filter: blur(5px);
+    @apply px-6 py-3 text-sm;
   }
 }
