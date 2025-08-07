@@ -173,26 +173,26 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
           return false;
         }
 
-        // Check collision with grace buffer and grounded check
-        const GRACE_MARGIN = 6; // Tweakable grace buffer
-        const playerLeft = PLAYER_X - PLAYER_SIZE/4;
-        const playerRight = PLAYER_X + PLAYER_SIZE * 0.75;
+        // Check collision with proper positioning
+        const GRACE_MARGIN = 4; // Tweakable grace buffer
+        const playerLeft = PLAYER_X;
+        const playerRight = PLAYER_X + PLAYER_SIZE;
         const playerTop = playerY;
-        const playerBottom = playerY + PLAYER_SIZE - GRACE_MARGIN; // Grace buffer
+        const playerBottom = playerY + PLAYER_SIZE;
 
         const obsLeft = obstacle.x;
         const obsRight = obstacle.x + obstacle.width;
         const obsTop = obstacle.y - obstacle.height;
         const obsBottom = obstacle.y;
 
-        // Only check collision when player is grounded
-        const isGrounded = !isJumping && playerY >= GROUND_Y - 1;
+        // Simple overlap detection with grace margin
+        const hasHorizontalOverlap = playerRight > obsLeft + GRACE_MARGIN && 
+                                   playerLeft < obsRight - GRACE_MARGIN;
+        const hasVerticalOverlap = playerBottom > obsTop + GRACE_MARGIN && 
+                                 playerTop < obsBottom - GRACE_MARGIN;
         
-        if (isGrounded && 
-            playerRight > obsLeft && 
-            playerLeft < obsRight && 
-            playerBottom > obsTop && 
-            playerTop < obsBottom) {
+        // Collision occurs when both horizontal and vertical overlap exist
+        if (hasHorizontalOverlap && hasVerticalOverlap) {
           // Collision detected
           setScreenGlitch(true);
           setTimeout(() => setScreenGlitch(false), 400); // Extended duration
