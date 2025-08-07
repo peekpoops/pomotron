@@ -241,24 +241,45 @@
       grid-template-columns: 1fr !important;
     }
     
-    /* Handle horizontal overflow for button containers */
-    .button-container-mobile {
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-      scrollbar-width: none;
-      -ms-overflow-style: none;
-      padding-bottom: 4px; /* Space for potential scrollbar */
+    /* Responsive button sizing */
+    .timer-control-button {
+      padding: 0.75rem 1.5rem !important;
+      font-size: 0.875rem !important;
     }
     
-    .button-container-mobile::-webkit-scrollbar {
+    .timer-control-button .button-text {
       display: none;
     }
     
-    /* Ensure minimum button widths don't cause overflow */
-    .button-container-mobile > div {
-      min-width: max-content;
-      padding-left: 1rem;
-      padding-right: 1rem;
+    .timer-control-button .button-icon {
+      margin-right: 0 !important;
+    }
+    
+    .settings-button {
+      padding: 0.5rem 1rem !important;
+      font-size: 0.75rem !important;
+    }
+  }
+
+  @media (max-width: 480px) {
+    /* Extra compact for very small screens */
+    .timer-control-button {
+      padding: 0.5rem 1rem !important;
+      font-size: 0.75rem !important;
+      min-width: auto !important;
+    }
+    
+    .settings-button {
+      padding: 0.5rem 0.75rem !important;
+      font-size: 0.75rem !important;
+    }
+    
+    .settings-button .button-text {
+      display: none;
+    }
+    
+    .settings-button .button-icon {
+      margin-right: 0 !important;
     }
   }
 

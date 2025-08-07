@@ -340,88 +340,84 @@ export default function Timer({ onOpenSettings }: TimerProps) {
               </div>
 
               {/* Timer Controls */}
-              <div className="button-container-mobile">
-                <div className="flex justify-center space-x-4 mb-6">
-                  {!timerState.isRunning && !timerState.isPaused ? (
-                    <Button
-                      onClick={handleStartSession}
-                      className="btn-primary px-8 py-4 text-lg font-orbitron font-bold hover:scale-105 transition-transform"
-                    >
-                      <Play className="h-5 w-5 mr-2" />
-                      START
-                    </Button>
-                  ) : timerState.isRunning ? (
-                    <Button
-                      onClick={pauseSession}
-                      className="btn-secondary px-6 py-4 font-medium hover:scale-105 transition-transform"
-                    >
-                      <Pause className="h-4 w-4 mr-2" />
-                      PAUSE
-                    </Button>
-                  ) : (
-                    <Button
-                      onClick={resumeSession}
-                      className="btn-primary px-6 py-4 font-medium hover:scale-105 transition-transform"
-                    >
-                      <Play className="h-4 w-4 mr-2" />
-                      RESUME
-                    </Button>
-                  )}
-                  
+              <div className="flex justify-center space-x-2 sm:space-x-4 mb-6">
+                {!timerState.isRunning && !timerState.isPaused ? (
                   <Button
-                    onClick={resetSession}
-                    className="btn-tertiary px-6 py-4 font-medium hover:scale-105 transition-transform"
+                    onClick={handleStartSession}
+                    className="btn-primary px-8 py-4 text-lg font-orbitron font-bold hover:scale-105 transition-transform timer-control-button"
                   >
-                    <RotateCcw className="h-4 w-4 mr-2" />
-                    RESET
+                    <Play className="h-5 w-5 mr-2 button-icon" />
+                    <span className="button-text">START</span>
                   </Button>
-                  
+                ) : timerState.isRunning ? (
                   <Button
-                    onClick={endSession}
-                    className="btn-danger px-6 py-4 font-medium hover:scale-105 transition-transform"
+                    onClick={pauseSession}
+                    className="btn-secondary px-6 py-4 font-medium hover:scale-105 transition-transform timer-control-button"
                   >
-                    <Square className="h-4 w-4 mr-2" />
-                    END
+                    <Pause className="h-4 w-4 mr-2 button-icon" />
+                    <span className="button-text">PAUSE</span>
                   </Button>
-                </div>
+                ) : (
+                  <Button
+                    onClick={resumeSession}
+                    className="btn-primary px-6 py-4 font-medium hover:scale-105 transition-transform timer-control-button"
+                  >
+                    <Play className="h-4 w-4 mr-2 button-icon" />
+                    <span className="button-text">RESUME</span>
+                  </Button>
+                )}
+                
+                <Button
+                  onClick={resetSession}
+                  className="btn-tertiary px-6 py-4 font-medium hover:scale-105 transition-transform timer-control-button"
+                >
+                  <RotateCcw className="h-4 w-4 mr-2 button-icon" />
+                  <span className="button-text">RESET</span>
+                </Button>
+                
+                <Button
+                  onClick={endSession}
+                  className="btn-danger px-6 py-4 font-medium hover:scale-105 transition-transform timer-control-button"
+                >
+                  <Square className="h-4 w-4 mr-2 button-icon" />
+                  <span className="button-text">END</span>
+                </Button>
               </div>
 
               {/* Quick Settings */}
-              <div className="button-container-mobile">
-                <div className="flex justify-center space-x-4">
+              <div className="flex justify-center space-x-2 sm:space-x-4">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={onOpenSettings}
+                  className="text-muted-foreground hover:text-foreground settings-button"
+                >
+                  <Settings2 className="h-4 w-4 mr-1 button-icon" />
+                  <span className="button-text">Settings</span>
+                </Button>
+                
+                {/* GlitchRun Button */}
+                {canPlayGlitchRun() && (
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={onOpenSettings}
-                    className="text-muted-foreground hover:text-foreground"
+                    onClick={handleGlitchRun}
+                    className={`relative settings-button ${
+                      !canPlayGlitchRun() 
+                        ? 'text-muted-foreground/50 cursor-not-allowed' 
+                        : 'text-muted-foreground hover:text-accent'
+                    }`}
+                    disabled={!canPlayGlitchRun()}
+                    title={
+                      timerState.sessionType === 'focus' && glitchRunUsedThisSession
+                        ? 'GlitchRun used this focus session'
+                        : 'Play GlitchRun - Quick 10s dopamine boost!'
+                    }
                   >
-                    <Settings2 className="h-4 w-4 mr-1" />
-                    Settings
+                    <Zap className="h-4 w-4 mr-1 button-icon" />
+                    <span className="button-text">GlitchRun</span>
                   </Button>
-                  
-                  {/* GlitchRun Button */}
-                  {canPlayGlitchRun() && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={handleGlitchRun}
-                      className={`relative ${
-                        !canPlayGlitchRun() 
-                          ? 'text-muted-foreground/50 cursor-not-allowed' 
-                          : 'text-muted-foreground hover:text-accent'
-                      }`}
-                      disabled={!canPlayGlitchRun()}
-                      title={
-                        timerState.sessionType === 'focus' && glitchRunUsedThisSession
-                          ? 'GlitchRun used this focus session'
-                          : 'Play GlitchRun - Quick 10s dopamine boost!'
-                      }
-                    >
-                      <Zap className="h-4 w-4 mr-1" />
-                      GlitchRun
-                    </Button>
-                  )}
-                </div>
+                )}
               </div>
             </CardContent>
           </Card>
