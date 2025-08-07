@@ -301,11 +301,6 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
 
     // Draw enhanced Tron-like avatar
     const pulse = Math.sin(Date.now() * 0.01) * 0.3 + 0.7;
-    const jumpProgress = isJumping ? Math.abs(jumpVelocityRef.current) / 13 : 0;
-
-    // Squash and stretch effect
-    const scaleX = isJumping ? 1.1 + jumpProgress * 0.2 : 1.0;
-    const scaleY = isJumping ? 0.9 - jumpProgress * 0.1 : 1.0;
     const rotation = isJumping ? Math.sin(Date.now() * 0.03) * 0.15 : 0;
 
     const avatarWidth = PLAYER_SIZE * 1.4; // Larger avatar
@@ -315,7 +310,6 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
 
     ctx.save();
     ctx.translate(centerX, centerY);
-    ctx.scale(scaleX, scaleY);
     ctx.rotate(rotation);
 
     // Jump aura ring
@@ -485,11 +479,11 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
 
       ctx.globalAlpha = burstAlpha;
       ctx.shadowBlur = 25;
-      ctx.shadowColor = '#00ff00';
+      ctx.shadowColor = '#ff6b9d';
 
       // Draw burst rings
       for (let i = 0; i < 3; i++) {
-        ctx.strokeStyle = `rgba(0, 255, 0, ${burstAlpha * (1 - i * 0.3)})`;
+        ctx.strokeStyle = `rgba(255, 107, 157, ${burstAlpha * (1 - i * 0.3)})`;
         ctx.lineWidth = 4 - i;
         ctx.beginPath();
         ctx.arc(successBurst.x, successBurst.y, burstSize + i * 15, 0, Math.PI * 2);
@@ -503,7 +497,7 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
         const sparkleX = successBurst.x + Math.cos(angle) * sparkleDistance;
         const sparkleY = successBurst.y + Math.sin(angle) * sparkleDistance;
 
-        ctx.fillStyle = `rgba(255, 255, 0, ${burstAlpha})`;
+        ctx.fillStyle = `rgba(0, 255, 255, ${burstAlpha})`;
         ctx.fillRect(sparkleX - 2, sparkleY - 2, 4, 4);
       }
 
