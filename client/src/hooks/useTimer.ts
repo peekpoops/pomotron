@@ -95,11 +95,13 @@ export function useTimer() {
 
   // Timer countdown effect
   useEffect(() => {
+    console.log('Timer effect triggered - isRunning:', timerState.isRunning, 'isPaused:', timerState.isPaused);
     if (timerState.isRunning && !timerState.isPaused) {
+      console.log('Starting interval timer');
       intervalRef.current = setInterval(() => {
         setTimerState(prev => {
-          // Simple countdown - just decrement timeLeft by 1 second
           const newTimeLeft = Math.max(0, prev.timeLeft - 1);
+          console.log('Countdown tick:', newTimeLeft);
           
           if (newTimeLeft <= 0) {
             // Timer finished
@@ -199,6 +201,7 @@ export function useTimer() {
       
       startIdleDetection();
     } else {
+      console.log('Stopping interval timer');
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
         intervalRef.current = null;
