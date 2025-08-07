@@ -66,10 +66,10 @@ export default function Home() {
     <div className="min-h-screen bg-background">
       {/* Header Navigation */}
       <header className="border-b border-border/30 sticky top-0 z-40 bg-background/80 backdrop-blur-sm">
-        <nav className="container mx-auto px-4 py-4">
+        <nav className="container mx-auto px-2 sm:px-4 py-3 sm:py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
-              <div className="text-4xl font-orbitron font-black tracking-wider relative">
+              <div className="text-2xl sm:text-4xl font-orbitron font-black tracking-wider relative mobile-header-title">
                 <span className="bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent drop-shadow-[0_0_20px_rgba(255,107,157,0.8)] filter">
                   POMOTRON
                 </span>
@@ -79,9 +79,9 @@ export default function Home() {
               </div>
             </div>
             
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2 sm:space-x-4">
               {/* Navigation Tabs */}
-              <div className="flex space-x-3 p-2 rounded-xl bg-black/20 backdrop-blur-sm border border-white/10">
+              <div className="flex space-x-2 sm:space-x-3 p-1 sm:p-2 rounded-xl bg-black/20 backdrop-blur-sm border border-white/10 mobile-nav-container">
                 {navigation.map((item) => {
                   const Icon = item.icon;
                   return (
@@ -94,8 +94,8 @@ export default function Home() {
                       }`}
                       title={`Switch to ${item.label} (Press ${item.shortcut})`}
                     >
-                      <Icon className="h-5 w-5 mr-3 relative z-10" />
-                      <span className="relative z-10">{item.label}</span>
+                      <Icon className="h-4 w-4 sm:h-5 sm:w-5 mr-0 sm:mr-3 relative z-10 tab-icon" />
+                      <span className="relative z-10 tab-text hidden sm:inline">{item.label}</span>
                       {/* Animated background gradient */}
                       <div className={`absolute inset-0 rounded-lg transition-opacity duration-300 ${
                         currentView === item.id 
@@ -114,7 +114,7 @@ export default function Home() {
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-8 relative">
+      <main className="container mx-auto px-2 sm:px-4 py-4 sm:py-8 relative">
         {currentView === 'timer' && <Timer onOpenSettings={() => setCurrentView('settings')} />}
         {currentView === 'analytics' && <Analytics />}
         {currentView === 'settings' && <SettingsComponent />}

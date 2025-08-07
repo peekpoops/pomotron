@@ -81,29 +81,29 @@ export default function Settings() {
   ];
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8">
-      <div className="mb-8 text-center">
-        <h1 className="text-4xl font-orbitron font-black text-primary mb-2 neon-text tracking-wider">
+    <div className="max-w-4xl mx-auto space-y-4 sm:space-y-8 modal-content-mobile">
+      <div className="mb-4 sm:mb-8 text-center modal-header-mobile">
+        <h1 className="text-2xl sm:text-4xl font-orbitron font-black text-primary mb-2 neon-text tracking-wider modal-title">
           <span className="bg-gradient-to-r from-primary via-accent to-secondary bg-clip-text text-transparent">
             SETTINGS & CONFIGURATION
           </span>
         </h1>
-        <p className="text-secondary font-tech-mono">Customize your Pomotron experience</p>
+        <p className="text-sm sm:text-base text-secondary font-tech-mono">Customize your Pomotron experience</p>
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-8">
+      <div className="grid lg:grid-cols-2 gap-4 sm:gap-8 settings-grid-mobile">
         {/* Timer Configuration */}
         <Card className="neon-border glass-morphism">
-          <CardHeader>
-            <CardTitle className="section-title text-lg text-secondary flex items-center">
-              <Clock className="h-5 w-5 mr-2" />
+          <CardHeader className="settings-card-mobile">
+            <CardTitle className="section-title text-base sm:text-lg text-secondary flex items-center">
+              <Clock className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
               Timer Configuration
             </CardTitle>
           </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="grid grid-cols-3 gap-4">
+          <CardContent className="space-y-4 sm:space-y-6 settings-card-mobile">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
               <div>
-                <Label htmlFor="focus-duration" className="text-sm font-medium text-muted-foreground">
+                <Label htmlFor="focus-duration" className="text-xs sm:text-sm font-medium text-muted-foreground">
                   Focus (min)
                 </Label>
                 <Input
@@ -116,11 +116,11 @@ export default function Settings() {
                     ...prev,
                     focusDuration: parseInt(e.target.value) || 25
                   }))}
-                  className="form-input mt-1"
+                  className="form-input mt-1 text-sm"
                 />
               </div>
               <div>
-                <Label htmlFor="break-duration" className="text-sm font-medium text-muted-foreground">
+                <Label htmlFor="break-duration" className="text-xs sm:text-sm font-medium text-muted-foreground">
                   Break (min)
                 </Label>
                 <Input
@@ -133,11 +133,11 @@ export default function Settings() {
                     ...prev,
                     breakDuration: parseInt(e.target.value) || 5
                   }))}
-                  className="form-input mt-1"
+                  className="form-input mt-1 text-sm"
                 />
               </div>
               <div>
-                <Label htmlFor="long-break-duration" className="text-sm font-medium text-muted-foreground">
+                <Label htmlFor="long-break-duration" className="text-xs sm:text-sm font-medium text-muted-foreground">
                   Long Break (min)
                 </Label>
                 <Input
@@ -150,13 +150,13 @@ export default function Settings() {
                     ...prev,
                     longBreakDuration: parseInt(e.target.value) || 15
                   }))}
-                  className="form-input mt-1"
+                  className="form-input mt-1 text-sm"
                 />
               </div>
             </div>
 
             <div>
-              <Label htmlFor="cycles-before-long-break" className="text-sm font-medium text-muted-foreground">
+              <Label htmlFor="cycles-before-long-break" className="text-xs sm:text-sm font-medium text-muted-foreground">
                 Cycles before long break
               </Label>
               <Input
@@ -169,12 +169,12 @@ export default function Settings() {
                   ...prev,
                   cyclesBeforeLongBreak: parseInt(e.target.value) || 4
                 }))}
-                className="form-input mt-1"
+                className="form-input mt-1 text-sm"
               />
             </div>
 
             <div>
-              <Label htmlFor="idle-timeout" className="text-sm font-medium text-muted-foreground">
+              <Label htmlFor="idle-timeout" className="text-xs sm:text-sm font-medium text-muted-foreground">
                 Idle nudge timeout (min)
               </Label>
               <Input
@@ -187,13 +187,13 @@ export default function Settings() {
                   ...prev,
                   idleTimeout: parseInt(e.target.value) || 5
                 }))}
-                className="form-input mt-1"
+                className="form-input mt-1 text-sm"
               />
             </div>
 
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
               <div className="flex items-center space-x-2">
-                <Label htmlFor="auto-start" className="text-sm font-medium text-muted-foreground">
+                <Label htmlFor="auto-start" className="text-xs sm:text-sm font-medium text-muted-foreground">
                   Auto-start next session
                 </Label>
                 <Popover>
@@ -219,9 +219,9 @@ export default function Settings() {
               />
             </div>
 
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
               <div className="flex items-center space-x-2">
-                <Label htmlFor="soft-start" className="text-sm font-medium text-muted-foreground">
+                <Label htmlFor="soft-start" className="text-xs sm:text-sm font-medium text-muted-foreground">
                   Soft start (5s countdown)
                 </Label>
                 <Popover>
@@ -247,9 +247,9 @@ export default function Settings() {
               />
             </div>
 
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
               <div className="flex items-center space-x-2">
-                <Label htmlFor="show-quotes" className="text-sm font-medium text-muted-foreground">
+                <Label htmlFor="show-quotes" className="text-xs sm:text-sm font-medium text-muted-foreground">
                   Show motivational quotes
                 </Label>
                 <Popover>
@@ -275,18 +275,18 @@ export default function Settings() {
               />
             </div>
 
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
               <div className="flex items-center space-x-2">
-                <Label htmlFor="sounds-enabled" className="text-sm font-medium text-muted-foreground">
+                <Label htmlFor="sounds-enabled" className="text-xs sm:text-sm font-medium text-muted-foreground">
                   Enable sound effects
                 </Label>
                 <Popover>
                   <PopoverTrigger asChild>
                     <button className="text-muted-foreground hover:text-foreground">
-                      <Info className="h-4 w-4" />
+                      <Info className="h-3 w-3 sm:h-4 sm:w-4" />
                     </button>
                   </PopoverTrigger>
-                  <PopoverContent side="top" align="center" className="w-80 text-sm">
+                  <PopoverContent side="top" align="center" className="w-60 sm:w-80 text-xs sm:text-sm">
                     <p>
                       Play retro-style sound effects for timer events like starting sessions, breaks, and idle notifications.
                     </p>
@@ -305,21 +305,19 @@ export default function Settings() {
           </CardContent>
         </Card>
 
-        
-
         {/* Keyboard Shortcuts */}
         <Card className="neon-border glass-morphism">
-          <CardHeader>
-            <CardTitle className="section-title text-lg text-secondary flex items-center">
-              <Keyboard className="h-5 w-5 mr-2" />
+          <CardHeader className="settings-card-mobile">
+            <CardTitle className="section-title text-base sm:text-lg text-secondary flex items-center">
+              <Keyboard className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
               Keyboard Shortcuts
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
+          <CardContent className="settings-card-mobile">
+            <div className="space-y-2 sm:space-y-3">
               {keyboardShortcuts.map((shortcut) => (
                 <div key={shortcut.action} className="flex justify-between items-center">
-                  <span className="text-sm text-muted-foreground">{shortcut.action}</span>
+                  <span className="text-xs sm:text-sm text-muted-foreground">{shortcut.action}</span>
                   <Badge variant="secondary" className="text-xs font-mono">
                     {shortcut.key}
                   </Badge>
@@ -334,7 +332,7 @@ export default function Settings() {
       <div className="text-center">
         <Button
           onClick={handleSave}
-          className="btn-primary px-8 py-3 font-medium"
+          className="btn-primary px-6 sm:px-8 py-3 font-medium w-full sm:w-auto"
         >
           <Save className="h-4 w-4 mr-2" />
           Save Settings
