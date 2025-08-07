@@ -15,7 +15,7 @@ const defaultTimerState: TimerState = {
 };
 
 export function useTimer() {
-  const [timerState, setTimerState] = useState<TimerState>(defaultTimerState);
+  const [timerState, setTimerState] = useLocalStorage<TimerState>('pomotron-timer-state', defaultTimerState);
   const [settings] = useLocalStorage<Settings>('pomotron-settings', {
     focusDuration: 25,
     breakDuration: 5,
