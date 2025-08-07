@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Clock, BarChart3, Settings } from 'lucide-react';
+import { Clock, BarChart3, Settings, Zap, Activity, Cog } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Timer from '@/components/Timer';
 import Analytics from '@/components/Analytics';
@@ -57,9 +57,9 @@ export default function Home() {
   }, []);
 
   const navigation = [
-    { id: 'timer' as ViewType, label: 'Timer', icon: Clock },
-    { id: 'analytics' as ViewType, label: 'Analytics', icon: BarChart3 },
-    { id: 'settings' as ViewType, label: 'Settings', icon: Settings },
+    { id: 'timer' as ViewType, label: 'Timer', icon: Zap, shortcut: 'T' },
+    { id: 'analytics' as ViewType, label: 'Analytics', icon: Activity, shortcut: 'A' },
+    { id: 'settings' as ViewType, label: 'Settings', icon: Cog, shortcut: 'S' },
   ];
 
   return (
@@ -81,7 +81,7 @@ export default function Home() {
             
             <div className="flex items-center space-x-4">
               {/* Navigation Tabs */}
-              <div className="flex space-x-2">
+              <div className="flex space-x-3 p-2 rounded-xl bg-black/20 backdrop-blur-sm border border-white/10">
                 {navigation.map((item) => {
                   const Icon = item.icon;
                   return (
@@ -89,12 +89,24 @@ export default function Home() {
                       key={item.id}
                       variant="ghost"
                       onClick={() => setCurrentView(item.id)}
-                      className={`nav-tab px-4 py-2 font-medium transition-all duration-300 ${
+                      className={`nav-tab relative group font-medium transition-all duration-500 ${
                         currentView === item.id ? 'active' : ''
                       }`}
+                      title={`Switch to ${item.label} (Press ${item.shortcut})`}
                     >
-                      <Icon className="h-4 w-4 mr-2" />
-                      {item.label}
+                      <Icon className="h-5 w-5 mr-3 relative z-10" />
+                      <span className="relative z-10">{item.label}</span>
+                      <div className="absolute top-1 right-1 w-6 h-6 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center opacity-60 group-hover:opacity-100 transition-opacity">
+                        <span className="text-xs font-bold font-tech-mono">{item.shortcut}</span>
+                      </div>
+                      {/* Animated background gradient */}
+                      <div className={`absolute inset-0 rounded-lg transition-opacity duration-300 ${
+                        currentView === item.id 
+                          ? 'opacity-100' 
+                          : 'opacity-0 group-hover:opacity-30'
+                      }`}>
+                        <div className="absolute inset-0 bg-gradient-to-r from-primary/20 via-accent/20 to-secondary/20 rounded-lg animate-pulse"></div>
+                      </div>
                     </Button>
                   );
                 })}
