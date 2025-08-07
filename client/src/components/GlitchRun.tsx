@@ -16,6 +16,8 @@ interface Obstacle {
   width: number;
   height: number;
   glitchPhase: number;
+  collided: boolean;
+  collided: boolean;
 }
 
 interface Particle {
@@ -147,40 +149,61 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
         y: GROUND_Y,
         width: OBSTACLE_WIDTH,
         height: OBSTACLE_HEIGHT,
-        glitchPhase: Math.random() * Math.PI * 2
+        glitchPhase: Math.random() * Math.PI * 2,
+        collided: false
       }]);
       lastObstacleRef.current = now;
     }
 
-    // Update obstacles and check collisions
+    // Update obstacles and check collisions using forEach loop
     setObstacles(prev => {
-      return prev.map(obstacle => ({
-        ...obstacle,
-        x: obstacle.x - OBSTACLE_SPEED,
-        glitchPhase: obstacle.glitchPhase + 0.2
-      })).filter(obstacle => {
-        // Remove obstacles that are off-screen and award points only if successfully avoided
-        if (obstacle.x < -obstacle.width) {
-          // Check if obstacle was successfully avoided (no collision occurred)
-          const GRACE_MARGIN = 4;
-          const playerLeft = PLAYER_X;
-          const playerRight = PLAYER_X + PLAYER_SIZE;
-          const playerTop = playerY;
-          const playerBottom = playerY + PLAYER_SIZE;
+      const updatedObstacles: typeof prev = [];
+      const GRACE_MARGIN = 4;
+      
+      prev.forEach(obstacle => {
+        // Update obstacle position and glitch phase
+        const updatedObstacle = {
+          ...obstacle,
+          x: obstacle.x - OBSTACLE_SPEED,
+          glitchPhase: obstacle.glitchPhase + 0.2
+        };
 
-          const obsLeft = obstacle.x;
-          const obsRight = obstacle.x + obstacle.width;
-          const obsTop = obstacle.y - obstacle.height;
-          const obsBottom = obstacle.y;
+        // Player position for collision checking
+        const playerLeft = PLAYER_X;
+        const playerRight = PLAYER_X + PLAYER_SIZE;
+        const playerTop = playerY;
+        const playerBottom = playerY + PLAYER_SIZE;
 
-          const hasHorizontalOverlap = playerRight > obsLeft + GRACE_MARGIN &&
-                                     playerLeft < obsRight - GRACE_MARGIN;
-          const hasVerticalOverlap = playerBottom > obsTop + GRACE_MARGIN &&
-                                   playerTop < obsBottom - GRACE_MARGIN;
-          const wasCollision = hasHorizontalOverlap && hasVerticalOverlap;
+        const obsLeft = updatedObstacle.x;
+        const obsRight = updatedObstacle.x + updatedObstacle.width;
+        const obsTop = updatedObstacle.y - updatedObstacle.height;
+        const obsBottom = updatedObstacle.y;
 
-          // Only award score if obstacle passed without collision
-          if (!wasCollision) {
+        // Check for collision
+        const hasHorizontalOverlap = playerRight > obsLeft + GRACE_MARGIN && 
+                                   playerLeft < obsRight - GRACE_MARGIN;
+        const hasVerticalOverlap = playerBottom > obsTop + GRACE_MARGIN && 
+                                 playerTop < obsBottom - GRACE_MARGIN;
+        
+        const playerRightEdge = PLAYER_X + PLAYER_SIZE;
+        const obstacleLeftEdge = updatedObstacle.x;
+        const hasPassedObstacle = playerRightEdge < obstacleLeftEdge;
+        
+        const isCollision = hasHorizontalOverlap && hasVerticalOverlap && !hasPassedObstacle;
+
+        // Mark collision if it occurred
+        if (isCollision && !updatedObstacle.collided) {
+          updatedObstacle.collided = true;
+          // Collision detected - trigger effects but don't end game
+          setScreenGlitch(true);
+          setTimeout(() => setScreenGlitch(false), 400);
+          playSound('glitch-collision');
+        }
+
+        // Handle obstacle that went off-screen
+        if (updatedObstacle.x < -updatedObstacle.width) {
+          // Award score only if no collision occurred during the obstacle's lifetime
+          if (!updatedObstacle.collided) {
             setScore(s => {
               const newScore = s + 10;
               playSound('glitch-score');
@@ -193,45 +216,20 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
               time: Date.now()
             });
           }
-          return false; // Remove obstacle either way
+          // Don't add to updatedObstacles (remove it)
+          return;
         }
 
-        // Check collision with proper positioning
-        const GRACE_MARGIN = 4; // Tweakable grace buffer
-        const playerLeft = PLAYER_X;
-        const playerRight = PLAYER_X + PLAYER_SIZE;
-        const playerTop = playerY;
-        const playerBottom = playerY + PLAYER_SIZE;
-
-        const obsLeft = obstacle.x;
-        const obsRight = obstacle.x + obstacle.width;
-        const obsTop = obstacle.y - obstacle.height;
-        const obsBottom = obstacle.y;
-
-        // Check for collision - proper logic for both ground hits and air collisions
-        const hasHorizontalOverlap = playerRight > obsLeft + GRACE_MARGIN && 
-                                     playerLeft < obsRight - GRACE_MARGIN;
-        const hasVerticalOverlap = playerBottom > obsTop + GRACE_MARGIN && 
-                                 playerTop < obsBottom - GRACE_MARGIN;
-        
-        // Collision occurs when both horizontal and vertical overlap exist
-        // But only if the player hasn't already successfully passed the obstacle
-        const playerRightEdge = PLAYER_X + PLAYER_SIZE;
-        const obstacleLeftEdge = obstacle.x;
-        const hasPassedObstacle = playerRightEdge < obstacleLeftEdge; // Player completely past obstacle
-        
-        if (hasHorizontalOverlap && hasVerticalOverlap && !hasPassedObstacle) {
-          // Collision detected - trigger effects but don't end game
-          setScreenGlitch(true);
-          setTimeout(() => setScreenGlitch(false), 400);
-          // Play collision sound
-          playSound('glitch-collision');
-          // Remove obstacle but don't end game - player loses score opportunity
-          return false;
+        // Remove obstacle if it collided (after effects are triggered)
+        if (updatedObstacle.collided) {
+          return;
         }
 
-        return true;
+        // Obstacle is safe - keep it
+        updatedObstacles.push(updatedObstacle);
       });
+
+      return updatedObstacles;
     });
 
     // Update particles
