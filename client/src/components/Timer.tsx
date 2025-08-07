@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Clock, Play, Pause, RotateCcw, Square, Settings2 } from 'lucide-react';
+import { Clock, Play, Pause, RotateCcw, Square, Settings2, Target, Zap, Flame, TrendingUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -386,30 +386,93 @@ export default function Timer({ onOpenSettings }: TimerProps) {
             </Card>
           )}
 
-          {/* Today's Stats */}
-          <Card className="neon-border glass-morphism">
-            <CardContent className="p-6">
-              <h3 className="section-title text-lg mb-4 text-secondary">
-                Today's Progress
+          {/* Today's Progress - Retro Style */}
+          <Card className="neon-border glass-morphism relative overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-accent/5 to-secondary/5 opacity-50"></div>
+            <CardContent className="p-6 relative z-10">
+              <h3 className="section-title text-lg mb-6 text-secondary flex items-center font-orbitron font-bold">
+                <TrendingUp className="h-5 w-5 mr-2 text-accent animate-pulse" />
+                <span className="bg-gradient-to-r from-accent to-primary bg-clip-text text-transparent">
+                  TODAY'S PROGRESS
+                </span>
               </h3>
-              <div className="space-y-3">
-                <div className="flex justify-between">
-                  <span className="text-sm text-muted-foreground">Sessions:</span>
-                  <span className="text-sm font-medium">
-                    {new Date().toDateString() === new Date().toDateString() ? 
-                      timerState.currentCycle - 1 : 0}
-                  </span>
+              <div className="space-y-4">
+                {/* Sessions completed */}
+                <div className="flex items-center justify-between p-3 rounded-lg bg-gradient-to-r from-primary/10 to-accent/10 border border-primary/20 hover:border-primary/40 transition-all duration-300">
+                  <div className="flex items-center space-x-3">
+                    <div className="relative">
+                      <Target className="h-6 w-6 text-primary animate-pulse" />
+                      <div className="absolute -top-1 -right-1 w-3 h-3 bg-accent rounded-full animate-ping opacity-75"></div>
+                    </div>
+                    <span className="text-sm font-tech-mono text-secondary font-medium">SESSIONS</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-2xl font-orbitron font-black text-primary neon-text">
+                      {new Date().toDateString() === new Date().toDateString() ? 
+                        timerState.currentCycle - 1 : 0}
+                    </span>
+                    <span className="text-xs text-muted-foreground font-tech-mono">DONE</span>
+                  </div>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-sm text-muted-foreground">Focus Time:</span>
-                  <span className="text-sm font-medium">
-                    {Math.floor((timerState.currentCycle - 1) * settings.focusDuration / 60)}h{' '}
-                    {(timerState.currentCycle - 1) * settings.focusDuration % 60}m
-                  </span>
+
+                {/* Focus time */}
+                <div className="flex items-center justify-between p-3 rounded-lg bg-gradient-to-r from-accent/10 to-secondary/10 border border-accent/20 hover:border-accent/40 transition-all duration-300">
+                  <div className="flex items-center space-x-3">
+                    <div className="relative">
+                      <Zap className="h-6 w-6 text-accent animate-bounce" />
+                      <div className="absolute inset-0 animate-spin">
+                        <div className="h-6 w-6 border-2 border-transparent border-t-accent/30 rounded-full"></div>
+                      </div>
+                    </div>
+                    <span className="text-sm font-tech-mono text-secondary font-medium">FOCUS TIME</span>
+                  </div>
+                  <div className="flex items-center space-x-1">
+                    <span className="text-xl font-orbitron font-black text-accent">
+                      {Math.floor((timerState.currentCycle - 1) * settings.focusDuration / 60)}
+                    </span>
+                    <span className="text-xs text-accent font-tech-mono">H</span>
+                    <span className="text-xl font-orbitron font-black text-accent ml-2">
+                      {(timerState.currentCycle - 1) * settings.focusDuration % 60}
+                    </span>
+                    <span className="text-xs text-accent font-tech-mono">M</span>
+                  </div>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-sm text-muted-foreground">Streak:</span>
-                  <span className="text-sm font-medium text-accent">1 day</span>
+
+                {/* Streak */}
+                <div className="flex items-center justify-between p-3 rounded-lg bg-gradient-to-r from-secondary/10 to-primary/10 border border-secondary/20 hover:border-secondary/40 transition-all duration-300">
+                  <div className="flex items-center space-x-3">
+                    <div className="relative">
+                      <Flame className="h-6 w-6 text-secondary animate-pulse" style={{ filter: 'drop-shadow(0 0 10px currentColor)' }} />
+                      <div className="absolute -inset-1 bg-secondary/20 rounded-full animate-ping opacity-75"></div>
+                    </div>
+                    <span className="text-sm font-tech-mono text-secondary font-medium">STREAK</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-2xl font-orbitron font-black text-secondary neon-text">1</span>
+                    <span className="text-xs text-muted-foreground font-tech-mono">DAY</span>
+                    <div className="flex space-x-1 ml-2">
+                      {[...Array(3)].map((_, i) => (
+                        <div 
+                          key={i} 
+                          className="w-1 h-4 bg-secondary/60 rounded-full animate-pulse"
+                          style={{ animationDelay: `${i * 0.2}s` }}
+                        ></div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Retro circuit pattern decoration */}
+              <div className="absolute bottom-2 right-2 opacity-10">
+                <div className="grid grid-cols-3 gap-1">
+                  {[...Array(9)].map((_, i) => (
+                    <div 
+                      key={i} 
+                      className="w-1 h-1 bg-primary rounded-full animate-ping"
+                      style={{ animationDelay: `${i * 0.1}s` }}
+                    ></div>
+                  ))}
                 </div>
               </div>
             </CardContent>
