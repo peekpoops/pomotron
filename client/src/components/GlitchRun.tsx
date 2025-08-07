@@ -188,13 +188,8 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
         const isCollision = hasHorizontalOverlap && hasVerticalOverlap;
 
         // Mark collision if it occurred
-        if (isCollision && !updatedObstacle.collided) {
-          console.log('COLLISION DETECTED - marking obstacle as collided', {
-            obstacleId: updatedObstacle.id,
-            playerPos: { left: playerLeft, right: playerRight, top: playerTop, bottom: playerBottom },
-            obsPos: { left: obsLeft, right: obsRight, top: obsTop, bottom: obsBottom },
-            overlaps: { horizontal: hasHorizontalOverlap, vertical: hasVerticalOverlap }
-          });
+        if (isCollision) {
+          console.log('🔴 COLLISION! Obstacle', updatedObstacle.id, 'hit player - marking as collided');
           updatedObstacle.collided = true;
           // Collision detected - trigger effects but don't end game
           setScreenGlitch(true);
@@ -204,16 +199,11 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
 
         // Handle obstacle that went off-screen
         if (updatedObstacle.x < -updatedObstacle.width) {
-          console.log('OBSTACLE OFF-SCREEN - checking if should score', {
-            obstacleId: updatedObstacle.id,
-            collided: updatedObstacle.collided,
-            willScore: !updatedObstacle.collided
-          });
           // Award score only if no collision occurred during the obstacle's lifetime
           if (!updatedObstacle.collided) {
+            console.log('✅ SCORE! Obstacle', updatedObstacle.id, 'passed without collision - awarding 10 points');
             setScore(s => {
               const newScore = s + 10;
-              console.log('SCORING! New score:', newScore);
               playSound('glitch-score');
               return newScore;
             });
@@ -224,7 +214,7 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
               time: Date.now()
             });
           } else {
-            console.log('NO SCORE - obstacle was collided with');
+            console.log('❌ NO SCORE - Obstacle', updatedObstacle.id, 'was collided with, not awarding points');
           }
           // Don't add to updatedObstacles (remove it)
           return;
@@ -604,11 +594,30 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
     };
   }, []);
 
-  // Stop game loop when modal closes
+  // Reset game completely when modal closes
   useEffect(() => {
-    if (!isOpen && gameLoopRef.current) {
-      cancelAnimationFrame(gameLoopRef.current);
+    if (!isOpen) {
+      if (gameLoopRef.current) {
+        cancelAnimationFrame(gameLoopRef.current);
+      }
+      // Reset all game state
       setGameState('waiting');
+      setScore(0);
+      setTimeLeft(10);
+      setPlayerY(GROUND_Y);
+      setIsJumping(false);
+      setObstacles([]);
+      setParticles([]);
+      setScreenGlitch(false);
+      setJumpAura(0);
+      setSuccessBurst(null);
+      
+      // Reset refs
+      lastObstacleRef.current = 0;
+      obstacleIdRef.current = 0;
+      particleIdRef.current = 0;
+      jumpVelocityRef.current = 0;
+      gameStartTimeRef.current = 0;
     }
   }, [isOpen]);
 
