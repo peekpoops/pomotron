@@ -228,6 +228,20 @@ export default function Timer({ onOpenSettings, timerHook: externalTimerHook }: 
     startSession(intention);
   };
 
+  // Calculate today's completed focus cycles
+  const getTodayCompletedCycles = () => {
+    const today = new Date().toDateString();
+    const [sessions] = useLocalStorage<Session[]>('pomotron-sessions', []);
+    
+    return sessions.filter(session => 
+      session.completed && 
+      session.sessionType === 'focus' && 
+      new Date(session.startTime).toDateString() === today
+    ).length;
+  };
+
+  const todayCompletedCycles = getTodayCompletedCycles();
+
   const getSessionInfo = () => {
     if (timerState.sessionType === 'focus') {
       return `Cycle ${timerState.currentCycle} of ${settings.cyclesBeforeLongBreak} • Long break after ${settings.cyclesBeforeLongBreak} cycles`;
@@ -666,8 +680,7 @@ export default function Timer({ onOpenSettings, timerHook: externalTimerHook }: 
                   </div>
                   <div className="flex items-center">
                     <span className="text-2xl font-orbitron font-black text-primary neon-text">
-                      {new Date().toDateString() === new Date().toDateString() ? 
-                        timerState.currentCycle - 1 : 0}
+                      {todayCompletedCycles}
                     </span>
                   </div>
                 </div>
@@ -685,11 +698,11 @@ export default function Timer({ onOpenSettings, timerHook: externalTimerHook }: 
                   </div>
                   <div className="flex items-center space-x-1">
                     <span className="text-xl font-orbitron font-black text-accent">
-                      {Math.floor((timerState.currentCycle - 1) * settings.focusDuration / 60)}
+                      {Math.floor(todayCompletedCycles * settings.focusDuration / 60)}
                     </span>
                     <span className="text-xs text-accent font-tech-mono">H</span>
                     <span className="text-xl font-orbitron font-black text-accent ml-2">
-                      {(timerState.currentCycle - 1) * settings.focusDuration % 60}
+                      {todayCompletedCycles * settings.focusDuration % 60}
                     </span>
                     <span className="text-xs text-accent font-tech-mono">M</span>
                   </div>
