@@ -41,28 +41,73 @@ export default function Settings() {
   }, [settings]);
 
   const handleSave = () => {
-    // Prevent saving settings during focus sessions
-    if (timerState.isRunning && timerState.sessionType === 'focus') {
+    // Allow saving during sessions, but apply timer config changes after session ends
+    if (timerState.isRunning || timerState.isPaused) {
+      // Save non-timer settings immediately
+      const immediateSettings = {
+        ...localSettings,
+        // Keep current timer durations for running session
+        focusDuration: settings.focusDuration,
+        breakDuration: settings.breakDuration,
+        longBreakDuration: settings.longBreakDuration,
+        cyclesBeforeLongBreak: settings.cyclesBeforeLongBreak,
+        autoStart: settings.autoStart,
+      };
+      
+      setSettings(immediateSettings);
+      
+      // Store pending timer config changes
+      if (localSettings.focusDuration !== settings.focusDuration ||
+          localSettings.breakDuration !== settings.breakDuration ||
+          localSettings.longBreakDuration !== settings.longBreakDuration ||
+          localSettings.cyclesBeforeLongBreak !== settings.cyclesBeforeLongBreak ||
+          localSettings.autoStart !== settings.autoStart) {
+        localStorage.setItem('pomotron-pending-timer-config', JSON.stringify({
+          focusDuration: localSettings.focusDuration,
+          breakDuration: localSettings.breakDuration,
+          longBreakDuration: localSettings.longBreakDuration,
+          cyclesBeforeLongBreak: localSettings.cyclesBeforeLongBreak,
+          autoStart: localSettings.autoStart,
+        }));
+        
+        toast({
+          title: "Settings Partially Saved",
+          description: "Timer configuration changes will apply after the current session ends.",
+          duration: 4000,
+        });
+      } else {
+        toast({
+          title: "Settings Saved",
+          description: "Your preferences have been updated successfully.",
+        });
+      }
+    } else {
+      // No active session, apply all settings immediately
+      setSettings(localSettings);
       toast({
-        title: "Cannot Save Settings",
-        description: "Settings cannot be changed during a focus session. Please pause or wait for the session to complete.",
-        variant: "destructive",
+        title: "Settings Saved",
+        description: "Your preferences have been updated successfully.",
       });
-      return;
     }
-
-    setSettings(localSettings);
+    
+    // Always apply theme changes immediately
     if (localSettings.theme !== theme) {
       setTheme(localSettings.theme);
     }
-    toast({
-      title: "Settings Saved",
-      description: "Your preferences have been updated successfully.",
-    });
   };
 
   const hasUnsavedChanges = JSON.stringify(localSettings) !== JSON.stringify(settings);
   const isFocusSessionRunning = timerState.isRunning && timerState.sessionType === 'focus';
+  const hasActiveSession = timerState.isRunning || timerState.isPaused;
+  
+  // Check for pending timer config changes
+  const hasPendingTimerChanges = hasActiveSession && (
+    localSettings.focusDuration !== settings.focusDuration ||
+    localSettings.breakDuration !== settings.breakDuration ||
+    localSettings.longBreakDuration !== settings.longBreakDuration ||
+    localSettings.cyclesBeforeLongBreak !== settings.cyclesBeforeLongBreak ||
+    localSettings.autoStart !== settings.autoStart
+  );
 
   
 
@@ -123,7 +168,18 @@ export default function Settings() {
             <CardTitle className="section-title text-base sm:text-lg text-secondary flex items-center">
               <Clock className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
               Timer Configuration
+              {hasPendingTimerChanges && (
+                <Badge variant="secondary" className="ml-2 text-xs animate-pulse">
+                  Pending
+                </Badge>
+              )}
             </CardTitle>
+            {hasPendingTimerChanges && (
+              <div className="text-xs text-yellow-600 dark:text-yellow-400 mt-2 flex items-center">
+                <div className="w-2 h-2 bg-yellow-500 rounded-full animate-pulse mr-2"></div>
+                Timer changes will apply after the current session ends
+              </div>
+            )}
           </CardHeader>
           
           {/* Top Save Buttons */}

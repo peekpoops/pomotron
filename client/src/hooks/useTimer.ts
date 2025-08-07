@@ -166,6 +166,18 @@ export function useTimer() {
               duration: 5000,
             });
             
+            // Apply any pending timer config changes when session ends
+            const pendingConfig = localStorage.getItem('pomotron-pending-timer-config');
+            if (pendingConfig) {
+              const parsedConfig = JSON.parse(pendingConfig);
+              const currentSettings = JSON.parse(localStorage.getItem('pomotron-settings') || '{}');
+              localStorage.setItem('pomotron-settings', JSON.stringify({
+                ...currentSettings,
+                ...parsedConfig,
+              }));
+              localStorage.removeItem('pomotron-pending-timer-config');
+            }
+
             return {
               ...prev,
               isRunning: settings.autoStart,
@@ -251,23 +263,23 @@ export function useTimer() {
     return ((totalTime - timerState.timeLeft) / totalTime) * 100;
   }, [timerState, settings]);
 
-  // Update timer duration when settings change - applies immediately regardless of timer state
+  // Update timer duration when settings change - only for stopped timers
   useEffect(() => {
-    let newDuration: number;
-    switch (timerState.sessionType) {
-      case 'focus':
-        newDuration = settings.focusDuration * 60;
-        break;
-      case 'break':
-        newDuration = settings.breakDuration * 60;
-        break;
-      case 'longBreak':
-        newDuration = settings.longBreakDuration * 60;
-        break;
-    }
-    
-    // For stopped timers, update to full new duration
+    // Only update duration for stopped timers
     if (!timerState.isRunning && !timerState.isPaused) {
+      let newDuration: number;
+      switch (timerState.sessionType) {
+        case 'focus':
+          newDuration = settings.focusDuration * 60;
+          break;
+        case 'break':
+          newDuration = settings.breakDuration * 60;
+          break;
+        case 'longBreak':
+          newDuration = settings.longBreakDuration * 60;
+          break;
+      }
+      
       if (timerState.timeLeft !== newDuration) {
         setTimerState(prev => ({
           ...prev,
@@ -275,19 +287,7 @@ export function useTimer() {
         }));
       }
     }
-    // For running timers, adjust proportionally to maintain progress
-    else if (timerState.isRunning || timerState.isPaused) {
-      const currentProgress = getProgress();
-      const adjustedTimeLeft = Math.round(newDuration * (1 - currentProgress / 100));
-      
-      if (adjustedTimeLeft !== timerState.timeLeft && adjustedTimeLeft > 0) {
-        setTimerState(prev => ({
-          ...prev,
-          timeLeft: adjustedTimeLeft,
-        }));
-      }
-    }
-  }, [settings.focusDuration, settings.breakDuration, settings.longBreakDuration, timerState.sessionType, timerState.isRunning, timerState.isPaused, timerState.timeLeft, getProgress]);
+  }, [settings.focusDuration, settings.breakDuration, settings.longBreakDuration, timerState.sessionType, timerState.isRunning, timerState.isPaused, timerState.timeLeft]);
 
   const startSession = useCallback((intention?: { task: string; why: string }) => {
     const sessionId = crypto.randomUUID();
@@ -366,6 +366,18 @@ export function useTimer() {
       ));
     }
     
+    // Apply any pending timer config changes when session resets
+    const pendingConfig = localStorage.getItem('pomotron-pending-timer-config');
+    if (pendingConfig) {
+      const parsedConfig = JSON.parse(pendingConfig);
+      const currentSettings = JSON.parse(localStorage.getItem('pomotron-settings') || '{}');
+      localStorage.setItem('pomotron-settings', JSON.stringify({
+        ...currentSettings,
+        ...parsedConfig,
+      }));
+      localStorage.removeItem('pomotron-pending-timer-config');
+    }
+    
     let duration: number;
     switch (timerState.sessionType) {
       case 'focus':
@@ -401,6 +413,18 @@ export function useTimer() {
           ? { ...s, endTime: new Date(), completed: false }
           : s
       ));
+    }
+    
+    // Apply any pending timer config changes when session ends
+    const pendingConfig = localStorage.getItem('pomotron-pending-timer-config');
+    if (pendingConfig) {
+      const parsedConfig = JSON.parse(pendingConfig);
+      const currentSettings = JSON.parse(localStorage.getItem('pomotron-settings') || '{}');
+      localStorage.setItem('pomotron-settings', JSON.stringify({
+        ...currentSettings,
+        ...parsedConfig,
+      }));
+      localStorage.removeItem('pomotron-pending-timer-config');
     }
     
     setTimerState({
