@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { useTheme } from '@/hooks/useTheme';
 import { Settings as SettingsType, Theme } from '@/types';
@@ -206,77 +206,61 @@ export default function Settings() {
               />
             </div>
 
-            <TooltipProvider>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <Label htmlFor="auto-start" className="text-sm font-medium text-muted-foreground">
-                    Auto-start next session
-                  </Label>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <button
-                        className="text-muted-foreground hover:text-foreground"
-                        onClick={(e) => e.preventDefault()}
-                      >
-                        <Info className="h-4 w-4" />
-                      </button>
-                    </TooltipTrigger>
-                    <TooltipContent
-                      side="top"
-                      align="center"
-                      className="z-50"
-                    >
-                      <p className="max-w-xs">
-                        Automatically starts the next session (break or focus) when the current session ends, without requiring manual intervention.
-                      </p>
-                    </TooltipContent>
-                  </Tooltip>
-                </div>
-                <Switch
-                  id="auto-start"
-                  checked={localSettings.autoStart}
-                  onCheckedChange={(checked) => setLocalSettings(prev => ({
-                    ...prev,
-                    autoStart: checked
-                  }))}
-                />
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <Label htmlFor="auto-start" className="text-sm font-medium text-muted-foreground">
+                  Auto-start next session
+                </Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <button className="text-muted-foreground hover:text-foreground">
+                      <Info className="h-4 w-4" />
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent side="top" align="center" className="w-80 text-sm">
+                    <p>
+                      Automatically starts the next session (break or focus) when the current session ends, without requiring manual intervention.
+                    </p>
+                  </PopoverContent>
+                </Popover>
               </div>
+              <Switch
+                id="auto-start"
+                checked={localSettings.autoStart}
+                onCheckedChange={(checked) => setLocalSettings(prev => ({
+                  ...prev,
+                  autoStart: checked
+                }))}
+              />
+            </div>
 
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <Label htmlFor="soft-start" className="text-sm font-medium text-muted-foreground">
-                    Soft start (5s countdown)
-                  </Label>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <button
-                        className="text-muted-foreground hover:text-foreground"
-                        onClick={(e) => e.preventDefault()}
-                      >
-                        <Info className="h-4 w-4" />
-                      </button>
-                    </TooltipTrigger>
-                    <TooltipContent
-                      side="top"
-                      align="center"
-                      className="z-50"
-                    >
-                      <p className="max-w-xs">
-                        Adds a 5-second countdown before starting any session, giving you time to prepare and get into focus mode.
-                      </p>
-                    </TooltipContent>
-                  </Tooltip>
-                </div>
-                <Switch
-                  id="soft-start"
-                  checked={localSettings.softStart}
-                  onCheckedChange={(checked) => setLocalSettings(prev => ({
-                    ...prev,
-                    softStart: checked
-                  }))}
-                />
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <Label htmlFor="soft-start" className="text-sm font-medium text-muted-foreground">
+                  Soft start (5s countdown)
+                </Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <button className="text-muted-foreground hover:text-foreground">
+                      <Info className="h-4 w-4" />
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent side="top" align="center" className="w-80 text-sm">
+                    <p>
+                      Adds a 5-second countdown before starting any session, giving you time to prepare and get into focus mode.
+                    </p>
+                  </PopoverContent>
+                </Popover>
               </div>
-            </TooltipProvider>
+              <Switch
+                id="soft-start"
+                checked={localSettings.softStart}
+                onCheckedChange={(checked) => setLocalSettings(prev => ({
+                  ...prev,
+                  softStart: checked
+                }))}
+              />
+            </div>
           </CardContent>
         </Card>
 
