@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Clock, Play, Pause, RotateCcw, Square, Settings2, Target, Zap, Flame, TrendingUp, Heart, Lightbulb, Sparkles } from 'lucide-react';
+import { Clock, Play, Pause, RotateCcw, Square, Settings2, Target, Zap, Flame, TrendingUp, Heart, Lightbulb } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -10,7 +10,6 @@ import { useTimer } from '@/hooks/useTimer';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { Settings } from '@/types';
 import IntentionModal from './IntentionModal';
-import { DiscoSpinner } from './DiscoSpinner';
 
 interface TimerProps {
   onOpenSettings: () => void;
@@ -143,8 +142,6 @@ export default function Timer({ onOpenSettings }: TimerProps) {
   const [currentQuote, setCurrentQuote] = useState(motivationalQuotes[0]);
   const [showFullQuote, setShowFullQuote] = useState(false);
   const [availableQuotes, setAvailableQuotes] = useLocalStorage<typeof motivationalQuotes>('pomotron-available-quotes', [...motivationalQuotes]);
-  const [showDiscoSpinner, setShowDiscoSpinner] = useState(false);
-  const [discoSpinnerUsedThisSession, setDiscoSpinnerUsedThisSession] = useLocalStorage<boolean>('disco-spinner-used', false);
   const [usedQuotes, setUsedQuotes] = useLocalStorage<typeof motivationalQuotes>('pomotron-used-quotes', []);
 
   // Initialize the first quote if we haven't set one yet
@@ -223,39 +220,7 @@ export default function Timer({ onOpenSettings }: TimerProps) {
     }
   };
 
-  // Disco Spinner logic
-  const canPlayDiscoSpinner = () => {
-    if (!settings.soundsEnabled) return false; // Use soundsEnabled as disco spinner toggle
-    if (timerState.sessionType === 'focus' && timerState.isRunning) {
-      return !discoSpinnerUsedThisSession;
-    }
-    return !timerState.isRunning || timerState.sessionType === 'break' || timerState.sessionType === 'longBreak';
-  };
-
-  const handleDiscoSpinner = () => {
-    if (canPlayDiscoSpinner()) {
-      setShowDiscoSpinner(true);
-      if (timerState.sessionType === 'focus' && timerState.isRunning) {
-        setDiscoSpinnerUsedThisSession(true);
-      }
-    }
-  };
-
-  const handleDiscoSpinnerClose = () => {
-    setShowDiscoSpinner(false);
-  };
-
-  // Reset disco spinner usage when new focus session starts
-  useEffect(() => {
-    if (timerState.sessionType === 'focus' && timerState.isRunning) {
-      // Reset usage at start of new focus session (when time is full)
-      const sessionDurationMinutes = settings.focusDuration;
-      const sessionDurationSeconds = sessionDurationMinutes * 60;
-      if (timerState.timeLeft === sessionDurationSeconds) {
-        setDiscoSpinnerUsedThisSession(false);
-      }
-    }
-  }, [timerState.sessionType, timerState.isRunning, timerState.timeLeft, settings.focusDuration]);
+  
 
   return (
     <div className="max-w-6xl mx-auto space-y-8">
@@ -396,32 +361,6 @@ export default function Timer({ onOpenSettings }: TimerProps) {
                   <Settings2 className="h-4 w-4 mr-1" />
                   Settings
                 </Button>
-                
-                {/* Disco Spinner Button */}
-                {canPlayDiscoSpinner() && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={handleDiscoSpinner}
-                    className={`relative ${
-                      !canPlayDiscoSpinner() 
-                        ? 'text-muted-foreground/50 cursor-not-allowed' 
-                        : 'text-accent hover:text-primary animate-pulse'
-                    }`}
-                    disabled={!canPlayDiscoSpinner()}
-                    title={
-                      timerState.sessionType === 'focus' && discoSpinnerUsedThisSession
-                        ? 'Disco Spinner used this focus session'
-                        : 'Play Disco Spinner - Quick dopamine boost!'
-                    }
-                  >
-                    <Sparkles className="h-4 w-4 mr-1" style={{ filter: 'drop-shadow(0 0 4px currentColor)' }} />
-                    Disco
-                    {timerState.sessionType === 'focus' && !discoSpinnerUsedThisSession && (
-                      <div className="absolute -top-1 -right-1 w-2 h-2 bg-accent rounded-full animate-ping" />
-                    )}
-                  </Button>
-                )}
               </div>
             </CardContent>
           </Card>
@@ -611,11 +550,6 @@ export default function Timer({ onOpenSettings }: TimerProps) {
         open={showIntentionModal}
         onOpenChange={setShowIntentionModal}
         onSubmit={handleIntentionSet}
-      />
-
-      <DiscoSpinner
-        isOpen={showDiscoSpinner}
-        onClose={handleDiscoSpinnerClose}
       />
     </div>
   );
