@@ -18,6 +18,8 @@ const defaultTimerState: TimerState = {
 
 export function useTimer() {
   const [timerState, setTimerState] = useLocalStorage<TimerState>('pomotron-timer-state', defaultTimerState);
+  
+  // Initialize settings first
   const [settings] = useLocalStorage<Settings>('pomotron-settings', {
     focusDuration: 25,
     breakDuration: 5,
@@ -33,6 +35,33 @@ export function useTimer() {
     showQuotes: true,
     soundsEnabled: true,
   });
+  
+  // Validate timer state on mount and fix any inconsistencies
+  useEffect(() => {
+    // If timer was left in a running state but has no startTime, reset it
+    if (timerState.isRunning && !timerState.startTime) {
+      console.log('Found invalid timer state - running but no startTime, resetting...');
+      setTimerState(prev => ({
+        ...prev,
+        isRunning: false,
+        isPaused: false,
+        startTime: null,
+        pausedDuration: 0,
+        currentSessionId: undefined,
+      }));
+    }
+    
+    // If timer has a startTime but isn't running, reset it
+    if (timerState.startTime && !timerState.isRunning) {
+      console.log('Found invalid timer state - has startTime but not running, resetting...');
+      setTimerState(prev => ({
+        ...prev,
+        startTime: null,
+        pausedDuration: 0,
+        currentSessionId: undefined,
+      }));
+    }
+  }, []);
   const [sessions, setSessions] = useLocalStorage<Session[]>('pomotron-sessions', []);
   
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -179,7 +208,7 @@ export function useTimer() {
               localStorage.removeItem('pomotron-pending-timer-config');
             }
 
-            return {
+            const newState = {
               ...prev,
               isRunning: settings.autoStart,
               timeLeft: nextDuration,
@@ -190,6 +219,12 @@ export function useTimer() {
               startTime: settings.autoStart ? Date.now() : null,
               pausedDuration: 0,
             };
+            
+            // Save the new state to localStorage to ensure persistence across tabs
+            localStorage.setItem('pomotron-timer-state', JSON.stringify(newState));
+            console.log('Session ended, new timer state saved:', newState);
+            
+            return newState;
           }
           
           return { ...prev, timeLeft: Math.round(accurateTimeLeft) };
