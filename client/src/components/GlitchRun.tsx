@@ -187,6 +187,16 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
         
         const isCollision = hasHorizontalOverlap && hasVerticalOverlap;
 
+        // Debug: Log collision check for obstacles near player
+        if (Math.abs(updatedObstacle.x - PLAYER_X) < 100) {
+          console.log(`Obstacle ${updatedObstacle.id} collision check:`, {
+            playerBounds: { left: playerLeft, right: playerRight, top: playerTop, bottom: playerBottom },
+            obsBounds: { left: obsLeft, right: obsRight, top: obsTop, bottom: obsBottom },
+            overlaps: { horizontal: hasHorizontalOverlap, vertical: hasVerticalOverlap },
+            collision: isCollision
+          });
+        }
+
         // Mark collision if it occurred
         if (isCollision) {
           console.log('🔴 COLLISION! Obstacle', updatedObstacle.id, 'hit player - marking as collided');
