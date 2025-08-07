@@ -37,16 +37,12 @@ export function useTimer() {
   
   // Clean up timer state on mount to prevent session continuation
   useEffect(() => {
-    // Only reset if running, but preserve paused state
-    if (timerState.isRunning && timerState.startTime) {
-      console.log('Page loaded with active timer state, stopping timer but preserving pause state');
-      setTimerState(prev => ({
-        ...prev,
-        isRunning: false,
-        startTime: null,
-        // Keep isPaused and currentSessionId intact
-      }));
-    }
+    // Don't interfere with the timer state at all on mount
+    console.log('Component mounted - timer state:', { 
+      isRunning: timerState.isRunning, 
+      isPaused: timerState.isPaused, 
+      timeLeft: timerState.timeLeft 
+    });
   }, []); // Only run on mount
   const [sessions, setSessions] = useLocalStorage<Session[]>('pomotron-sessions', []);
   
@@ -126,15 +122,14 @@ export function useTimer() {
             // Save completed session
             if (prev.currentSessionId) {
               console.log('Completing session:', prev.currentSessionId, 'Session type:', prev.sessionType);
-              setSessions(prevSessions => {
-                const updated = prevSessions.map(s => 
+              // Use callback to avoid dependency issues
+              setSessions(prevSessions => 
+                prevSessions.map(s => 
                   s.id === prev.currentSessionId 
                     ? { ...s, endTime: new Date(), completed: true }
                     : s
-                );
-                console.log('Sessions after completion:', updated);
-                return updated;
-              });
+                )
+              );
             }
             
             // Calculate next duration
@@ -151,6 +146,7 @@ export function useTimer() {
                 break;
             }
             
+            // Use ref to avoid dependency
             playSound('sessionComplete');
             
             // Handle website blocking
@@ -214,7 +210,7 @@ export function useTimer() {
         clearInterval(intervalRef.current);
       }
     };
-  }, [timerState.isRunning, timerState.isPaused]);
+  }, [timerState.isRunning, timerState.isPaused, settings.focusDuration, settings.breakDuration, settings.longBreakDuration, settings.cyclesBeforeLongBreak]);
 
   // Activity listeners for idle detection
   useEffect(() => {
@@ -330,8 +326,12 @@ export function useTimer() {
   }, [timerState, settings, setSessions]);
 
   const pauseSession = useCallback(() => {
+    console.log('Pause button clicked');
     setTimerState(prev => {
-      if (!prev.isRunning) return prev;
+      if (!prev.isRunning) {
+        console.log('Timer not running, ignoring pause');
+        return prev;
+      }
       
       console.log('PAUSING - Before:', { isRunning: prev.isRunning, isPaused: prev.isPaused, timeLeft: prev.timeLeft });
       
@@ -342,10 +342,9 @@ export function useTimer() {
         startTime: null,
       };
       
-      // Save paused state to localStorage immediately
-      localStorage.setItem('pomotron-timer-state', JSON.stringify(newState));
-      
       console.log('PAUSING - After:', { isRunning: newState.isRunning, isPaused: newState.isPaused, timeLeft: newState.timeLeft });
+      
+      // Don't save to localStorage to avoid conflicts
       return newState;
     });
     
