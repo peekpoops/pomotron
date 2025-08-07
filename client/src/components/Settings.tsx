@@ -235,6 +235,54 @@ export default function Settings() {
           </CardContent>
         </Card>
 
+        {/* Visual Themes */}
+        <Card className="neon-border glass-morphism">
+          <CardHeader>
+            <CardTitle className="section-title text-lg text-secondary flex items-center">
+              <Palette className="h-5 w-5 mr-2" />
+              Visual Themes
+            </CardTitle>
+            <CardDescription className="text-muted-foreground">
+              Choose your preferred visual style
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid gap-4">
+              {themeOptions.map((themeOption) => (
+                <div
+                  key={themeOption.id}
+                  className={`relative cursor-pointer rounded-lg border-2 p-4 transition-all ${
+                    localSettings.theme === themeOption.id
+                      ? 'border-primary bg-primary/10 shadow-lg'
+                      : 'border-border bg-card hover:border-primary/50'
+                  }`}
+                  onClick={() => setLocalSettings(prev => ({
+                    ...prev,
+                    theme: themeOption.id
+                  }))}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-3">
+                      <div
+                        className={`h-6 w-6 rounded-full bg-gradient-to-r ${themeOption.gradient}`}
+                      />
+                      <div>
+                        <h4 className="font-medium text-foreground">{themeOption.name}</h4>
+                        <p className="text-sm text-muted-foreground">{themeOption.description}</p>
+                      </div>
+                    </div>
+                    {localSettings.theme === themeOption.id && (
+                      <div className="h-4 w-4 rounded-full bg-primary flex items-center justify-center">
+                        <div className="h-2 w-2 rounded-full bg-primary-foreground" />
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Website Blocker */}
         <Card className="neon-border glass-morphism">
           <CardHeader>
