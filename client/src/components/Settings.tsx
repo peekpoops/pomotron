@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { useTheme } from '@/hooks/useTheme';
+import { useTimer } from '@/hooks/useTimer';
 import { Settings as SettingsType, Theme } from '@/types';
 import { useToast } from '@/hooks/use-toast';
 
@@ -31,32 +32,25 @@ const defaultSettings: SettingsType = {
 export default function Settings() {
   const [settings, setSettings] = useLocalStorage<SettingsType>('pomotron-settings', defaultSettings);
   const { theme, setTheme } = useTheme();
+  const { timerState } = useTimer();
   const [localSettings, setLocalSettings] = useState<SettingsType>(settings);
-  const [isInitialized, setIsInitialized] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
     setLocalSettings(settings);
-    setIsInitialized(true);
   }, [settings]);
 
-  // Auto-save functionality
-  useEffect(() => {
-    // Skip saving until component is initialized and settings have actually changed
-    if (!isInitialized || JSON.stringify(localSettings) === JSON.stringify(settings)) return;
-    
-    // Auto-save after a short delay to avoid excessive saves during rapid changes
-    const timeoutId = setTimeout(() => {
-      setSettings(localSettings);
-      if (localSettings.theme !== theme) {
-        setTheme(localSettings.theme);
-      }
-    }, 300);
-
-    return () => clearTimeout(timeoutId);
-  }, [localSettings, isInitialized, settings, setSettings, theme, setTheme]);
-
   const handleSave = () => {
+    // Prevent saving settings during focus sessions
+    if (timerState.isRunning && timerState.sessionType === 'focus') {
+      toast({
+        title: "Cannot Save Settings",
+        description: "Settings cannot be changed during a focus session. Please pause or wait for the session to complete.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setSettings(localSettings);
     if (localSettings.theme !== theme) {
       setTheme(localSettings.theme);
@@ -66,6 +60,9 @@ export default function Settings() {
       description: "Your preferences have been updated successfully.",
     });
   };
+
+  const hasUnsavedChanges = JSON.stringify(localSettings) !== JSON.stringify(settings);
+  const isFocusSessionRunning = timerState.isRunning && timerState.sessionType === 'focus';
 
   
 
@@ -321,13 +318,7 @@ export default function Settings() {
               />
             </div>
 
-            {/* Auto-save notification */}
-            <div className="pt-4 border-t border-border/20">
-              <div className="flex items-center justify-center space-x-2 text-xs sm:text-sm text-muted-foreground">
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                <span>Settings auto-save as you change them</span>
-              </div>
-            </div>
+
           </CardContent>
         </Card>
 
@@ -392,6 +383,42 @@ export default function Settings() {
         </CardContent>
       </Card>
 
+      {/* Save Button */}
+      <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-4 border-t border-border/20">
+        {isFocusSessionRunning && (
+          <div className="flex items-center space-x-2 text-xs sm:text-sm text-yellow-600 dark:text-yellow-400">
+            <div className="w-2 h-2 bg-yellow-500 rounded-full animate-pulse"></div>
+            <span>Settings cannot be changed during a focus session</span>
+          </div>
+        )}
+        
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 sm:ml-auto">
+          <Button
+            variant="outline"
+            onClick={() => setLocalSettings(settings)}
+            disabled={!hasUnsavedChanges}
+            className="text-xs sm:text-sm"
+          >
+            Reset Changes
+          </Button>
+          <Button
+            onClick={handleSave}
+            disabled={!hasUnsavedChanges || isFocusSessionRunning}
+            className="text-xs sm:text-sm"
+          >
+            <Save className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
+            Save Settings
+            {hasUnsavedChanges && !isFocusSessionRunning && (
+              <Badge variant="secondary" className="ml-2 text-xs">
+                {Object.keys(localSettings).filter(key => 
+                  JSON.stringify(localSettings[key as keyof SettingsType]) !== 
+                  JSON.stringify(settings[key as keyof SettingsType])
+                ).length}
+              </Badge>
+            )}
+          </Button>
+        </div>
+      </div>
 
     </div>
   );
