@@ -340,84 +340,88 @@ export default function Timer({ onOpenSettings }: TimerProps) {
               </div>
 
               {/* Timer Controls */}
-              <div className="flex justify-center space-x-4 mb-6">
-                {!timerState.isRunning && !timerState.isPaused ? (
+              <div className="button-container-mobile">
+                <div className="flex justify-center space-x-4 mb-6">
+                  {!timerState.isRunning && !timerState.isPaused ? (
+                    <Button
+                      onClick={handleStartSession}
+                      className="btn-primary px-8 py-4 text-lg font-orbitron font-bold hover:scale-105 transition-transform"
+                    >
+                      <Play className="h-5 w-5 mr-2" />
+                      START
+                    </Button>
+                  ) : timerState.isRunning ? (
+                    <Button
+                      onClick={pauseSession}
+                      className="btn-secondary px-6 py-4 font-medium hover:scale-105 transition-transform"
+                    >
+                      <Pause className="h-4 w-4 mr-2" />
+                      PAUSE
+                    </Button>
+                  ) : (
+                    <Button
+                      onClick={resumeSession}
+                      className="btn-primary px-6 py-4 font-medium hover:scale-105 transition-transform"
+                    >
+                      <Play className="h-4 w-4 mr-2" />
+                      RESUME
+                    </Button>
+                  )}
+                  
                   <Button
-                    onClick={handleStartSession}
-                    className="btn-primary px-8 py-4 text-lg font-orbitron font-bold hover:scale-105 transition-transform"
+                    onClick={resetSession}
+                    className="btn-tertiary px-6 py-4 font-medium hover:scale-105 transition-transform"
                   >
-                    <Play className="h-5 w-5 mr-2" />
-                    START
+                    <RotateCcw className="h-4 w-4 mr-2" />
+                    RESET
                   </Button>
-                ) : timerState.isRunning ? (
+                  
                   <Button
-                    onClick={pauseSession}
-                    className="btn-secondary px-6 py-4 font-medium hover:scale-105 transition-transform"
+                    onClick={endSession}
+                    className="btn-danger px-6 py-4 font-medium hover:scale-105 transition-transform"
                   >
-                    <Pause className="h-4 w-4 mr-2" />
-                    PAUSE
+                    <Square className="h-4 w-4 mr-2" />
+                    END
                   </Button>
-                ) : (
-                  <Button
-                    onClick={resumeSession}
-                    className="btn-primary px-6 py-4 font-medium hover:scale-105 transition-transform"
-                  >
-                    <Play className="h-4 w-4 mr-2" />
-                    RESUME
-                  </Button>
-                )}
-                
-                <Button
-                  onClick={resetSession}
-                  className="btn-tertiary px-6 py-4 font-medium hover:scale-105 transition-transform"
-                >
-                  <RotateCcw className="h-4 w-4 mr-2" />
-                  RESET
-                </Button>
-                
-                <Button
-                  onClick={endSession}
-                  className="btn-danger px-6 py-4 font-medium hover:scale-105 transition-transform"
-                >
-                  <Square className="h-4 w-4 mr-2" />
-                  END
-                </Button>
+                </div>
               </div>
 
               {/* Quick Settings */}
-              <div className="flex justify-center space-x-4">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={onOpenSettings}
-                  className="text-muted-foreground hover:text-foreground"
-                >
-                  <Settings2 className="h-4 w-4 mr-1" />
-                  Settings
-                </Button>
-                
-                {/* GlitchRun Button */}
-                {canPlayGlitchRun() && (
+              <div className="button-container-mobile">
+                <div className="flex justify-center space-x-4">
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={handleGlitchRun}
-                    className={`relative ${
-                      !canPlayGlitchRun() 
-                        ? 'text-muted-foreground/50 cursor-not-allowed' 
-                        : 'text-muted-foreground hover:text-accent'
-                    }`}
-                    disabled={!canPlayGlitchRun()}
-                    title={
-                      timerState.sessionType === 'focus' && glitchRunUsedThisSession
-                        ? 'GlitchRun used this focus session'
-                        : 'Play GlitchRun - Quick 10s dopamine boost!'
-                    }
+                    onClick={onOpenSettings}
+                    className="text-muted-foreground hover:text-foreground"
                   >
-                    <Zap className="h-4 w-4 mr-1" />
-                    GlitchRun
+                    <Settings2 className="h-4 w-4 mr-1" />
+                    Settings
                   </Button>
-                )}
+                  
+                  {/* GlitchRun Button */}
+                  {canPlayGlitchRun() && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleGlitchRun}
+                      className={`relative ${
+                        !canPlayGlitchRun() 
+                          ? 'text-muted-foreground/50 cursor-not-allowed' 
+                          : 'text-muted-foreground hover:text-accent'
+                      }`}
+                      disabled={!canPlayGlitchRun()}
+                      title={
+                        timerState.sessionType === 'focus' && glitchRunUsedThisSession
+                          ? 'GlitchRun used this focus session'
+                          : 'Play GlitchRun - Quick 10s dopamine boost!'
+                      }
+                    >
+                      <Zap className="h-4 w-4 mr-1" />
+                      GlitchRun
+                    </Button>
+                  )}
+                </div>
               </div>
             </CardContent>
           </Card>
