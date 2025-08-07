@@ -105,9 +105,9 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
 
     setTimeLeft(Math.ceil(newTimeLeft));
 
-    // Update jump aura (fades over time)
+    // Update jump aura (fades quickly and only while jumping)
     if (jumpAura > 0) {
-      setJumpAura(prev => Math.max(0, prev - 0.05));
+      setJumpAura(prev => Math.max(0, prev - 0.1));
     }
 
     // Update success burst effect
@@ -121,14 +121,15 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
       return;
     }
 
-    // Update player jump
+    // Update player jump with proper physics
     if (isJumping) {
-      jumpVelocityRef.current += 0.8; // gravity
+      jumpVelocityRef.current += 1.0; // gravity
       const newY = playerY + jumpVelocityRef.current;
 
       if (newY >= GROUND_Y) {
         setPlayerY(GROUND_Y);
         setIsJumping(false);
+        setJumpAura(0); // Clear aura when landing
         jumpVelocityRef.current = 0;
       } else {
         setPlayerY(newY);
@@ -207,12 +208,12 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
     if (gameState !== 'playing' || isJumping) return;
 
     setIsJumping(true);
-    jumpVelocityRef.current = -13; // Slightly stronger jump
+    jumpVelocityRef.current = -15; // Stronger jump for better visibility
     setScore(s => s + 5); // Points for jumping
-    setJumpAura(1.0); // Trigger jump aura ring
+    setJumpAura(0.8); // Brief aura ring that fades quickly
 
     // Create enhanced jump particles
-    const newParticles = [];
+    const newParticles: Particle[] = [];
     for (let i = 0; i < 12; i++) {
       newParticles.push({
         id: particleIdRef.current++,
@@ -312,7 +313,20 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
     ctx.translate(centerX, centerY);
     ctx.rotate(rotation);
 
-    
+    // Draw jump aura ring (only when jumping and aura > 0)
+    if (jumpAura > 0 && isJumping) {
+      const auraSize = avatarWidth * 2 * jumpAura;
+      ctx.globalAlpha = jumpAura * 0.6;
+      ctx.strokeStyle = '#ff6b9d';
+      ctx.lineWidth = 4;
+      ctx.shadowBlur = 15;
+      ctx.shadowColor = '#ff6b9d';
+      ctx.beginPath();
+      ctx.arc(0, 0, auraSize, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.globalAlpha = 1;
+      ctx.shadowBlur = 0;
+    }
 
     // Avatar outline glow
     ctx.shadowBlur = 20;
