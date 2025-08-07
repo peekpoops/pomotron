@@ -225,15 +225,7 @@ export default function Timer({ onOpenSettings }: TimerProps) {
               </div>
 
               {/* Quick Settings */}
-              <div className="flex justify-center space-x-6 text-sm">
-                <div className="flex items-center space-x-2">
-                  <Switch id="auto-start" checked={settings.autoStart} disabled />
-                  <Label htmlFor="auto-start">Auto-start</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Switch id="soft-start" checked={settings.softStart} disabled />
-                  <Label htmlFor="soft-start">Soft start</Label>
-                </div>
+              <div className="flex justify-center">
                 <Button
                   variant="ghost"
                   size="sm"
