@@ -207,22 +207,41 @@ export function useTimer() {
     };
   }, [resetIdleDetection]);
 
-  // Update timer duration when settings change (only if timer is not running)
+  // Calculate progress percentage
+  const getProgress = useCallback((): number => {
+    let totalTime: number;
+    switch (timerState.sessionType) {
+      case 'focus':
+        totalTime = settings.focusDuration * 60;
+        break;
+      case 'break':
+        totalTime = settings.breakDuration * 60;
+        break;
+      case 'longBreak':
+        totalTime = settings.longBreakDuration * 60;
+        break;
+    }
+    
+    return ((totalTime - timerState.timeLeft) / totalTime) * 100;
+  }, [timerState, settings]);
+
+  // Update timer duration when settings change - applies immediately regardless of timer state
   useEffect(() => {
+    let newDuration: number;
+    switch (timerState.sessionType) {
+      case 'focus':
+        newDuration = settings.focusDuration * 60;
+        break;
+      case 'break':
+        newDuration = settings.breakDuration * 60;
+        break;
+      case 'longBreak':
+        newDuration = settings.longBreakDuration * 60;
+        break;
+    }
+    
+    // For stopped timers, update to full new duration
     if (!timerState.isRunning && !timerState.isPaused) {
-      let newDuration: number;
-      switch (timerState.sessionType) {
-        case 'focus':
-          newDuration = settings.focusDuration * 60;
-          break;
-        case 'break':
-          newDuration = settings.breakDuration * 60;
-          break;
-        case 'longBreak':
-          newDuration = settings.longBreakDuration * 60;
-          break;
-      }
-      
       if (timerState.timeLeft !== newDuration) {
         setTimerState(prev => ({
           ...prev,
@@ -230,7 +249,19 @@ export function useTimer() {
         }));
       }
     }
-  }, [settings.focusDuration, settings.breakDuration, settings.longBreakDuration, timerState.isRunning, timerState.isPaused, timerState.sessionType, timerState.timeLeft]);
+    // For running timers, adjust proportionally to maintain progress
+    else if (timerState.isRunning || timerState.isPaused) {
+      const currentProgress = getProgress();
+      const adjustedTimeLeft = Math.round(newDuration * (1 - currentProgress / 100));
+      
+      if (adjustedTimeLeft !== timerState.timeLeft && adjustedTimeLeft > 0) {
+        setTimerState(prev => ({
+          ...prev,
+          timeLeft: adjustedTimeLeft,
+        }));
+      }
+    }
+  }, [settings.focusDuration, settings.breakDuration, settings.longBreakDuration, timerState.sessionType, timerState.isRunning, timerState.isPaused, timerState.timeLeft, getProgress]);
 
   const startSession = useCallback((intention?: { task: string; why: string }) => {
     const sessionId = crypto.randomUUID();
@@ -350,24 +381,6 @@ export function useTimer() {
     const secs = seconds % 60;
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   }, []);
-
-  // Calculate progress percentage
-  const getProgress = useCallback((): number => {
-    let totalTime: number;
-    switch (timerState.sessionType) {
-      case 'focus':
-        totalTime = settings.focusDuration * 60;
-        break;
-      case 'break':
-        totalTime = settings.breakDuration * 60;
-        break;
-      case 'longBreak':
-        totalTime = settings.longBreakDuration * 60;
-        break;
-    }
-    
-    return ((totalTime - timerState.timeLeft) / totalTime) * 100;
-  }, [timerState, settings]);
 
   return {
     timerState,
