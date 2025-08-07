@@ -235,7 +235,7 @@ export default function Timer({ onOpenSettings }: TimerProps) {
       
       const sessionDate = new Date(session.startTime).toDateString();
       const isToday = sessionDate === today;
-      const hasEnded = session.endTime || session.completed === true;
+      const hasEnded = session.endTime !== undefined || session.completed === true;
       
       return isToday && hasEnded;
     });
@@ -248,7 +248,9 @@ export default function Timer({ onOpenSettings }: TimerProps) {
     sessions.forEach((session: any, index: number) => {
       if (session.sessionType === 'focus') {
         const sessionDate = new Date(session.startTime).toDateString();
-        console.log(`Session ${index}: ${sessionDate}, hasEndTime: ${!!session.endTime}, completed: ${session.completed}, isToday: ${sessionDate === today}`);
+        const isToday = sessionDate === today;
+        const hasEnded = session.endTime !== undefined || session.completed === true;
+        console.log(`Session ${index}: ${sessionDate}, hasEndTime: ${!!session.endTime}, completed: ${session.completed}, isToday: ${isToday}, hasEnded: ${hasEnded}, shouldCount: ${isToday && hasEnded}`);
       }
     });
     
