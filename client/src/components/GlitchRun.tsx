@@ -159,17 +159,20 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
         x: obstacle.x - OBSTACLE_SPEED,
         glitchPhase: obstacle.glitchPhase + 0.2
       })).filter(obstacle => {
-        // Remove obstacles that are off-screen
+        // Remove obstacles that are off-screen and award points
         if (obstacle.x < -obstacle.width) {
-          setScore(s => s + 10); // Points for surviving
+          setScore(s => {
+            const newScore = s + 10;
+            // Only play sound when score actually increases
+            playSound('glitch-score');
+            return newScore;
+          });
           // Create success burst effect
           setSuccessBurst({
             x: PLAYER_X + PLAYER_SIZE/2,
             y: playerY + PLAYER_SIZE/2,
             time: Date.now()
           });
-          // Play score sound
-          playSound('glitch-score');
           return false;
         }
 
@@ -185,29 +188,26 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
         const obsTop = obstacle.y - obstacle.height;
         const obsBottom = obstacle.y;
 
-        // Only check collision if player hasn't passed the obstacle yet
-        // This prevents collision on the way down after successful jump
-        const playerCenterX = PLAYER_X + PLAYER_SIZE / 2;
-        const obstacleCenterX = obstacle.x + obstacle.width / 2;
-        const hasPassedObstacle = playerCenterX > obstacleCenterX;
-
-        // Check overlap only if player hasn't passed the obstacle
-        if (!hasPassedObstacle) {
-          const hasHorizontalOverlap = playerRight > obsLeft + GRACE_MARGIN && 
+        // Check for collision - proper logic for both ground hits and air collisions
+        const hasHorizontalOverlap = playerRight > obsLeft + GRACE_MARGIN && 
                                      playerLeft < obsRight - GRACE_MARGIN;
-          const hasVerticalOverlap = playerBottom > obsTop + GRACE_MARGIN && 
-                                   playerTop < obsBottom - GRACE_MARGIN;
-          
-          // Collision occurs when both horizontal and vertical overlap exist
-          if (hasHorizontalOverlap && hasVerticalOverlap) {
-            // Collision detected - trigger effects but don't end game
-            setScreenGlitch(true);
-            setTimeout(() => setScreenGlitch(false), 400);
-            // Play collision sound
-            playSound('glitch-collision');
-            // Remove obstacle but don't end game - player loses score opportunity
-            return false;
-          }
+        const hasVerticalOverlap = playerBottom > obsTop + GRACE_MARGIN && 
+                                 playerTop < obsBottom - GRACE_MARGIN;
+        
+        // Collision occurs when both horizontal and vertical overlap exist
+        // But only if the player hasn't already successfully passed the obstacle
+        const playerRightEdge = PLAYER_X + PLAYER_SIZE;
+        const obstacleLeftEdge = obstacle.x;
+        const hasPassedObstacle = playerRightEdge < obstacleLeftEdge; // Player completely past obstacle
+        
+        if (hasHorizontalOverlap && hasVerticalOverlap && !hasPassedObstacle) {
+          // Collision detected - trigger effects but don't end game
+          setScreenGlitch(true);
+          setTimeout(() => setScreenGlitch(false), 400);
+          // Play collision sound
+          playSound('glitch-collision');
+          // Remove obstacle but don't end game - player loses score opportunity
+          return false;
         }
 
         return true;
@@ -575,6 +575,14 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
       }
     };
   }, []);
+
+  // Stop game loop when modal closes
+  useEffect(() => {
+    if (!isOpen && gameLoopRef.current) {
+      cancelAnimationFrame(gameLoopRef.current);
+      setGameState('waiting');
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
