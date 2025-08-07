@@ -37,15 +37,14 @@ export function useTimer() {
   
   // Clean up timer state on mount to prevent session continuation
   useEffect(() => {
-    // Always reset running state on page load/refresh
-    if (timerState.isRunning || timerState.startTime || timerState.currentSessionId) {
-      console.log('Page loaded with active timer state, resetting to prevent session continuation');
+    // Only reset if running, but preserve paused state
+    if (timerState.isRunning && timerState.startTime) {
+      console.log('Page loaded with active timer state, stopping timer but preserving pause state');
       setTimerState(prev => ({
         ...prev,
         isRunning: false,
-        isPaused: false,
         startTime: null,
-        currentSessionId: undefined,
+        // Keep isPaused and currentSessionId intact
       }));
     }
   }, []); // Only run on mount
@@ -331,12 +330,20 @@ export function useTimer() {
     setTimerState(prev => {
       if (!prev.isRunning) return prev;
       
-      return {
+      console.log('PAUSING - Before:', { isRunning: prev.isRunning, isPaused: prev.isPaused, timeLeft: prev.timeLeft });
+      
+      const newState = {
         ...prev,
         isRunning: false,
         isPaused: true,
-        startTime: null, // Clear startTime so countdown stops
+        startTime: null,
       };
+      
+      // Save paused state to localStorage immediately
+      localStorage.setItem('pomotron-timer-state', JSON.stringify(newState));
+      
+      console.log('PAUSING - After:', { isRunning: newState.isRunning, isPaused: newState.isPaused, timeLeft: newState.timeLeft });
+      return newState;
     });
     
     deactivateWebsiteBlocking();
@@ -346,12 +353,20 @@ export function useTimer() {
     setTimerState(prev => {
       if (!prev.isPaused) return prev;
       
-      return {
+      console.log('RESUMING - Before:', { isRunning: prev.isRunning, isPaused: prev.isPaused, timeLeft: prev.timeLeft });
+      
+      const newState = {
         ...prev,
         isRunning: true,
         isPaused: false,
-        startTime: Date.now(), // Fresh start time for remaining duration
+        startTime: Date.now(),
       };
+      
+      // Save resumed state to localStorage immediately
+      localStorage.setItem('pomotron-timer-state', JSON.stringify(newState));
+      
+      console.log('RESUMING - After:', { isRunning: newState.isRunning, isPaused: newState.isPaused, timeLeft: newState.timeLeft });
+      return newState;
     });
     
     if (timerState.sessionType === 'focus' && settings.websiteBlockingEnabled) {
