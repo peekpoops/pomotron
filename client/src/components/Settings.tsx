@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
-import { Clock, Palette, Shield, Keyboard, Save, Plus, X } from 'lucide-react';
+import { Clock, Palette, Shield, Keyboard, Save, Plus, X, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { useTheme } from '@/hooks/useTheme';
 import { Settings as SettingsType, Theme } from '@/types';
@@ -205,33 +206,63 @@ export default function Settings() {
               />
             </div>
             
-            <div className="flex items-center justify-between">
-              <Label htmlFor="auto-start" className="text-sm font-medium text-muted-foreground">
-                Auto-start next session
-              </Label>
-              <Switch
-                id="auto-start"
-                checked={localSettings.autoStart}
-                onCheckedChange={(checked) => setLocalSettings(prev => ({
-                  ...prev,
-                  autoStart: checked
-                }))}
-              />
-            </div>
-            
-            <div className="flex items-center justify-between">
-              <Label htmlFor="soft-start" className="text-sm font-medium text-muted-foreground">
-                Soft start (5s countdown)
-              </Label>
-              <Switch
-                id="soft-start"
-                checked={localSettings.softStart}
-                onCheckedChange={(checked) => setLocalSettings(prev => ({
-                  ...prev,
-                  softStart: checked
-                }))}
-              />
-            </div>
+            <TooltipProvider>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <Label htmlFor="auto-start" className="text-sm font-medium text-muted-foreground">
+                    Auto-start next session
+                  </Label>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button className="text-muted-foreground hover:text-foreground">
+                        <Info className="h-4 w-4" />
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="max-w-xs">
+                        Automatically starts the next session (break or focus) when the current session ends, without requiring manual intervention.
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </div>
+                <Switch
+                  id="auto-start"
+                  checked={localSettings.autoStart}
+                  onCheckedChange={(checked) => setLocalSettings(prev => ({
+                    ...prev,
+                    autoStart: checked
+                  }))}
+                />
+              </div>
+              
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <Label htmlFor="soft-start" className="text-sm font-medium text-muted-foreground">
+                    Soft start (5s countdown)
+                  </Label>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button className="text-muted-foreground hover:text-foreground">
+                        <Info className="h-4 w-4" />
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p className="max-w-xs">
+                        Adds a 5-second countdown before starting any session, giving you time to prepare and get into focus mode.
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </div>
+                <Switch
+                  id="soft-start"
+                  checked={localSettings.softStart}
+                  onCheckedChange={(checked) => setLocalSettings(prev => ({
+                    ...prev,
+                    softStart: checked
+                  }))}
+                />
+              </div>
+            </TooltipProvider>
           </CardContent>
         </Card>
 
