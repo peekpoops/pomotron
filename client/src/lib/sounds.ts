@@ -95,6 +95,7 @@ export function playSound(type: 'start' | 'reset' | 'sessionComplete' | 'idleNud
       return;
     }
   }
+  // If no settings exist, sounds are enabled by default
 
   // Check if audio is enabled and context is available
   if (typeof window === 'undefined' || !window.AudioContext && !(window as any).webkitAudioContext) {
