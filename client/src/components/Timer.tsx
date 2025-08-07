@@ -140,9 +140,20 @@ export default function Timer({ onOpenSettings }: TimerProps) {
   });
   
   const [showIntentionModal, setShowIntentionModal] = useState(false);
-  const [currentQuote, setCurrentQuote] = useState(motivationalQuotes[0]);
+  
+  // Helper function to get a random quote
+  const getRandomQuote = () => {
+    const randomIndex = Math.floor(Math.random() * motivationalQuotes.length);
+    return motivationalQuotes[randomIndex];
+  };
+
+  const [currentQuote, setCurrentQuote] = useState(() => getRandomQuote());
   const [showFullQuote, setShowFullQuote] = useState(false);
-  const [availableQuotes, setAvailableQuotes] = useLocalStorage<typeof motivationalQuotes>('pomotron-available-quotes', [...motivationalQuotes]);
+  const [availableQuotes, setAvailableQuotes] = useLocalStorage<typeof motivationalQuotes>('pomotron-available-quotes', () => {
+    // Shuffle quotes initially by creating a randomized copy
+    const shuffled = [...motivationalQuotes].sort(() => Math.random() - 0.5);
+    return shuffled;
+  });
   const [usedQuotes, setUsedQuotes] = useLocalStorage<typeof motivationalQuotes>('pomotron-used-quotes', []);
   const [showGlitchRun, setShowGlitchRun] = useState(false);
   const [glitchRunUsedThisSession, setGlitchRunUsedThisSession] = useLocalStorage<boolean>('glitch-run-used', false);
@@ -154,16 +165,38 @@ export default function Timer({ onOpenSettings }: TimerProps) {
     }
   }, []);
 
-  const getNextQuote = () => {
-    // If no available quotes, reset the cycle
-    if (availableQuotes.length === 0) {
-      setAvailableQuotes([...motivationalQuotes]);
+  // Force refresh quotes on app restart to ensure randomization
+  useEffect(() => {
+    // Clear existing quote state to ensure fresh randomization on app restart
+    const shouldRefreshQuotes = localStorage.getItem('pomotron-quotes-refreshed') !== 'true';
+    if (shouldRefreshQuotes) {
+      localStorage.removeItem('pomotron-available-quotes');
+      localStorage.removeItem('pomotron-used-quotes');
+      localStorage.setItem('pomotron-quotes-refreshed', 'true');
+      
+      // Reset to shuffled quotes
+      const shuffledQuotes = [...motivationalQuotes].sort(() => Math.random() - 0.5);
+      setAvailableQuotes(shuffledQuotes);
       setUsedQuotes([]);
-      // Select from freshly reset quotes
-      const randomIndex = Math.floor(Math.random() * motivationalQuotes.length);
-      const selectedQuote = motivationalQuotes[randomIndex];
+      
+      // Set a random initial quote
+      const randomQuote = getRandomQuote();
+      setCurrentQuote(randomQuote);
+    }
+  }, []);
+
+  const getNextQuote = () => {
+    // If no available quotes, reset the cycle with shuffled quotes
+    if (availableQuotes.length === 0) {
+      // Create a shuffled copy of all quotes
+      const shuffledQuotes = [...motivationalQuotes].sort(() => Math.random() - 0.5);
+      setAvailableQuotes(shuffledQuotes);
+      setUsedQuotes([]);
+      
+      // Select the first quote from the shuffled array
+      const selectedQuote = shuffledQuotes[0];
       setCurrentQuote(selectedQuote);
-      setAvailableQuotes(motivationalQuotes.filter((_, index) => index !== randomIndex));
+      setAvailableQuotes(shuffledQuotes.slice(1)); // Remove selected quote
       setUsedQuotes([selectedQuote]);
       return;
     }
