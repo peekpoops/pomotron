@@ -67,7 +67,8 @@ export function DiscoSpinner({ isOpen, onClose }: DiscoSpinnerProps) {
   }, []);
 
   const createSynthBeat = useCallback(() => {
-    if (audioContextRef.current) {
+    console.log('Creating synth beat, audio context state:', audioContextRef.current?.state);
+    if (audioContextRef.current && audioContextRef.current.state === 'running') {
       try {
         const oscillator = audioContextRef.current.createOscillator();
         const gainNode = audioContextRef.current.createGain();
@@ -79,17 +80,19 @@ export function DiscoSpinner({ isOpen, onClose }: DiscoSpinnerProps) {
         oscillator.frequency.setValueAtTime(80, audioContextRef.current.currentTime);
         
         gainNode.gain.setValueAtTime(0, audioContextRef.current.currentTime);
-        gainNode.gain.linearRampToValueAtTime(0.2, audioContextRef.current.currentTime + 0.01);
-        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContextRef.current.currentTime + 0.1);
+        gainNode.gain.linearRampToValueAtTime(0.3, audioContextRef.current.currentTime + 0.01);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, audioContextRef.current.currentTime + 0.15);
         
         oscillator.start(audioContextRef.current.currentTime);
-        oscillator.stop(audioContextRef.current.currentTime + 0.1);
+        oscillator.stop(audioContextRef.current.currentTime + 0.15);
         
         setBeatPulse(true);
-        setTimeout(() => setBeatPulse(false), 100);
+        setTimeout(() => setBeatPulse(false), 150);
       } catch (error) {
         console.error('Error creating synth beat:', error);
       }
+    } else {
+      console.log('Audio context not ready or suspended');
     }
   }, []);
 
@@ -116,6 +119,7 @@ export function DiscoSpinner({ isOpen, onClose }: DiscoSpinnerProps) {
   }, []);
 
   const handleKeyPress = useCallback((event: KeyboardEvent) => {
+    console.log('Key pressed:', event.code, 'isPlaying:', isPlaying);
     if (!isPlaying || event.code !== 'Space') return;
     
     event.preventDefault();
@@ -124,7 +128,10 @@ export function DiscoSpinner({ isOpen, onClose }: DiscoSpinnerProps) {
     const isOnBeat = timeSinceLastBeat <= TIMING_TOLERANCE || 
                      timeSinceLastBeat >= (BEAT_INTERVAL - TIMING_TOLERANCE);
     
+    console.log('Spacebar timing - since last beat:', timeSinceLastBeat, 'on beat:', isOnBeat);
+    
     if (isOnBeat) {
+      console.log('HIT! Adding point');
       setScore(prev => prev + 1);
       setShowScoreBoost(true);
       setTimeout(() => setShowScoreBoost(false), 300);
@@ -137,6 +144,8 @@ export function DiscoSpinner({ isOpen, onClose }: DiscoSpinnerProps) {
       }
       
       playHitSound();
+    } else {
+      console.log('MISS! Wrong timing');
     }
   }, [isPlaying, createParticle, playHitSound]);
 
@@ -158,47 +167,61 @@ export function DiscoSpinner({ isOpen, onClose }: DiscoSpinnerProps) {
   }, [handleKeyPress, onClose]);
 
   const startGame = useCallback(async () => {
+    console.log('Starting disco spinner game');
     setScore(0);
     setTimeLeft(10);
     setIsPlaying(true);
     setParticles([]);
     
-    // Initialize audio context
-    if (!audioContextRef.current) {
-      audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
-    }
-    
-    // Resume audio context for modern browsers
-    if (audioContextRef.current.state === 'suspended') {
-      await audioContextRef.current.resume();
-    }
-    
-    // Start beat loop
-    lastBeatTimeRef.current = Date.now();
-    const beatLoop = () => {
-      createSynthBeat();
+    // Initialize audio context with user interaction
+    try {
+      if (!audioContextRef.current) {
+        audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+        console.log('Created audio context, state:', audioContextRef.current.state);
+      }
+      
+      // Resume audio context for modern browsers
+      if (audioContextRef.current.state === 'suspended') {
+        console.log('Resuming suspended audio context');
+        await audioContextRef.current.resume();
+        console.log('Audio context resumed, state:', audioContextRef.current.state);
+      }
+      
+      // Start beat loop
       lastBeatTimeRef.current = Date.now();
-    };
-    
-    beatLoop(); // First beat immediately
-    beatTimerRef.current = setInterval(beatLoop, BEAT_INTERVAL);
-    
-    // Game timer
-    gameTimerRef.current = setInterval(() => {
-      setTimeLeft(prev => {
-        if (prev <= 1) {
-          endGame();
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-    
-    // Particle animation
-    particleTimerRef.current = setInterval(updateParticles, 16);
-    
-    // Add keyboard listener
-    document.addEventListener('keydown', handleKeyPress);
+      const beatLoop = () => {
+        createSynthBeat();
+        lastBeatTimeRef.current = Date.now();
+      };
+      
+      // First beat after a short delay to ensure audio context is ready
+      setTimeout(() => {
+        beatLoop();
+        beatTimerRef.current = setInterval(beatLoop, BEAT_INTERVAL);
+        console.log('Started beat timer with interval:', BEAT_INTERVAL);
+      }, 100);
+      
+      // Game timer
+      gameTimerRef.current = setInterval(() => {
+        setTimeLeft(prev => {
+          if (prev <= 1) {
+            endGame();
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+      
+      // Particle animation
+      particleTimerRef.current = setInterval(updateParticles, 16);
+      
+      // Add keyboard listener
+      document.addEventListener('keydown', handleKeyPress);
+      console.log('Added keydown listener');
+      
+    } catch (error) {
+      console.error('Error starting game:', error);
+    }
   }, [createSynthBeat, handleKeyPress, updateParticles, endGame]);
 
   useEffect(() => {
@@ -275,9 +298,16 @@ export function DiscoSpinner({ isOpen, onClose }: DiscoSpinnerProps) {
           {/* Disco Ball */}
           <div className="relative mb-6">
             <div 
-              className={`disco-ball w-24 h-24 rounded-full relative ${
-                beatPulse ? 'scale-110' : ''
-              } transition-all duration-100`}
+              className={`w-24 h-24 rounded-full relative disco-ball-spin ${
+                beatPulse ? 'disco-ball-pulse scale-110' : ''
+              } transition-all duration-150 cursor-pointer`}
+              onClick={async () => {
+                // Enable audio context on click
+                if (audioContextRef.current?.state === 'suspended') {
+                  await audioContextRef.current.resume();
+                  console.log('Audio context resumed via click');
+                }
+              }}
               style={{
                 background: 'conic-gradient(from 0deg, #ff00ff, #00ffff, #ffff00, #ff4081, #7c4dff, #ff00ff)',
                 boxShadow: beatPulse 
@@ -319,11 +349,19 @@ export function DiscoSpinner({ isOpen, onClose }: DiscoSpinnerProps) {
           {/* Instructions */}
           {isPlaying ? (
             <div className="text-center text-white/80">
-              <div className="text-sm font-tech-mono mb-2">TAP SPACEBAR TO THE BEAT!</div>
-              <div className="flex items-center justify-center text-xs text-white/60">
-                <Sparkles className="h-4 w-4 mr-1" />
-                Hit the rhythm for points
-              </div>
+              {audioContextRef.current?.state === 'suspended' ? (
+                <div className="text-sm font-tech-mono mb-2 text-yellow-400">
+                  CLICK THE DISCO BALL TO ENABLE SOUND
+                </div>
+              ) : (
+                <>
+                  <div className="text-sm font-tech-mono mb-2">TAP SPACEBAR TO THE BEAT!</div>
+                  <div className="flex items-center justify-center text-xs text-white/60">
+                    <Sparkles className="h-4 w-4 mr-1" />
+                    Hit the rhythm for points
+                  </div>
+                </>
+              )}
             </div>
           ) : (
             <div className="text-center text-white/80">

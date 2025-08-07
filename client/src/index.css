@@ -296,12 +296,12 @@
     100% { transform: translateY(-40px) rotate(360deg); opacity: 0; }
   }
 
-  .disco-ball {
-    animation: disco-spin 2s linear infinite;
+  .disco-ball-spin {
+    animation: disco-spin 4s linear infinite;
   }
 
-  .disco-ball:hover {
-    animation: disco-spin 1s linear infinite, neon-glow 1s ease-in-out infinite alternate;
+  .disco-ball-pulse {
+    animation: neon-glow 0.15s ease-in-out;
   }
 
   .sparkle-particle {
