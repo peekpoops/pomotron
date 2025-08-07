@@ -246,12 +246,7 @@ export default function Analytics() {
         {/* Recent Intentions */}
         <Card className="neon-border glass-morphism">
           <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle className="section-title text-lg text-secondary">Recent Intentions</CardTitle>
-              <Button variant="ghost" size="sm" className="text-xs text-accent hover:text-primary font-tech-mono">
-                View All
-              </Button>
-            </div>
+            <CardTitle className="section-title text-lg text-secondary">Recent Intentions</CardTitle>
           </CardHeader>
           <CardContent>
             <ScrollArea className="h-96">
