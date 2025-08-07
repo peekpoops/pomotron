@@ -226,17 +226,14 @@ export default function Timer({ onOpenSettings }: TimerProps) {
   // Calculate completed cycles (completed focus sessions) from today's sessions
   const getCompletedCyclesToday = (): number => {
     const today = new Date().toDateString();
+    
+    // Count focus sessions that have ended (either completed=true or has endTime)
     const todayCompletedFocusSessions = sessions.filter((session: any) => 
       session.startTime && 
       new Date(session.startTime).toDateString() === today && 
-      session.completed &&
+      (session.completed === true || session.endTime) && // Session completed or has ended
       session.sessionType === 'focus'
     );
-    
-    // Debug logging
-    console.log('Sessions data:', sessions);
-    console.log('Today\'s completed focus sessions:', todayCompletedFocusSessions);
-    console.log('Count:', todayCompletedFocusSessions.length);
     
     return todayCompletedFocusSessions.length;
   };

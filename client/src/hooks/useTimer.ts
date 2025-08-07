@@ -126,15 +126,11 @@ export function useTimer() {
             
             // Save completed session
             if (prev.currentSessionId) {
-              const sessionToUpdate = sessions.find(s => s.id === prev.currentSessionId);
-              if (sessionToUpdate) {
-                const updatedSession: Session = {
-                  ...sessionToUpdate,
-                  endTime: new Date(),
-                  completed: true,
-                };
-                setSessions(prev => prev.map(s => s.id === updatedSession.id ? updatedSession : s));
-              }
+              setSessions(prevSessions => prevSessions.map(s => 
+                s.id === prev.currentSessionId 
+                  ? { ...s, endTime: new Date(), completed: true }
+                  : s
+              ));
             }
             
             // Calculate next duration
