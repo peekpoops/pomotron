@@ -232,7 +232,7 @@ export default function Timer({ onOpenSettings, timerHook: externalTimerHook }: 
     if (timerState.sessionType === 'focus') {
       return `Cycle ${timerState.currentCycle} of ${settings.cyclesBeforeLongBreak} • Long break after ${settings.cyclesBeforeLongBreak} cycles`;
     } else if (timerState.sessionType === 'break') {
-      return `Short break after completing Cycle ${timerState.currentCycle - 1} • Next: Cycle ${timerState.currentCycle}`;
+      return `Short break after completing Cycle ${timerState.currentCycle} • Next: Cycle ${timerState.currentCycle + 1}`;
     } else {
       return `Long break after completing ${settings.cyclesBeforeLongBreak} cycles • Starting fresh after this break`;
     }
