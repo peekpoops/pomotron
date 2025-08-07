@@ -351,27 +351,64 @@ export function useTimer() {
 
   const pauseSession = useCallback(() => {
     setTimerState(prev => {
+      if (!prev.startTime || !prev.isRunning) return prev; // Can't pause if not running
+      
       const now = Date.now();
-      const additionalPausedTime = prev.startTime ? now - prev.startTime - prev.pausedDuration : 0;
+      const timeElapsedSinceStart = (now - prev.startTime) / 1000; // in seconds
+      const timeElapsedMinusPausedTime = timeElapsedSinceStart - (prev.pausedDuration / 1000);
+      
+      // Calculate total session duration
+      let totalDuration: number;
+      switch (prev.sessionType) {
+        case 'focus':
+          totalDuration = settings.focusDuration * 60;
+          break;
+        case 'break':
+          totalDuration = settings.breakDuration * 60;
+          break;
+        case 'longBreak':
+          totalDuration = settings.longBreakDuration * 60;
+          break;
+      }
+      
+      const newTimeLeft = Math.max(0, totalDuration - timeElapsedMinusPausedTime);
+      
+      console.log('Pausing timer:', {
+        timeElapsedSinceStart,
+        previousPausedDuration: prev.pausedDuration / 1000,
+        timeElapsedMinusPausedTime,
+        newTimeLeft,
+        totalDuration
+      });
       
       return {
         ...prev,
         isRunning: false,
         isPaused: true,
-        pausedDuration: prev.pausedDuration + additionalPausedTime,
+        timeLeft: Math.round(newTimeLeft),
+        pausedDuration: prev.pausedDuration + (now - prev.startTime - prev.pausedDuration),
       };
     });
     
     deactivateWebsiteBlocking();
-  }, []);
+  }, [settings]);
 
   const resumeSession = useCallback(() => {
-    setTimerState(prev => ({
-      ...prev,
-      isRunning: true,
-      isPaused: false,
-      startTime: prev.startTime || Date.now(), // Set start time if not already set
-    }));
+    setTimerState(prev => {
+      if (!prev.isPaused) return prev; // Can't resume if not paused
+      
+      console.log('Resuming timer:', {
+        currentTimeLeft: prev.timeLeft,
+        pausedDuration: prev.pausedDuration / 1000
+      });
+      
+      return {
+        ...prev,
+        isRunning: true,
+        isPaused: false,
+        startTime: Date.now() - prev.pausedDuration, // Adjust start time to account for paused duration
+      };
+    });
     
     if (timerState.sessionType === 'focus' && settings.websiteBlockingEnabled) {
       activateWebsiteBlocking(settings.blockedSites);
