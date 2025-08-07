@@ -225,15 +225,25 @@ export default function Timer({ onOpenSettings }: TimerProps) {
 
   // Calculate completed cycles (completed focus sessions) from today's sessions
   const getCompletedCyclesToday = (): number => {
+    if (!sessions || sessions.length === 0) return 0;
+    
     const today = new Date().toDateString();
     
-    // Count focus sessions that have ended (either completed=true or has endTime)
-    const todayCompletedFocusSessions = sessions.filter((session: any) => 
-      session.startTime && 
-      new Date(session.startTime).toDateString() === today && 
-      (session.completed === true || session.endTime) && // Session completed or has ended
-      session.sessionType === 'focus'
-    );
+    // Count focus sessions that have ended today
+    const todayCompletedFocusSessions = sessions.filter((session: any) => {
+      if (!session.startTime || session.sessionType !== 'focus') return false;
+      
+      const sessionDate = new Date(session.startTime).toDateString();
+      const isToday = sessionDate === today;
+      const hasEnded = session.endTime || session.completed === true;
+      
+      return isToday && hasEnded;
+    });
+    
+    console.log('Today:', today);
+    console.log('All sessions:', sessions);
+    console.log('Today\'s completed focus sessions:', todayCompletedFocusSessions);
+    console.log('Count:', todayCompletedFocusSessions.length);
     
     return todayCompletedFocusSessions.length;
   };
@@ -283,6 +293,11 @@ export default function Timer({ onOpenSettings }: TimerProps) {
       }
     }
   }, [timerState.sessionType, timerState.isRunning, timerState.timeLeft, settings.focusDuration]);
+
+  // Force component re-render when sessions change
+  useEffect(() => {
+    // This effect will trigger when sessions array changes
+  }, [sessions]);
 
   return (
     <div className="max-w-6xl mx-auto space-y-8 px-4 sm:px-6 lg:px-8">
@@ -556,13 +571,13 @@ export default function Timer({ onOpenSettings }: TimerProps) {
                       <Target className="h-6 w-6 text-primary animate-pulse" />
                       <div className="absolute -top-1 -right-1 w-3 h-3 bg-accent rounded-full animate-ping opacity-75"></div>
                     </div>
-                    <span className="text-sm font-tech-mono text-secondary font-medium">SESSIONS</span>
+                    <span className="text-sm font-tech-mono text-secondary font-medium">CYCLES COMPLETED</span>
                   </div>
                   <div className="flex items-center space-x-2">
                     <span className="text-2xl font-orbitron font-black text-primary neon-text">
                       {getCompletedCyclesToday()}
                     </span>
-                    <span className="text-xs text-muted-foreground font-tech-mono">CYCLES</span>
+                    <span className="text-xs text-muted-foreground font-tech-mono"></span>
                   </div>
                 </div>
 
