@@ -364,7 +364,7 @@ export default function Timer({ onOpenSettings }: TimerProps) {
         <div className="space-y-6">
           {/* Current Intention - Enhanced Retro Style */}
           {timerState.currentIntention.task && (
-            <Card className="neon-border glass-morphism relative overflow-hidden animate-pulse-slow">
+            <Card className="neon-border glass-morphism relative overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-br from-accent/10 via-primary/5 to-secondary/10 opacity-60"></div>
               <CardContent className="p-6 relative z-10">
                 <div className="mb-6">
