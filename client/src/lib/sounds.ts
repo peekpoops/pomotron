@@ -86,7 +86,94 @@ function createIdleNudgeSound(): void {
   }, 400);
 }
 
-export function playSound(type: 'start' | 'reset' | 'sessionComplete' | 'idleNudge'): void {
+// GlitchRun specific sound effects
+function createJumpSound(): void {
+  // Rising synth woosh
+  const ctx = getAudioContext();
+  const oscillator = ctx.createOscillator();
+  const gainNode = ctx.createGain();
+  
+  oscillator.connect(gainNode);
+  gainNode.connect(ctx.destination);
+  
+  oscillator.type = 'sawtooth';
+  oscillator.frequency.setValueAtTime(200, ctx.currentTime);
+  oscillator.frequency.exponentialRampToValueAtTime(600, ctx.currentTime + 0.2);
+  
+  gainNode.gain.setValueAtTime(0, ctx.currentTime);
+  gainNode.gain.linearRampToValueAtTime(0.15, ctx.currentTime + 0.02);
+  gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.2);
+  
+  oscillator.start(ctx.currentTime);
+  oscillator.stop(ctx.currentTime + 0.2);
+}
+
+function createLandSound(): void {
+  // Soft landing blip
+  createRetroBeep(150, 0.1, 'triangle');
+}
+
+function createScoreSound(): void {
+  // Pleasant arpeggiated ping
+  const frequencies = [523, 659, 784]; // C, E, G major chord
+  frequencies.forEach((freq, index) => {
+    setTimeout(() => {
+      createRetroBeep(freq, 0.15, 'triangle');
+    }, index * 40);
+  });
+}
+
+function createCollisionSound(): void {
+  // Harsh glitch zap with distortion
+  const ctx = getAudioContext();
+  const oscillator = ctx.createOscillator();
+  const gainNode = ctx.createGain();
+  
+  oscillator.connect(gainNode);
+  gainNode.connect(ctx.destination);
+  
+  oscillator.type = 'square';
+  oscillator.frequency.setValueAtTime(800, ctx.currentTime);
+  oscillator.frequency.exponentialRampToValueAtTime(50, ctx.currentTime + 0.3);
+  
+  gainNode.gain.setValueAtTime(0, ctx.currentTime);
+  gainNode.gain.linearRampToValueAtTime(0.2, ctx.currentTime + 0.01);
+  gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+  
+  oscillator.start(ctx.currentTime);
+  oscillator.stop(ctx.currentTime + 0.3);
+}
+
+function createGameStartSound(): void {
+  // Retro 8-bit start blip
+  createRetroBeep(880, 0.1, 'square');
+  setTimeout(() => {
+    createRetroBeep(1100, 0.15, 'square');
+  }, 120);
+}
+
+function createGameOverSound(): void {
+  // Low synth fail tone with falling pitch
+  const ctx = getAudioContext();
+  const oscillator = ctx.createOscillator();
+  const gainNode = ctx.createGain();
+  
+  oscillator.connect(gainNode);
+  gainNode.connect(ctx.destination);
+  
+  oscillator.type = 'sawtooth';
+  oscillator.frequency.setValueAtTime(300, ctx.currentTime);
+  oscillator.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + 0.8);
+  
+  gainNode.gain.setValueAtTime(0, ctx.currentTime);
+  gainNode.gain.linearRampToValueAtTime(0.25, ctx.currentTime + 0.05);
+  gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.8);
+  
+  oscillator.start(ctx.currentTime);
+  oscillator.stop(ctx.currentTime + 0.8);
+}
+
+export function playSound(type: 'start' | 'reset' | 'sessionComplete' | 'idleNudge' | 'glitch-jump' | 'glitch-land' | 'glitch-score' | 'glitch-collision' | 'glitch-game-start' | 'glitch-game-over'): void {
   // Check if sounds are enabled in settings
   const settings = localStorage.getItem('pomotron-settings');
   if (settings) {
@@ -124,6 +211,24 @@ export function playSound(type: 'start' | 'reset' | 'sessionComplete' | 'idleNud
       break;
     case 'idleNudge':
       createIdleNudgeSound();
+      break;
+    case 'glitch-jump':
+      createJumpSound();
+      break;
+    case 'glitch-land':
+      createLandSound();
+      break;
+    case 'glitch-score':
+      createScoreSound();
+      break;
+    case 'glitch-collision':
+      createCollisionSound();
+      break;
+    case 'glitch-game-start':
+      createGameStartSound();
+      break;
+    case 'glitch-game-over':
+      createGameOverSound();
       break;
     default:
       console.warn('Unknown sound type:', type);

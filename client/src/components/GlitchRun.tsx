@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { X, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { playSound } from '@/lib/sounds';
 
 interface GlitchRunProps {
   isOpen: boolean;
@@ -74,6 +75,9 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
     particleIdRef.current = 0;
     jumpVelocityRef.current = 0;
     gameStartTimeRef.current = Date.now();
+    
+    // Play game start sound
+    playSound('glitch-game-start');
   }, []);
 
   // End game
@@ -82,6 +86,9 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
     if (gameLoopRef.current) {
       cancelAnimationFrame(gameLoopRef.current);
     }
+
+    // Play game over sound
+    playSound('glitch-game-over');
 
     // Auto-close after 2 seconds
     setTimeout(() => {
@@ -125,10 +132,10 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
         setPlayerY(GROUND_Y);
         setIsJumping(false);
         jumpVelocityRef.current = 0;
-
+        // Play landing sound
+        playSound('glitch-land');
       } else {
         setPlayerY(newY);
-
       }
     }
 
@@ -161,6 +168,8 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
             y: playerY + PLAYER_SIZE/2,
             time: Date.now()
           });
+          // Play score sound
+          playSound('glitch-score');
           return false;
         }
 
@@ -187,6 +196,8 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
           // Collision detected
           setScreenGlitch(true);
           setTimeout(() => setScreenGlitch(false), 400); // Extended duration
+          // Play collision sound
+          playSound('glitch-collision');
           endGame(); // End game on collision
           return false; // Remove obstacle
         }
@@ -215,6 +226,9 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
     jumpVelocityRef.current = -16; // Strong upward velocity
     setScore(s => s + 5); // Points for jumping
     setJumpAura(1.0); // Trigger aura ring once per jump
+    
+    // Play jump sound
+    playSound('glitch-jump');
 
     // Create enhanced jump particles
     const newParticles: Particle[] = [];
