@@ -14,6 +14,7 @@ import { GlitchRun } from './GlitchRun';
 
 interface TimerProps {
   onOpenSettings: () => void;
+  timerHook?: ReturnType<typeof useTimer>;
 }
 
 const motivationalQuotes = [
@@ -121,8 +122,10 @@ const motivationalQuotes = [
   { text: "We must be free not because we claim freedom, but because we practice it.", author: "William Faulkner" }
 ];
 
-export default function Timer({ onOpenSettings }: TimerProps) {
-  const { timerState, startSession, pauseSession, resumeSession, resetSession, endSession, formatTime, getProgress } = useTimer();
+export default function Timer({ onOpenSettings, timerHook: externalTimerHook }: TimerProps) {
+  const internalTimerHook = useTimer();
+  const timerHook = externalTimerHook || internalTimerHook;
+  const { timerState, startSession, pauseSession, resumeSession, resetSession, endSession, formatTime, getProgress } = timerHook;
   const [settings] = useLocalStorage<Settings>('pomotron-settings', {
     focusDuration: 25,
     breakDuration: 5,

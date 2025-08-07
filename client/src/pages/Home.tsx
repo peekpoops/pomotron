@@ -5,12 +5,16 @@ import Timer from '@/components/Timer';
 import Analytics from '@/components/Analytics';
 import SettingsComponent from '@/components/Settings';
 import { useTheme } from '@/hooks/useTheme';
+import { useTimer } from '@/hooks/useTimer';
 import { initializeAudio } from '@/lib/sounds';
 import { ViewType } from '@/types';
 
 export default function Home() {
   const [currentView, setCurrentView] = useState<ViewType>('timer');
   const { theme } = useTheme();
+  
+  // Move timer state to Home level to persist across tab switches
+  const timerHook = useTimer();
 
   useEffect(() => {
     // Initialize audio on first user interaction
@@ -115,7 +119,7 @@ export default function Home() {
 
       {/* Main Content */}
       <main className="container mx-auto px-2 sm:px-4 py-4 sm:py-8 relative">
-        {currentView === 'timer' && <Timer onOpenSettings={() => setCurrentView('settings')} />}
+        {currentView === 'timer' && <Timer onOpenSettings={() => setCurrentView('settings')} timerHook={timerHook} />}
         {currentView === 'analytics' && <Analytics />}
         {currentView === 'settings' && <SettingsComponent />}
       </main>
