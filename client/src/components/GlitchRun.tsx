@@ -515,34 +515,6 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
       ctx.shadowBlur = 0;
     }
 
-    // Game over message overlay
-    if (gameState === 'finished') {
-      // Semi-transparent overlay
-      ctx.globalAlpha = 0.8;
-      ctx.fillStyle = '#000000';
-      ctx.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
-      ctx.globalAlpha = 1;
-
-      // Main message
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.font = 'bold 24px monospace';
-      ctx.fillStyle = '#ff6b9d';
-      ctx.shadowBlur = 10;
-      ctx.shadowColor = '#ff6b9d';
-      ctx.fillText('BACK TO FOCUS', GAME_WIDTH / 2, GAME_HEIGHT / 2 - 20);
-
-      // Score message
-      ctx.font = 'bold 16px monospace';
-      ctx.fillStyle = '#00ffff';
-      ctx.shadowColor = '#00ffff';
-      ctx.fillText(`Final Score: ${score}`, GAME_WIDTH / 2, GAME_HEIGHT / 2 + 20);
-
-      ctx.shadowBlur = 0;
-      ctx.textAlign = 'start';
-      ctx.textBaseline = 'alphabetic';
-    }
-
     // Screen glitch effect
     if (screenGlitch) {
       ctx.globalAlpha = 0.3;
@@ -662,8 +634,11 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
 
             {gameState === 'finished' && (
               <div>
+                <div className="text-xl font-orbitron font-bold text-accent mb-2">
+                  BACK TO FOCUS
+                </div>
                 <div className="text-sm text-white/60">
-                  Closing in 2s...
+                  Final Score: {score}
                 </div>
               </div>
             )}
