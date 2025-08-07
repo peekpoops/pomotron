@@ -214,7 +214,7 @@ export function useTimer() {
         clearInterval(intervalRef.current);
       }
     };
-  }, [timerState.isRunning, timerState.isPaused, settings, sessions, setSessions, toast, startIdleDetection, stopIdleDetection]);
+  }, [timerState.isRunning, timerState.isPaused]);
 
   // Activity listeners for idle detection
   useEffect(() => {
