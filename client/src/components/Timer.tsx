@@ -340,19 +340,19 @@ export default function Timer({ onOpenSettings }: TimerProps) {
               </div>
 
               {/* Timer Controls */}
-              <div className="flex flex-col sm:flex-row justify-center space-y-3 sm:space-y-0 sm:space-x-4 mb-6 mobile-button-stack">
+              <div className="flex justify-center space-x-4 mb-6">
                 {!timerState.isRunning && !timerState.isPaused ? (
                   <Button
                     onClick={handleStartSession}
-                    className="btn-primary px-6 sm:px-8 py-3 sm:py-4 text-base sm:text-lg font-orbitron font-bold hover:scale-105 transition-transform"
+                    className="btn-primary px-8 py-4 text-lg font-orbitron font-bold hover:scale-105 transition-transform"
                   >
-                    <Play className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
+                    <Play className="h-5 w-5 mr-2" />
                     START
                   </Button>
                 ) : timerState.isRunning ? (
                   <Button
                     onClick={pauseSession}
-                    className="btn-secondary px-4 sm:px-6 py-3 sm:py-4 font-medium hover:scale-105 transition-transform"
+                    className="btn-secondary px-6 py-4 font-medium hover:scale-105 transition-transform"
                   >
                     <Pause className="h-4 w-4 mr-2" />
                     PAUSE
@@ -360,7 +360,7 @@ export default function Timer({ onOpenSettings }: TimerProps) {
                 ) : (
                   <Button
                     onClick={resumeSession}
-                    className="btn-primary px-4 sm:px-6 py-3 sm:py-4 font-medium hover:scale-105 transition-transform"
+                    className="btn-primary px-6 py-4 font-medium hover:scale-105 transition-transform"
                   >
                     <Play className="h-4 w-4 mr-2" />
                     RESUME
@@ -369,7 +369,7 @@ export default function Timer({ onOpenSettings }: TimerProps) {
                 
                 <Button
                   onClick={resetSession}
-                  className="btn-tertiary px-4 sm:px-6 py-3 sm:py-4 font-medium hover:scale-105 transition-transform"
+                  className="btn-tertiary px-6 py-4 font-medium hover:scale-105 transition-transform"
                 >
                   <RotateCcw className="h-4 w-4 mr-2" />
                   RESET
@@ -377,7 +377,7 @@ export default function Timer({ onOpenSettings }: TimerProps) {
                 
                 <Button
                   onClick={endSession}
-                  className="btn-danger px-4 sm:px-6 py-3 sm:py-4 font-medium hover:scale-105 transition-transform"
+                  className="btn-danger px-6 py-4 font-medium hover:scale-105 transition-transform"
                 >
                   <Square className="h-4 w-4 mr-2" />
                   END
@@ -385,12 +385,12 @@ export default function Timer({ onOpenSettings }: TimerProps) {
               </div>
 
               {/* Quick Settings */}
-              <div className="flex flex-col sm:flex-row justify-center items-center space-y-2 sm:space-y-0 sm:space-x-4">
+              <div className="flex justify-center space-x-4">
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={onOpenSettings}
-                  className="text-muted-foreground hover:text-foreground w-full sm:w-auto"
+                  className="text-muted-foreground hover:text-foreground"
                 >
                   <Settings2 className="h-4 w-4 mr-1" />
                   Settings
@@ -402,7 +402,7 @@ export default function Timer({ onOpenSettings }: TimerProps) {
                     variant="ghost"
                     size="sm"
                     onClick={handleGlitchRun}
-                    className={`relative w-full sm:w-auto ${
+                    className={`relative ${
                       !canPlayGlitchRun() 
                         ? 'text-muted-foreground/50 cursor-not-allowed' 
                         : 'text-muted-foreground hover:text-accent'
