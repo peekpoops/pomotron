@@ -308,6 +308,13 @@
     .modal-header-mobile .modal-title {
       font-size: 1.25rem !important;
     }
+
+    /* Quote mobile responsiveness */
+    .quote-text-mobile {
+      line-height: 1.5;
+      word-wrap: break-word;
+      hyphens: auto;
+    }
   }
 
   @media (max-width: 640px) {

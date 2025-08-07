@@ -261,36 +261,39 @@ export default function Timer({ onOpenSettings }: TimerProps) {
       {/* Motivational Quote Banner */}
       {settings.showQuotes && (
         <Card className="glass-morphism animate-float">
-          <CardContent className="p-4 sm:p-6 relative">
-            <div className="text-center">
-              <p className="text-sm sm:text-lg italic text-secondary font-tech-mono quote-text-mobile">
-                "{showFullQuote ? currentQuote.text : currentQuote.text.length > 120 ? `${currentQuote.text.substring(0, 120)}...` : currentQuote.text}"
-              </p>
-              {showFullQuote && (
-                <div className="mt-4 space-y-3">
-                  <p className="text-sm text-accent font-semibold">
-                    — {currentQuote.author}
-                  </p>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={getNextQuote}
-                    className="text-xs text-accent hover:text-primary font-tech-mono"
-                  >
-                    <RotateCcw className="h-3 w-3 mr-1" />
-                    New Quote
-                  </Button>
-                </div>
-              )}
+          <CardContent className="p-4 sm:p-6">
+            <div className="flex justify-between items-start gap-3 sm:gap-4">
+              <div className="flex-1 text-center min-w-0">
+                <p className="text-sm sm:text-lg italic text-secondary font-tech-mono quote-text-mobile">
+                  "{showFullQuote ? currentQuote.text : currentQuote.text.length > 120 ? `${currentQuote.text.substring(0, 120)}...` : currentQuote.text}"
+                </p>
+                {showFullQuote && (
+                  <div className="mt-4 space-y-3">
+                    <p className="text-sm text-accent font-semibold">
+                      — {currentQuote.author}
+                    </p>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={getNextQuote}
+                      className="text-xs text-accent hover:text-primary font-tech-mono"
+                    >
+                      <RotateCcw className="h-3 w-3 mr-1" />
+                      New Quote
+                    </Button>
+                  </div>
+                )}
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowFullQuote(!showFullQuote)}
+                className="text-accent hover:text-primary p-2 flex-shrink-0 min-w-[2rem] h-8 rounded-md"
+                title={showFullQuote ? "Collapse quote" : "Expand quote"}
+              >
+                {showFullQuote ? '↑' : '↓'}
+              </Button>
             </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setShowFullQuote(!showFullQuote)}
-              className="absolute top-4 right-4 text-accent hover:text-primary p-1"
-            >
-              {showFullQuote ? '↑' : '↓'}
-            </Button>
           </CardContent>
         </Card>
       )}
