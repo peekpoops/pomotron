@@ -233,6 +233,11 @@ export default function Timer({ onOpenSettings }: TimerProps) {
       session.sessionType === 'focus'
     );
     
+    // Debug logging
+    console.log('Sessions data:', sessions);
+    console.log('Today\'s completed focus sessions:', todayCompletedFocusSessions);
+    console.log('Count:', todayCompletedFocusSessions.length);
+    
     return todayCompletedFocusSessions.length;
   };
 
