@@ -226,7 +226,7 @@ export default function Timer({ onOpenSettings }: TimerProps) {
   // GlitchRun logic
   const canPlayGlitchRun = () => {
     if (timerState.sessionType === 'focus' && timerState.isRunning) {
-      return !glitchRunUsedThisSession;
+      return true; // !glitchRunUsedThisSession; // Temporarily commented out limit
     }
     return !timerState.isRunning || timerState.sessionType === 'break' || timerState.sessionType === 'longBreak';
   };
@@ -235,7 +235,7 @@ export default function Timer({ onOpenSettings }: TimerProps) {
     if (canPlayGlitchRun()) {
       setShowGlitchRun(true);
       if (timerState.sessionType === 'focus' && timerState.isRunning) {
-        setGlitchRunUsedThisSession(true);
+        // setGlitchRunUsedThisSession(true); // Temporarily commented out limit
       }
     }
   };
@@ -409,9 +409,10 @@ export default function Timer({ onOpenSettings }: TimerProps) {
                     }`}
                     disabled={!canPlayGlitchRun()}
                     title={
-                      timerState.sessionType === 'focus' && glitchRunUsedThisSession
-                        ? 'GlitchRun used this focus session'
-                        : 'Play GlitchRun - Quick 10s dopamine boost!'
+                      // timerState.sessionType === 'focus' && glitchRunUsedThisSession
+                      //   ? 'GlitchRun used this focus session'
+                      //   : 'Play GlitchRun - Quick 10s dopamine boost!'
+                      'Play GlitchRun - Quick 10s dopamine boost!'
                     }
                   >
                     <Zap className="h-4 w-4 mr-1" style={{ filter: 'drop-shadow(0 0 4px currentColor)' }} />
