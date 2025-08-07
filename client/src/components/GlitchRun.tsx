@@ -40,7 +40,7 @@ const OBSTACLE_WIDTH = 25;
 const OBSTACLE_HEIGHT = 40;
 
 export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
-  const [gameState, setGameState] = useState<'waiting' | 'playing' | 'finished'>('waiting');
+  const [gameState, setGameState] = useState<'waiting' | 'playing' | 'finished' | 'showingBackToFocus'>('waiting');
   const [score, setScore] = useState(0);
   const [timeLeft, setTimeLeft] = useState(10);
   const [playerY, setPlayerY] = useState(GROUND_Y);
@@ -66,7 +66,7 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
     
     setGameState('playing');
     setScore(0);
-    setTimeLeft(11);
+    setTimeLeft(10);
     setPlayerY(GROUND_Y);
     setIsJumping(false);
     setObstacles([]);
@@ -92,18 +92,21 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
     // Play game over sound
     playSound('glitch-game-over');
 
-    // Auto-close after 2 seconds
+    // Show "BACK TO FOCUS" message after 1 second delay, then auto-close after 2 more seconds
     setTimeout(() => {
-      onClose();
-      setGameState('waiting');
-    }, 2000);
+      setGameState('showingBackToFocus');
+      setTimeout(() => {
+        onClose();
+        setGameState('waiting');
+      }, 2000);
+    }, 1000);
   }, [onClose]);
 
   // Update game state
   const updateGame = useCallback(() => {
     const now = Date.now();
     const elapsed = (now - gameStartTimeRef.current) / 1000;
-    const newTimeLeft = Math.max(0, 11 - elapsed);
+    const newTimeLeft = Math.max(0, 10 - elapsed);
 
     setTimeLeft(Math.ceil(newTimeLeft));
 
@@ -117,8 +120,8 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
       setSuccessBurst(null);
     }
 
-    // End game after 11 seconds
-    if (elapsed >= 11) {
+    // End game after 10 seconds
+    if (elapsed >= 10) {
       endGame();
       return;
     }
@@ -597,7 +600,7 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
       // Reset all game state
       setGameState('waiting');
       setScore(0);
-      setTimeLeft(11);
+      setTimeLeft(10);
       setPlayerY(GROUND_Y);
       setIsJumping(false);
       setObstacles([]);
@@ -676,7 +679,7 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
                   TAP CANVAS OR PRESS SPACEBAR TO START
                 </div>
                 <div className="text-xs text-white/60">
-                  Jump over glitch blocks • Survive 11 seconds
+                  Jump over glitch blocks • Survive 10 seconds
                 </div>
               </div>
             )}
@@ -702,6 +705,17 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
 
           {/* Game Finished Overlay */}
           {gameState === 'finished' && (
+            <div className="absolute inset-0 flex items-center justify-center z-20 bg-black/50">
+              <div className="text-center">
+                <div className="text-lg text-white/80 font-tech-mono">
+                  Final Score: {score}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Back to Focus Overlay */}
+          {gameState === 'showingBackToFocus' && (
             <div className="absolute inset-0 flex items-center justify-center z-20 bg-black/50">
               <div className="text-center animate-pulse">
                 <div className="text-3xl font-orbitron font-bold text-accent mb-3 neon-text">
