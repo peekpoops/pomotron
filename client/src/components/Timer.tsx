@@ -122,7 +122,7 @@ const motivationalQuotes = [
 ];
 
 export default function Timer({ onOpenSettings }: TimerProps) {
-  const { timerState, startSession, pauseSession, resumeSession, resetSession, endSession, formatTime, getProgress, sessions } = useTimer();
+  const { timerState, startSession, pauseSession, resumeSession, resetSession, endSession, formatTime, getProgress } = useTimer();
   const [settings] = useLocalStorage<Settings>('pomotron-settings', {
     focusDuration: 25,
     breakDuration: 5,
@@ -195,7 +195,7 @@ export default function Timer({ onOpenSettings }: TimerProps) {
     if (timerState.sessionType === 'focus') {
       return `Cycle ${timerState.currentCycle} of ${settings.cyclesBeforeLongBreak} • Long break after ${settings.cyclesBeforeLongBreak} cycles`;
     } else if (timerState.sessionType === 'break') {
-      return `Short break • Just completed cycle ${timerState.currentCycle} of ${settings.cyclesBeforeLongBreak}`;
+      return `Short break • Cycle ${timerState.currentCycle} of ${settings.cyclesBeforeLongBreak}`;
     } else {
       return 'Long break • Starting fresh after this break';
     }
@@ -221,46 +221,6 @@ export default function Timer({ onOpenSettings }: TimerProps) {
       case 'longBreak':
         return 'bg-accent';
     }
-  };
-
-  // Calculate completed cycles (completed focus sessions) from today's sessions
-  const getCompletedCyclesToday = (): number => {
-    if (!sessions || sessions.length === 0) return 0;
-    
-    const today = new Date().toDateString();
-    
-    // Count focus sessions that have ended today
-    const todayCompletedFocusSessions = sessions.filter((session: any) => {
-      if (!session.startTime || session.sessionType !== 'focus') return false;
-      
-      const sessionDate = new Date(session.startTime).toDateString();
-      const isToday = sessionDate === today;
-      const hasEnded = session.endTime !== undefined || session.completed === true;
-      
-      return isToday && hasEnded;
-    });
-    
-    // Debug: Only log when there are issues
-    if (todayCompletedFocusSessions.length === 0 && sessions.some(s => s.sessionType === 'focus' && s.endTime)) {
-      console.log('Debug: No today sessions found but completed sessions exist');
-      console.log('Today:', today);
-      console.log('Completed focus sessions found:', sessions.filter(s => s.sessionType === 'focus' && s.endTime).length);
-    }
-    
-    return todayCompletedFocusSessions.length;
-  };
-
-  // Calculate total focus time from completed sessions today
-  const getTotalFocusTimeToday = (): number => {
-    const today = new Date().toDateString();
-    const todayFocusSessions = sessions.filter((session: any) => 
-      session.startTime && 
-      new Date(session.startTime).toDateString() === today && 
-      session.completed && 
-      session.sessionType === 'focus'
-    );
-    
-    return todayFocusSessions.reduce((total: number, session: any) => total + session.duration, 0);
   };
 
   // GlitchRun logic
@@ -296,49 +256,41 @@ export default function Timer({ onOpenSettings }: TimerProps) {
     }
   }, [timerState.sessionType, timerState.isRunning, timerState.timeLeft, settings.focusDuration]);
 
-  // Force component re-render when sessions change
-  useEffect(() => {
-    // This effect will trigger when sessions array changes
-  }, [sessions]);
-
   return (
     <div className="max-w-6xl mx-auto space-y-8 px-4 sm:px-6 lg:px-8">
       {/* Motivational Quote Banner */}
       {settings.showQuotes && (
         <Card className="glass-morphism animate-float">
-          <CardContent className="p-4 sm:p-6">
-            <div className="flex justify-between items-start gap-3 sm:gap-4">
-              <div className="flex-1 text-center min-w-0">
-                <p className="text-sm sm:text-lg italic text-secondary font-tech-mono quote-text-mobile">
-                  "{showFullQuote ? currentQuote.text : currentQuote.text.length > 120 ? `${currentQuote.text.substring(0, 120)}...` : currentQuote.text}"
-                </p>
-                {showFullQuote && (
-                  <div className="mt-4 space-y-3">
-                    <p className="text-sm text-accent font-semibold">
-                      — {currentQuote.author}
-                    </p>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={getNextQuote}
-                      className="text-xs text-accent hover:text-primary font-tech-mono"
-                    >
-                      <RotateCcw className="h-3 w-3 mr-1" />
-                      New Quote
-                    </Button>
-                  </div>
-                )}
-              </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setShowFullQuote(!showFullQuote)}
-                className="text-accent hover:text-primary p-2 flex-shrink-0 min-w-[2rem] h-8 rounded-md"
-                title={showFullQuote ? "Collapse quote" : "Expand quote"}
-              >
-                {showFullQuote ? '↑' : '↓'}
-              </Button>
+          <CardContent className="p-4 sm:p-6 relative">
+            <div className="text-center">
+              <p className="text-sm sm:text-lg italic text-secondary font-tech-mono quote-text-mobile">
+                "{showFullQuote ? currentQuote.text : currentQuote.text.length > 120 ? `${currentQuote.text.substring(0, 120)}...` : currentQuote.text}"
+              </p>
+              {showFullQuote && (
+                <div className="mt-4 space-y-3">
+                  <p className="text-sm text-accent font-semibold">
+                    — {currentQuote.author}
+                  </p>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={getNextQuote}
+                    className="text-xs text-accent hover:text-primary font-tech-mono"
+                  >
+                    <RotateCcw className="h-3 w-3 mr-1" />
+                    New Quote
+                  </Button>
+                </div>
+              )}
             </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowFullQuote(!showFullQuote)}
+              className="absolute top-4 right-4 text-accent hover:text-primary p-1"
+            >
+              {showFullQuote ? '↑' : '↓'}
+            </Button>
           </CardContent>
         </Card>
       )}
@@ -573,13 +525,14 @@ export default function Timer({ onOpenSettings }: TimerProps) {
                       <Target className="h-6 w-6 text-primary animate-pulse" />
                       <div className="absolute -top-1 -right-1 w-3 h-3 bg-accent rounded-full animate-ping opacity-75"></div>
                     </div>
-                    <span className="text-sm font-tech-mono text-secondary font-medium">CYCLES COMPLETED</span>
+                    <span className="text-sm font-tech-mono text-secondary font-medium">SESSIONS</span>
                   </div>
                   <div className="flex items-center space-x-2">
                     <span className="text-2xl font-orbitron font-black text-primary neon-text">
-                      {getCompletedCyclesToday()}
+                      {new Date().toDateString() === new Date().toDateString() ? 
+                        timerState.currentCycle - 1 : 0}
                     </span>
-                    <span className="text-xs text-muted-foreground font-tech-mono"></span>
+                    <span className="text-xs text-muted-foreground font-tech-mono">DONE</span>
                   </div>
                 </div>
 
@@ -596,11 +549,11 @@ export default function Timer({ onOpenSettings }: TimerProps) {
                   </div>
                   <div className="flex items-center space-x-1">
                     <span className="text-xl font-orbitron font-black text-accent">
-                      {Math.floor(getTotalFocusTimeToday() / 3600)}
+                      {Math.floor((timerState.currentCycle - 1) * settings.focusDuration / 60)}
                     </span>
                     <span className="text-xs text-accent font-tech-mono">H</span>
                     <span className="text-xl font-orbitron font-black text-accent ml-2">
-                      {Math.floor((getTotalFocusTimeToday() % 3600) / 60)}
+                      {(timerState.currentCycle - 1) * settings.focusDuration % 60}
                     </span>
                     <span className="text-xs text-accent font-tech-mono">M</span>
                   </div>

@@ -12,13 +12,10 @@ const defaultTimerState: TimerState = {
   sessionType: 'focus',
   currentCycle: 1,
   currentIntention: { task: '', why: '' },
-  startTime: null,
 };
 
 export function useTimer() {
-  const [timerState, setTimerState] = useLocalStorage<TimerState>('pomotron-timer-state', defaultTimerState);
-  
-  // Initialize settings first
+  const [timerState, setTimerState] = useState<TimerState>(defaultTimerState);
   const [settings] = useLocalStorage<Settings>('pomotron-settings', {
     focusDuration: 25,
     breakDuration: 5,
@@ -31,19 +28,7 @@ export function useTimer() {
     websiteBlockingEnabled: true,
     frictionOverride: false,
     blockedSites: ['facebook.com', 'twitter.com', 'reddit.com', 'youtube.com', 'instagram.com'],
-    showQuotes: true,
-    soundsEnabled: true,
   });
-  
-  // Clean up timer state on mount to prevent session continuation
-  useEffect(() => {
-    // Don't interfere with the timer state at all on mount
-    console.log('Component mounted - timer state:', { 
-      isRunning: timerState.isRunning, 
-      isPaused: timerState.isPaused, 
-      timeLeft: timerState.timeLeft 
-    });
-  }, []); // Only run on mount
   const [sessions, setSessions] = useLocalStorage<Session[]>('pomotron-sessions', []);
   
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -61,9 +46,6 @@ export function useTimer() {
   // Start idle detection
   const startIdleDetection = useCallback(() => {
     if (idleIntervalRef.current) clearInterval(idleIntervalRef.current);
-    
-    // Skip idle detection if timeout is 0 (disabled)
-    if (settings.idleTimeout === 0) return;
     
     idleIntervalRef.current = setInterval(() => {
       const now = Date.now();
@@ -91,15 +73,10 @@ export function useTimer() {
 
   // Timer countdown effect
   useEffect(() => {
-    console.log('Timer effect triggered - isRunning:', timerState.isRunning, 'isPaused:', timerState.isPaused);
     if (timerState.isRunning && !timerState.isPaused) {
-      console.log('Starting interval timer');
       intervalRef.current = setInterval(() => {
         setTimerState(prev => {
-          const newTimeLeft = Math.max(0, prev.timeLeft - 1);
-          console.log('Countdown tick:', newTimeLeft);
-          
-          if (newTimeLeft <= 0) {
+          if (prev.timeLeft <= 1) {
             // Timer finished
             const isBreakNext = prev.sessionType === 'focus';
             const isLongBreak = prev.currentCycle >= settings.cyclesBeforeLongBreak && isBreakNext;
@@ -109,27 +86,26 @@ export function useTimer() {
             
             if (isBreakNext) {
               nextSessionType = isLongBreak ? 'longBreak' : 'break';
-              // Keep the same cycle during breaks - the cycle represents the focus session we just completed
             } else {
               nextSessionType = 'focus';
               if (prev.sessionType === 'longBreak') {
                 nextCycle = 1; // Reset cycle after long break
-              } else if (prev.sessionType === 'break') {
-                nextCycle = prev.currentCycle + 1; // Increment cycle when starting new focus session after break
+              } else {
+                nextCycle = prev.currentCycle + 1;
               }
             }
             
             // Save completed session
             if (prev.currentSessionId) {
-              console.log('Completing session:', prev.currentSessionId, 'Session type:', prev.sessionType);
-              // Use callback to avoid dependency issues
-              setSessions(prevSessions => 
-                prevSessions.map(s => 
-                  s.id === prev.currentSessionId 
-                    ? { ...s, endTime: new Date(), completed: true }
-                    : s
-                )
-              );
+              const sessionToUpdate = sessions.find(s => s.id === prev.currentSessionId);
+              if (sessionToUpdate) {
+                const updatedSession: Session = {
+                  ...sessionToUpdate,
+                  endTime: new Date(),
+                  completed: true,
+                };
+                setSessions(prev => prev.map(s => s.id === updatedSession.id ? updatedSession : s));
+              }
             }
             
             // Calculate next duration
@@ -146,7 +122,6 @@ export function useTimer() {
                 break;
             }
             
-            // Use ref to avoid dependency
             playSound('sessionComplete');
             
             // Handle website blocking
@@ -162,42 +137,23 @@ export function useTimer() {
               duration: 5000,
             });
             
-            // Apply any pending timer config changes when session ends
-            const pendingConfig = localStorage.getItem('pomotron-pending-timer-config');
-            if (pendingConfig) {
-              const parsedConfig = JSON.parse(pendingConfig);
-              const currentSettings = JSON.parse(localStorage.getItem('pomotron-settings') || '{}');
-              localStorage.setItem('pomotron-settings', JSON.stringify({
-                ...currentSettings,
-                ...parsedConfig,
-              }));
-              localStorage.removeItem('pomotron-pending-timer-config');
-            }
-
-            const newState = {
+            return {
               ...prev,
-              isRunning: false, // Always stop when session ends, regardless of autoStart
-              isPaused: false,
+              isRunning: settings.autoStart,
               timeLeft: nextDuration,
               sessionType: nextSessionType,
               currentCycle: nextCycle,
               currentSessionId: undefined,
               currentIntention: nextSessionType === 'focus' ? { task: '', why: '' } : prev.currentIntention,
-              startTime: null, // Always clear startTime when session ends
             };
-            
-            console.log('Session ended, timer stopped, new state:', newState);
-            
-            return newState;
           }
           
-          return { ...prev, timeLeft: newTimeLeft };
+          return { ...prev, timeLeft: prev.timeLeft - 1 };
         });
       }, 1000);
       
       startIdleDetection();
     } else {
-      console.log('Stopping interval timer');
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
         intervalRef.current = null;
@@ -210,85 +166,22 @@ export function useTimer() {
         clearInterval(intervalRef.current);
       }
     };
-  }, [timerState.isRunning, timerState.isPaused, settings.focusDuration, settings.breakDuration, settings.longBreakDuration, settings.cyclesBeforeLongBreak]);
+  }, [timerState.isRunning, timerState.isPaused, settings, sessions, setSessions, toast, startIdleDetection, stopIdleDetection]);
 
   // Activity listeners for idle detection
   useEffect(() => {
-    const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click'];
+    const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'];
     
-    // Add event listeners to document for current tab activity
     events.forEach(event => {
       document.addEventListener(event, resetIdleDetection, true);
     });
-
-    // Use Page Visibility API to detect when user switches tabs/windows
-    const handleVisibilityChange = () => {
-      if (!document.hidden) {
-        // User returned to this tab, reset idle detection
-        resetIdleDetection();
-      }
-    };
-
-    // Use window focus/blur to detect when user switches windows
-    const handleWindowFocus = () => {
-      resetIdleDetection();
-    };
-
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    window.addEventListener('focus', handleWindowFocus);
     
     return () => {
       events.forEach(event => {
         document.removeEventListener(event, resetIdleDetection, true);
       });
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-      window.removeEventListener('focus', handleWindowFocus);
     };
   }, [resetIdleDetection]);
-
-  // Calculate progress percentage
-  const getProgress = useCallback((): number => {
-    let totalTime: number;
-    switch (timerState.sessionType) {
-      case 'focus':
-        totalTime = settings.focusDuration * 60;
-        break;
-      case 'break':
-        totalTime = settings.breakDuration * 60;
-        break;
-      case 'longBreak':
-        totalTime = settings.longBreakDuration * 60;
-        break;
-    }
-    
-    return ((totalTime - timerState.timeLeft) / totalTime) * 100;
-  }, [timerState, settings]);
-
-  // Update timer duration when settings change - only for stopped timers
-  useEffect(() => {
-    // Only update duration for stopped timers
-    if (!timerState.isRunning && !timerState.isPaused) {
-      let newDuration: number;
-      switch (timerState.sessionType) {
-        case 'focus':
-          newDuration = settings.focusDuration * 60;
-          break;
-        case 'break':
-          newDuration = settings.breakDuration * 60;
-          break;
-        case 'longBreak':
-          newDuration = settings.longBreakDuration * 60;
-          break;
-      }
-      
-      if (timerState.timeLeft !== newDuration) {
-        setTimerState(prev => ({
-          ...prev,
-          timeLeft: newDuration,
-        }));
-      }
-    }
-  }, [settings.focusDuration, settings.breakDuration, settings.longBreakDuration, timerState.sessionType, timerState.isRunning, timerState.isPaused, timerState.timeLeft]);
 
   const startSession = useCallback((intention?: { task: string; why: string }) => {
     const sessionId = crypto.randomUUID();
@@ -315,7 +208,6 @@ export function useTimer() {
       isPaused: false,
       currentSessionId: sessionId,
       currentIntention: intention || prev.currentIntention,
-      startTime: Date.now(),
     }));
     
     if (timerState.sessionType === 'focus' && settings.websiteBlockingEnabled) {
@@ -326,50 +218,21 @@ export function useTimer() {
   }, [timerState, settings, setSessions]);
 
   const pauseSession = useCallback(() => {
-    console.log('Pause button clicked');
-    setTimerState(prev => {
-      if (!prev.isRunning) {
-        console.log('Timer not running, ignoring pause');
-        return prev;
-      }
-      
-      console.log('PAUSING - Before:', { isRunning: prev.isRunning, isPaused: prev.isPaused, timeLeft: prev.timeLeft });
-      
-      const newState = {
-        ...prev,
-        isRunning: false,
-        isPaused: true,
-        startTime: null,
-      };
-      
-      console.log('PAUSING - After:', { isRunning: newState.isRunning, isPaused: newState.isPaused, timeLeft: newState.timeLeft });
-      
-      // Don't save to localStorage to avoid conflicts
-      return newState;
-    });
+    setTimerState(prev => ({
+      ...prev,
+      isRunning: false,
+      isPaused: true,
+    }));
     
     deactivateWebsiteBlocking();
   }, []);
 
   const resumeSession = useCallback(() => {
-    setTimerState(prev => {
-      if (!prev.isPaused) return prev;
-      
-      console.log('RESUMING - Before:', { isRunning: prev.isRunning, isPaused: prev.isPaused, timeLeft: prev.timeLeft });
-      
-      const newState = {
-        ...prev,
-        isRunning: true,
-        isPaused: false,
-        startTime: Date.now(),
-      };
-      
-      // Save resumed state to localStorage immediately
-      localStorage.setItem('pomotron-timer-state', JSON.stringify(newState));
-      
-      console.log('RESUMING - After:', { isRunning: newState.isRunning, isPaused: newState.isPaused, timeLeft: newState.timeLeft });
-      return newState;
-    });
+    setTimerState(prev => ({
+      ...prev,
+      isRunning: true,
+      isPaused: false,
+    }));
     
     if (timerState.sessionType === 'focus' && settings.websiteBlockingEnabled) {
       activateWebsiteBlocking(settings.blockedSites);
@@ -388,18 +251,6 @@ export function useTimer() {
       ));
     }
     
-    // Apply any pending timer config changes when session resets
-    const pendingConfig = localStorage.getItem('pomotron-pending-timer-config');
-    if (pendingConfig) {
-      const parsedConfig = JSON.parse(pendingConfig);
-      const currentSettings = JSON.parse(localStorage.getItem('pomotron-settings') || '{}');
-      localStorage.setItem('pomotron-settings', JSON.stringify({
-        ...currentSettings,
-        ...parsedConfig,
-      }));
-      localStorage.removeItem('pomotron-pending-timer-config');
-    }
-    
     let duration: number;
     switch (timerState.sessionType) {
       case 'focus':
@@ -413,19 +264,13 @@ export function useTimer() {
         break;
     }
     
-    const newTimerState = {
-      ...timerState,
+    setTimerState(prev => ({
+      ...prev,
       isRunning: false,
       isPaused: false,
       timeLeft: duration,
       currentSessionId: undefined,
-      startTime: null,
-    };
-    
-    setTimerState(newTimerState);
-    
-    // Clear localStorage timer state immediately to prevent restoration
-    localStorage.setItem('pomotron-timer-state', JSON.stringify(newTimerState));
+    }));
     
     deactivateWebsiteBlocking();
     playSound('reset');
@@ -441,32 +286,10 @@ export function useTimer() {
       ));
     }
     
-    // Apply any pending timer config changes when session ends
-    const pendingConfig = localStorage.getItem('pomotron-pending-timer-config');
-    if (pendingConfig) {
-      const parsedConfig = JSON.parse(pendingConfig);
-      const currentSettings = JSON.parse(localStorage.getItem('pomotron-settings') || '{}');
-      localStorage.setItem('pomotron-settings', JSON.stringify({
-        ...currentSettings,
-        ...parsedConfig,
-      }));
-      localStorage.removeItem('pomotron-pending-timer-config');
-    }
-    
-    // Clear timer state completely and reset to focus session
-    const newTimerState = {
+    setTimerState({
       ...defaultTimerState,
       timeLeft: settings.focusDuration * 60,
-      startTime: null,
-      sessionType: 'focus' as const,
-      currentCycle: 1,
-      currentSessionId: undefined,
-    };
-    
-    setTimerState(newTimerState);
-    
-    // Clear localStorage timer state immediately to prevent restoration
-    localStorage.setItem('pomotron-timer-state', JSON.stringify(newTimerState));
+    });
     
     deactivateWebsiteBlocking();
     playSound('reset');
@@ -478,6 +301,24 @@ export function useTimer() {
     const secs = seconds % 60;
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   }, []);
+
+  // Calculate progress percentage
+  const getProgress = useCallback((): number => {
+    let totalTime: number;
+    switch (timerState.sessionType) {
+      case 'focus':
+        totalTime = settings.focusDuration * 60;
+        break;
+      case 'break':
+        totalTime = settings.breakDuration * 60;
+        break;
+      case 'longBreak':
+        totalTime = settings.longBreakDuration * 60;
+        break;
+    }
+    
+    return ((totalTime - timerState.timeLeft) / totalTime) * 100;
+  }, [timerState, settings]);
 
   return {
     timerState,

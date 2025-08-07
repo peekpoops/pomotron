@@ -1,6 +1,6 @@
 # Overview
 
-Pomotron - Enter the Focus Grid is a retro-themed Pomodoro timer web application designed to enhance productivity through the Pomodoro Technique. The app combines a nostalgic 1980s synthwave aesthetic with modern productivity features including intention-setting, website blocking, analytics tracking, and multiple visual themes. Built as a Progressive Web App (PWA), it provides both online and offline functionality with features like session history, customizable timer settings, and comprehensive productivity analytics.
+Pomotron is a retro-themed Pomodoro timer web application designed to enhance productivity through the Pomodoro Technique. The app combines a nostalgic 1980s synthwave aesthetic with modern productivity features including intention-setting, website blocking, analytics tracking, and multiple visual themes. Built as a Progressive Web App (PWA), it provides both online and offline functionality with features like session history, customizable timer settings, and comprehensive productivity analytics.
 
 # User Preferences
 

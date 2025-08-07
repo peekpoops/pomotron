@@ -63,7 +63,6 @@ export const timerStateSchema = z.object({
     task: z.string().default(''),
     why: z.string().default(''),
   }).default({ task: '', why: '' }),
-  startTime: z.number().nullable().default(null), // timestamp when timer started
 });
 
 export type TimerState = z.infer<typeof timerStateSchema>;

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Clock, Palette, Keyboard, Save, Info, RotateCcw } from 'lucide-react';
+import { Clock, Palette, Keyboard, Save, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -9,7 +9,6 @@ import { Badge } from '@/components/ui/badge';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { useTheme } from '@/hooks/useTheme';
-import { useTimer } from '@/hooks/useTimer';
 import { Settings as SettingsType, Theme } from '@/types';
 import { useToast } from '@/hooks/use-toast';
 
@@ -32,7 +31,6 @@ const defaultSettings: SettingsType = {
 export default function Settings() {
   const [settings, setSettings] = useLocalStorage<SettingsType>('pomotron-settings', defaultSettings);
   const { theme, setTheme } = useTheme();
-  const { timerState } = useTimer();
   const [localSettings, setLocalSettings] = useState<SettingsType>(settings);
   const { toast } = useToast();
 
@@ -41,73 +39,15 @@ export default function Settings() {
   }, [settings]);
 
   const handleSave = () => {
-    // Allow saving during sessions, but apply timer config changes after session ends
-    if (timerState.isRunning || timerState.isPaused) {
-      // Save non-timer settings immediately
-      const immediateSettings = {
-        ...localSettings,
-        // Keep current timer durations for running session
-        focusDuration: settings.focusDuration,
-        breakDuration: settings.breakDuration,
-        longBreakDuration: settings.longBreakDuration,
-        cyclesBeforeLongBreak: settings.cyclesBeforeLongBreak,
-        autoStart: settings.autoStart,
-      };
-      
-      setSettings(immediateSettings);
-      
-      // Store pending timer config changes
-      if (localSettings.focusDuration !== settings.focusDuration ||
-          localSettings.breakDuration !== settings.breakDuration ||
-          localSettings.longBreakDuration !== settings.longBreakDuration ||
-          localSettings.cyclesBeforeLongBreak !== settings.cyclesBeforeLongBreak ||
-          localSettings.autoStart !== settings.autoStart) {
-        localStorage.setItem('pomotron-pending-timer-config', JSON.stringify({
-          focusDuration: localSettings.focusDuration,
-          breakDuration: localSettings.breakDuration,
-          longBreakDuration: localSettings.longBreakDuration,
-          cyclesBeforeLongBreak: localSettings.cyclesBeforeLongBreak,
-          autoStart: localSettings.autoStart,
-        }));
-        
-        toast({
-          title: "Settings Partially Saved",
-          description: "Timer configuration changes will apply after the current session ends.",
-          duration: 4000,
-        });
-      } else {
-        toast({
-          title: "Settings Saved",
-          description: "Your preferences have been updated successfully.",
-        });
-      }
-    } else {
-      // No active session, apply all settings immediately
-      setSettings(localSettings);
-      toast({
-        title: "Settings Saved",
-        description: "Your preferences have been updated successfully.",
-      });
-    }
-    
-    // Always apply theme changes immediately
+    setSettings(localSettings);
     if (localSettings.theme !== theme) {
       setTheme(localSettings.theme);
     }
+    toast({
+      title: "Settings Saved",
+      description: "Your preferences have been updated successfully.",
+    });
   };
-
-  const hasUnsavedChanges = JSON.stringify(localSettings) !== JSON.stringify(settings);
-  const isFocusSessionRunning = timerState.isRunning && timerState.sessionType === 'focus';
-  const hasActiveSession = timerState.isRunning || timerState.isPaused;
-  
-  // Check for pending timer config changes
-  const hasPendingTimerChanges = hasActiveSession && (
-    localSettings.focusDuration !== settings.focusDuration ||
-    localSettings.breakDuration !== settings.breakDuration ||
-    localSettings.longBreakDuration !== settings.longBreakDuration ||
-    localSettings.cyclesBeforeLongBreak !== settings.cyclesBeforeLongBreak ||
-    localSettings.autoStart !== settings.autoStart
-  );
 
   
 
@@ -149,16 +89,6 @@ export default function Settings() {
           </span>
         </h1>
         <p className="text-sm sm:text-base text-secondary font-tech-mono">Customize your Pomotron experience</p>
-        
-        {/* Focus Session Warning */}
-        {isFocusSessionRunning && (
-          <div className="flex justify-center mt-4">
-            <div className="flex items-center space-x-2 text-xs sm:text-sm text-yellow-600 dark:text-yellow-400">
-              <div className="w-2 h-2 bg-yellow-500 rounded-full animate-pulse"></div>
-              <span>Settings cannot be changed during a focus session</span>
-            </div>
-          </div>
-        )}
       </div>
 
       <div className="grid lg:grid-cols-2 gap-4 sm:gap-8 settings-grid-mobile">
@@ -168,48 +98,8 @@ export default function Settings() {
             <CardTitle className="section-title text-base sm:text-lg text-secondary flex items-center">
               <Clock className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
               Timer Configuration
-              {hasPendingTimerChanges && (
-                <Badge variant="secondary" className="ml-2 text-xs animate-pulse">
-                  Pending
-                </Badge>
-              )}
             </CardTitle>
-            {hasPendingTimerChanges && (
-              <div className="text-xs text-yellow-600 dark:text-yellow-400 mt-2 flex items-center">
-                <div className="w-2 h-2 bg-yellow-500 rounded-full animate-pulse mr-2"></div>
-                Timer changes will apply after the current session ends
-              </div>
-            )}
           </CardHeader>
-          
-          {/* Top Save Buttons */}
-          <div className="px-4 sm:px-6 pb-4 border-b border-border/20">
-            <div className="flex justify-center space-x-2 sm:space-x-4">
-              <Button
-                onClick={() => setLocalSettings(defaultSettings)}
-                className="btn-tertiary px-4 py-2 sm:px-6 sm:py-3 font-medium hover:scale-105 transition-transform timer-control-button"
-              >
-                <RotateCcw className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 button-icon" />
-                <span className="button-text text-xs sm:text-sm">RESET</span>
-              </Button>
-              <Button
-                onClick={handleSave}
-                disabled={!hasUnsavedChanges}
-                className="btn-primary px-4 py-2 sm:px-6 sm:py-3 font-medium hover:scale-105 transition-transform timer-control-button"
-              >
-                <Save className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 button-icon" />
-                <span className="button-text text-xs sm:text-sm">SAVE</span>
-                {hasUnsavedChanges && (
-                  <Badge variant="secondary" className="ml-2 text-xs">
-                    {Object.keys(localSettings).filter(key => 
-                      JSON.stringify(localSettings[key as keyof SettingsType]) !== 
-                      JSON.stringify(settings[key as keyof SettingsType])
-                    ).length}
-                  </Badge>
-                )}
-              </Button>
-            </div>
-          </div>
           <CardContent className="space-y-4 sm:space-y-6 settings-card-mobile">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
               <div>
@@ -290,12 +180,12 @@ export default function Settings() {
               <Input
                 id="idle-timeout"
                 type="number"
-                min="0"
+                min="1"
                 max="60"
                 value={localSettings.idleTimeout}
                 onChange={(e) => setLocalSettings(prev => ({
                   ...prev,
-                  idleTimeout: parseInt(e.target.value) || 0
+                  idleTimeout: parseInt(e.target.value) || 5
                 }))}
                 className="form-input mt-1 text-sm"
               />
@@ -412,36 +302,6 @@ export default function Settings() {
                 }))}
               />
             </div>
-
-            {/* Bottom Save Buttons */}
-            <div className="pt-4 border-t border-border/20">
-              <div className="flex justify-center space-x-2 sm:space-x-4">
-                <Button
-                  onClick={() => setLocalSettings(defaultSettings)}
-                  className="btn-tertiary px-4 py-2 sm:px-6 sm:py-3 font-medium hover:scale-105 transition-transform timer-control-button"
-                >
-                  <RotateCcw className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 button-icon" />
-                  <span className="button-text text-xs sm:text-sm">RESET</span>
-                </Button>
-                <Button
-                  onClick={handleSave}
-                  disabled={!hasUnsavedChanges}
-                  className="btn-primary px-4 py-2 sm:px-6 sm:py-3 font-medium hover:scale-105 transition-transform timer-control-button"
-                >
-                  <Save className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2 button-icon" />
-                  <span className="button-text text-xs sm:text-sm">SAVE</span>
-                  {hasUnsavedChanges && (
-                    <Badge variant="secondary" className="ml-2 text-xs">
-                      {Object.keys(localSettings).filter(key => 
-                        JSON.stringify(localSettings[key as keyof SettingsType]) !== 
-                        JSON.stringify(settings[key as keyof SettingsType])
-                      ).length}
-                    </Badge>
-                  )}
-                </Button>
-              </div>
-            </div>
-
           </CardContent>
         </Card>
 
@@ -468,46 +328,16 @@ export default function Settings() {
         </Card>
       </div>
 
-      {/* About Pomodoro Technique */}
-      <Card className="neon-border glass-morphism">
-        <CardHeader className="settings-card-mobile">
-          <CardTitle className="section-title text-base sm:text-lg text-secondary flex items-center">
-            <Info className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
-            About the Pomodoro Technique
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="settings-card-mobile">
-          <div className="space-y-4 text-xs sm:text-sm text-muted-foreground">
-            <p>
-              The Pomodoro Technique is a time management method developed by Francesco Cirillo in the late 1980s. 
-              The technique uses a timer to break down work into intervals, traditionally 25 minutes in length, 
-              separated by short breaks.
-            </p>
-            <div className="space-y-2">
-              <p className="font-semibold text-secondary">How it works:</p>
-              <ul className="list-disc list-inside space-y-1 ml-2">
-                <li>Choose a task to work on</li>
-                <li>Set the timer for 25 minutes (one "pomodoro")</li>
-                <li>Work on the task until the timer rings</li>
-                <li>Take a short break (5 minutes)</li>
-                <li>After 4 pomodoros, take a longer break (15-30 minutes)</li>
-              </ul>
-            </div>
-            <div className="pt-2 border-t border-border/20">
-              <p className="text-xs text-muted-foreground/80">
-                Named after the tomato-shaped kitchen timer that Cirillo used as a university student. 
-                "Pomodoro" is Italian for tomato.
-              </p>
-              <p className="text-xs text-muted-foreground/80 mt-1">
-                Learn more: <a href="https://francescocirillo.com/pages/pomodoro-technique" target="_blank" rel="noopener noreferrer" className="text-accent hover:text-primary underline">francescocirillo.com</a>
-              </p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-
-
+      {/* Save Settings */}
+      <div className="text-center">
+        <Button
+          onClick={handleSave}
+          className="btn-primary px-6 sm:px-8 py-3 font-medium w-full sm:w-auto"
+        >
+          <Save className="h-4 w-4 mr-2" />
+          Save Settings
+        </Button>
+      </div>
     </div>
   );
 }
