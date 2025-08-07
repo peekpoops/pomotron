@@ -135,6 +135,7 @@ export default function Timer({ onOpenSettings }: TimerProps) {
     frictionOverride: false,
     blockedSites: [],
     showQuotes: true,
+    soundsEnabled: true,
   });
   
   const [showIntentionModal, setShowIntentionModal] = useState(false);

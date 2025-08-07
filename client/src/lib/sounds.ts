@@ -87,6 +87,15 @@ function createIdleNudgeSound(): void {
 }
 
 export function playSound(type: 'start' | 'reset' | 'sessionComplete' | 'idleNudge'): void {
+  // Check if sounds are enabled in settings
+  const settings = localStorage.getItem('pomotron-settings');
+  if (settings) {
+    const parsedSettings = JSON.parse(settings);
+    if (parsedSettings.soundsEnabled === false) {
+      return;
+    }
+  }
+
   // Check if audio is enabled and context is available
   if (typeof window === 'undefined' || !window.AudioContext && !(window as any).webkitAudioContext) {
     console.warn('Web Audio API not supported');

@@ -25,6 +25,7 @@ const defaultSettings: SettingsType = {
   frictionOverride: false,
   blockedSites: ['facebook.com', 'twitter.com', 'reddit.com', 'youtube.com', 'instagram.com'],
   showQuotes: true,
+  soundsEnabled: true,
 };
 
 export default function Settings() {
@@ -270,6 +271,34 @@ export default function Settings() {
                 onCheckedChange={(checked) => setLocalSettings(prev => ({
                   ...prev,
                   showQuotes: checked
+                }))}
+              />
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <Label htmlFor="sounds-enabled" className="text-sm font-medium text-muted-foreground">
+                  Enable sound effects
+                </Label>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <button className="text-muted-foreground hover:text-foreground">
+                      <Info className="h-4 w-4" />
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent side="top" align="center" className="w-80 text-sm">
+                    <p>
+                      Play retro-style sound effects for timer events like starting sessions, breaks, and idle notifications.
+                    </p>
+                  </PopoverContent>
+                </Popover>
+              </div>
+              <Switch
+                id="sounds-enabled"
+                checked={localSettings.soundsEnabled}
+                onCheckedChange={(checked) => setLocalSettings(prev => ({
+                  ...prev,
+                  soundsEnabled: checked
                 }))}
               />
             </div>

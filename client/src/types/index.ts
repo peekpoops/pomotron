@@ -30,4 +30,5 @@ export interface Settings {
   frictionOverride: boolean;
   blockedSites: string[];
   showQuotes: boolean;
+  soundsEnabled: boolean;
 }
