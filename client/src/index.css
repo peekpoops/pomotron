@@ -117,6 +117,28 @@
   .neon-text {
     text-shadow: 0 0 10px currentColor;
   }
+  
+  .break-glow {
+    text-shadow: 0 0 15px #10b981, 0 0 30px #10b981, 0 0 45px #10b981;
+    animation: breathe-emerald 2s ease-in-out infinite;
+  }
+  
+  .long-break-glow {
+    text-shadow: 0 0 15px #a855f7, 0 0 30px #a855f7, 0 0 45px #a855f7;
+    animation: breathe-purple 2s ease-in-out infinite;
+  }
+  
+  .break-session-card {
+    border: 2px solid #10b981;
+    box-shadow: 0 0 15px rgba(16, 185, 129, 0.3);
+    animation: pulse-emerald 3s ease-in-out infinite;
+  }
+  
+  .long-break-session-card {
+    border: 2px solid #a855f7;
+    box-shadow: 0 0 15px rgba(168, 85, 247, 0.3);
+    animation: pulse-purple 3s ease-in-out infinite;
+  }
 
   .retro-gradient {
     background: linear-gradient(135deg, var(--neon-pink) 0%, var(--synthwave-purple) 50%, var(--electric-blue) 100%);
@@ -194,6 +216,27 @@
 
   .toggle-switch.active::after {
     transform: translateX(24px);
+  }
+  
+  /* Break session animations */
+  @keyframes breathe-emerald {
+    0%, 100% { text-shadow: 0 0 15px #10b981, 0 0 30px #10b981, 0 0 45px #10b981; }
+    50% { text-shadow: 0 0 25px #10b981, 0 0 50px #10b981, 0 0 75px #10b981; }
+  }
+  
+  @keyframes breathe-purple {
+    0%, 100% { text-shadow: 0 0 15px #a855f7, 0 0 30px #a855f7, 0 0 45px #a855f7; }
+    50% { text-shadow: 0 0 25px #a855f7, 0 0 50px #a855f7, 0 0 75px #a855f7; }
+  }
+  
+  @keyframes pulse-emerald {
+    0%, 100% { box-shadow: 0 0 15px rgba(16, 185, 129, 0.3); }
+    50% { box-shadow: 0 0 25px rgba(16, 185, 129, 0.5); }
+  }
+  
+  @keyframes pulse-purple {
+    0%, 100% { box-shadow: 0 0 15px rgba(168, 85, 247, 0.3); }
+    50% { box-shadow: 0 0 25px rgba(168, 85, 247, 0.5); }
   }
 
   /* Mobile Responsive Fixes */

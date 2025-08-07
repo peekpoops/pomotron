@@ -149,11 +149,12 @@ export default function Timer({ onOpenSettings }: TimerProps) {
 
   const [currentQuote, setCurrentQuote] = useState(() => getRandomQuote());
   const [showFullQuote, setShowFullQuote] = useState(false);
-  const [availableQuotes, setAvailableQuotes] = useLocalStorage<typeof motivationalQuotes>('pomotron-available-quotes', () => {
-    // Shuffle quotes initially by creating a randomized copy
+  // Initialize shuffled quotes
+  const getShuffledQuotes = () => {
     const shuffled = [...motivationalQuotes].sort(() => Math.random() - 0.5);
     return shuffled;
-  });
+  };
+  const [availableQuotes, setAvailableQuotes] = useLocalStorage<typeof motivationalQuotes>('pomotron-available-quotes', getShuffledQuotes());
   const [usedQuotes, setUsedQuotes] = useLocalStorage<typeof motivationalQuotes>('pomotron-used-quotes', []);
   const [showGlitchRun, setShowGlitchRun] = useState(false);
   const [glitchRunUsedThisSession, setGlitchRunUsedThisSession] = useLocalStorage<boolean>('glitch-run-used', false);
@@ -250,9 +251,31 @@ export default function Timer({ onOpenSettings }: TimerProps) {
       case 'focus':
         return 'bg-primary';
       case 'break':
-        return 'bg-secondary';
+        return 'bg-gradient-to-r from-emerald-500 to-teal-400 border-emerald-400';
       case 'longBreak':
-        return 'bg-accent';
+        return 'bg-gradient-to-r from-purple-500 to-pink-400 border-purple-400';
+    }
+  };
+
+  const getTimerDisplayColor = () => {
+    switch (timerState.sessionType) {
+      case 'focus':
+        return 'text-primary neon-text';
+      case 'break':
+        return 'text-emerald-400 break-glow';
+      case 'longBreak':
+        return 'text-purple-400 long-break-glow';
+    }
+  };
+
+  const getCardClassName = () => {
+    switch (timerState.sessionType) {
+      case 'focus':
+        return 'neon-border glass-morphism';
+      case 'break':
+        return 'neon-border glass-morphism break-session-card';
+      case 'longBreak':
+        return 'neon-border glass-morphism long-break-session-card';
     }
   };
 
@@ -331,11 +354,54 @@ export default function Timer({ onOpenSettings }: TimerProps) {
       <div className="grid lg:grid-cols-3 gap-4 sm:gap-8 mobile-single-col">
         {/* Timer Section */}
         <div className="lg:col-span-2">
-          <Card className="neon-border glass-morphism">
+          <Card className={getCardClassName()}>
             <CardContent className="p-4 sm:p-6 lg:p-8 mobile-padding-md">
+              {/* Break Session Visual Enhancement */}
+              {(timerState.sessionType === 'break' || timerState.sessionType === 'longBreak') && (
+                <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                  {/* Animated particles for breaks */}
+                  <div className="break-particles">
+                    {[...Array(8)].map((_, i) => (
+                      <div
+                        key={i}
+                        className={`absolute w-1 h-1 rounded-full ${
+                          timerState.sessionType === 'break' ? 'bg-emerald-400' : 'bg-purple-400'
+                        } animate-ping`}
+                        style={{
+                          left: `${10 + (i * 12)}%`,
+                          top: `${20 + (i % 3) * 25}%`,
+                          animationDelay: `${i * 0.3}s`,
+                          animationDuration: '2s'
+                        }}
+                      />
+                    ))}
+                  </div>
+                  {/* Gradient overlay for dopamine effect */}
+                  <div className={`absolute inset-0 ${
+                    timerState.sessionType === 'break' 
+                      ? 'bg-gradient-to-br from-emerald-500/5 via-transparent to-teal-400/5' 
+                      : 'bg-gradient-to-br from-purple-500/5 via-transparent to-pink-400/5'
+                  } animate-pulse`} style={{ animationDuration: '3s' }} />
+                </div>
+              )}
+              
               {/* Timer Display */}
-              <div className="text-center mb-6 sm:mb-8">
-                <div className="timer-display text-4xl sm:text-6xl md:text-8xl font-orbitron font-bold neon-text text-primary mb-4">
+              <div className="text-center mb-6 sm:mb-8 relative z-10">
+                {(timerState.sessionType === 'break' || timerState.sessionType === 'longBreak') && (
+                  <div className="mb-4 animate-bounce">
+                    <div className={`text-2xl sm:text-3xl font-orbitron font-bold ${
+                      timerState.sessionType === 'break' ? 'text-emerald-400' : 'text-purple-400'
+                    }`}>
+                      🎉 {timerState.sessionType === 'break' ? 'BREAK TIME!' : 'LONG BREAK!'} 🎉
+                    </div>
+                    <div className="text-sm text-muted-foreground mt-2 font-tech-mono">
+                      {timerState.sessionType === 'break' 
+                        ? 'Time to recharge your focus energy!' 
+                        : 'You\'ve earned this extended break!'}
+                    </div>
+                  </div>
+                )}
+                <div className={`timer-display text-4xl sm:text-6xl md:text-8xl font-orbitron font-bold ${getTimerDisplayColor()} mb-4`}>
                   {formatTime(timerState.timeLeft)}
                 </div>
                 <div className="flex items-center justify-center space-x-2 mb-2">
@@ -377,10 +443,19 @@ export default function Timer({ onOpenSettings }: TimerProps) {
                 {!timerState.isRunning && !timerState.isPaused ? (
                   <Button
                     onClick={handleStartSession}
-                    className="btn-primary px-8 py-4 text-lg font-orbitron font-bold hover:scale-105 transition-transform timer-control-button"
+                    className={`px-8 py-4 text-lg font-orbitron font-bold hover:scale-105 transition-transform timer-control-button ${
+                      timerState.sessionType === 'break' 
+                        ? 'bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 text-white shadow-emerald-500/50'
+                        : timerState.sessionType === 'longBreak'
+                        ? 'bg-gradient-to-r from-purple-500 to-pink-400 hover:from-purple-400 hover:to-pink-300 text-white shadow-purple-500/50'
+                        : 'btn-primary'
+                    }`}
+                    style={timerState.sessionType !== 'focus' ? { boxShadow: `0 0 20px ${timerState.sessionType === 'break' ? 'rgba(16, 185, 129, 0.5)' : 'rgba(168, 85, 247, 0.5)'}` } : {}}
                   >
                     <Play className="h-5 w-5 mr-2 button-icon" />
-                    <span className="button-text">START</span>
+                    <span className="button-text">
+                      {timerState.sessionType === 'break' ? 'START BREAK' : timerState.sessionType === 'longBreak' ? 'START LONG BREAK' : 'START'}
+                    </span>
                   </Button>
                 ) : timerState.isRunning ? (
                   <Button
@@ -393,7 +468,14 @@ export default function Timer({ onOpenSettings }: TimerProps) {
                 ) : (
                   <Button
                     onClick={resumeSession}
-                    className="btn-primary px-6 py-4 font-medium hover:scale-105 transition-transform timer-control-button"
+                    className={`px-6 py-4 font-medium hover:scale-105 transition-transform timer-control-button ${
+                      timerState.sessionType === 'break' 
+                        ? 'bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 text-white'
+                        : timerState.sessionType === 'longBreak'
+                        ? 'bg-gradient-to-r from-purple-500 to-pink-400 hover:from-purple-400 hover:to-pink-300 text-white'
+                        : 'btn-primary'
+                    }`}
+                    style={timerState.sessionType !== 'focus' ? { boxShadow: `0 0 20px ${timerState.sessionType === 'break' ? 'rgba(16, 185, 129, 0.5)' : 'rgba(168, 85, 247, 0.5)'}` } : {}}
                   >
                     <Play className="h-4 w-4 mr-2 button-icon" />
                     <span className="button-text">RESUME</span>
