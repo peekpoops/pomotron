@@ -61,9 +61,12 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
 
   // Start game
   const startGame = useCallback(() => {
+    // Play game start sound immediately before state changes
+    playSound('glitch-game-start');
+    
     setGameState('playing');
     setScore(0);
-    setTimeLeft(10);
+    setTimeLeft(11);
     setPlayerY(GROUND_Y);
     setIsJumping(false);
     setObstacles([]);
@@ -77,9 +80,6 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
     particleIdRef.current = 0;
     jumpVelocityRef.current = 0;
     gameStartTimeRef.current = Date.now();
-    
-    // Play game start sound
-    playSound('glitch-game-start');
   }, []);
 
   // End game
@@ -103,7 +103,7 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
   const updateGame = useCallback(() => {
     const now = Date.now();
     const elapsed = (now - gameStartTimeRef.current) / 1000;
-    const newTimeLeft = Math.max(0, 10 - elapsed);
+    const newTimeLeft = Math.max(0, 11 - elapsed);
 
     setTimeLeft(Math.ceil(newTimeLeft));
 
@@ -117,8 +117,8 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
       setSuccessBurst(null);
     }
 
-    // End game after 10 seconds
-    if (elapsed >= 10) {
+    // End game after 11 seconds
+    if (elapsed >= 11) {
       endGame();
       return;
     }
@@ -243,14 +243,12 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
   const handleJump = useCallback(() => {
     if (gameState !== 'playing' || isJumping) return;
 
-
+    // Play jump sound immediately before state changes
+    playSound('glitch-jump');
     
     setIsJumping(true);
     jumpVelocityRef.current = -16; // Strong upward velocity
     setJumpAura(1.0); // Trigger aura ring once per jump
-    
-    // Play jump sound
-    playSound('glitch-jump');
 
     // Create enhanced jump particles
     const newParticles: Particle[] = [];
@@ -599,7 +597,7 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
       // Reset all game state
       setGameState('waiting');
       setScore(0);
-      setTimeLeft(10);
+      setTimeLeft(11);
       setPlayerY(GROUND_Y);
       setIsJumping(false);
       setObstacles([]);
@@ -678,7 +676,7 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
                   TAP CANVAS OR PRESS SPACEBAR TO START
                 </div>
                 <div className="text-xs text-white/60">
-                  Jump over glitch blocks • Survive 10 seconds
+                  Jump over glitch blocks • Survive 11 seconds
                 </div>
               </div>
             )}
