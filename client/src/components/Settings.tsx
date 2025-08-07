@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Clock, Palette, Shield, Keyboard, Save, Plus, X, Info } from 'lucide-react';
+import { Clock, Palette, Keyboard, Save, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -30,7 +30,6 @@ export default function Settings() {
   const [settings, setSettings] = useLocalStorage<SettingsType>('pomotron-settings', defaultSettings);
   const { theme, setTheme } = useTheme();
   const [localSettings, setLocalSettings] = useState<SettingsType>(settings);
-  const [newSite, setNewSite] = useState('');
   const { toast } = useToast();
 
   useEffect(() => {
@@ -48,23 +47,7 @@ export default function Settings() {
     });
   };
 
-  const addBlockedSite = () => {
-    const site = newSite.trim().toLowerCase().replace(/^https?:\/\//, '').replace(/^www\./, '');
-    if (site && !localSettings.blockedSites.includes(site)) {
-      setLocalSettings(prev => ({
-        ...prev,
-        blockedSites: [...prev.blockedSites, site]
-      }));
-      setNewSite('');
-    }
-  };
-
-  const removeBlockedSite = (site: string) => {
-    setLocalSettings(prev => ({
-      ...prev,
-      blockedSites: prev.blockedSites.filter(s => s !== site)
-    }));
-  };
+  
 
   const themeOptions = [
     {
@@ -264,85 +247,7 @@ export default function Settings() {
           </CardContent>
         </Card>
 
-        {/* Website Blocker */}
-        <Card className="neon-border glass-morphism">
-          <CardHeader>
-            <CardTitle className="section-title text-lg text-secondary flex items-center">
-              <Shield className="h-5 w-5 mr-2" />
-              Website Blocker
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="flex items-center justify-between">
-              <Label htmlFor="blocker-enabled" className="text-sm font-medium text-muted-foreground">
-                Enable website blocking
-              </Label>
-              <Switch
-                id="blocker-enabled"
-                checked={localSettings.websiteBlockingEnabled}
-                onCheckedChange={(checked) => setLocalSettings(prev => ({
-                  ...prev,
-                  websiteBlockingEnabled: checked
-                }))}
-              />
-            </div>
-
-            <div className="flex items-center justify-between">
-              <Label htmlFor="friction-override" className="text-sm font-medium text-muted-foreground">
-                Friction-based override
-              </Label>
-              <Switch
-                id="friction-override"
-                checked={localSettings.frictionOverride}
-                onCheckedChange={(checked) => setLocalSettings(prev => ({
-                  ...prev,
-                  frictionOverride: checked
-                }))}
-              />
-            </div>
-
-            <div>
-              <Label className="text-sm font-medium text-muted-foreground mb-2 block">
-                Blocked Websites
-              </Label>
-              <div className="space-y-2 mb-3">
-                {localSettings.blockedSites.map((site) => (
-                  <div key={site} className="flex items-center justify-between p-2 bg-muted rounded">
-                    <span className="text-sm">{site}</span>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => removeBlockedSite(site)}
-                      className="text-destructive hover:text-destructive h-8 w-8 p-0"
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  </div>
-                ))}
-              </div>
-
-              <div className="flex gap-2">
-                <Input
-                  placeholder="Add website..."
-                  value={newSite}
-                  onChange={(e) => setNewSite(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      addBlockedSite();
-                    }
-                  }}
-                  className="form-input flex-1"
-                />
-                <Button
-                  onClick={addBlockedSite}
-                  className="btn-primary px-4"
-                >
-                  <Plus className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+        
 
         {/* Keyboard Shortcuts */}
         <Card className="neon-border glass-morphism">
