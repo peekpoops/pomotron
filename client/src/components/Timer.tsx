@@ -225,7 +225,7 @@ export default function Timer({ onOpenSettings }: TimerProps) {
         <CardContent className="p-6 relative">
           <div className="text-center">
             <p className="text-lg italic text-secondary font-tech-mono">
-              "{showFullQuote ? currentQuote.text : `${currentQuote.text.substring(0, 120)}...`}"
+              "{showFullQuote ? currentQuote.text : currentQuote.text.length > 120 ? `${currentQuote.text.substring(0, 120)}...` : currentQuote.text}"
             </p>
             {showFullQuote && (
               <div className="mt-4 space-y-3">
