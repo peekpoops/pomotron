@@ -346,6 +346,44 @@ export default function Settings() {
         </Card>
       </div>
 
+      {/* About Pomodoro Technique */}
+      <Card className="neon-border glass-morphism">
+        <CardHeader className="settings-card-mobile">
+          <CardTitle className="section-title text-base sm:text-lg text-secondary flex items-center">
+            <Info className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
+            About the Pomodoro Technique
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="settings-card-mobile">
+          <div className="space-y-4 text-xs sm:text-sm text-muted-foreground">
+            <p>
+              The Pomodoro Technique is a time management method developed by Francesco Cirillo in the late 1980s. 
+              The technique uses a timer to break down work into intervals, traditionally 25 minutes in length, 
+              separated by short breaks.
+            </p>
+            <div className="space-y-2">
+              <p className="font-semibold text-secondary">How it works:</p>
+              <ul className="list-disc list-inside space-y-1 ml-2">
+                <li>Choose a task to work on</li>
+                <li>Set the timer for 25 minutes (one "pomodoro")</li>
+                <li>Work on the task until the timer rings</li>
+                <li>Take a short break (5 minutes)</li>
+                <li>After 4 pomodoros, take a longer break (15-30 minutes)</li>
+              </ul>
+            </div>
+            <div className="pt-2 border-t border-border/20">
+              <p className="text-xs text-muted-foreground/80">
+                Named after the tomato-shaped kitchen timer that Cirillo used as a university student. 
+                "Pomodoro" is Italian for tomato.
+              </p>
+              <p className="text-xs text-muted-foreground/80 mt-1">
+                Learn more: <a href="https://francescocirillo.com/pages/pomodoro-technique" target="_blank" rel="noopener noreferrer" className="text-accent hover:text-primary underline">francescocirillo.com</a>
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Auto-save notification */}
       <div className="text-center">
         <div className="flex items-center justify-center space-x-2 text-sm text-muted-foreground">
