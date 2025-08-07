@@ -21,7 +21,7 @@ export function useTimer() {
     breakDuration: 5,
     longBreakDuration: 15,
     cyclesBeforeLongBreak: 4,
-    autoStart: false,
+    autoStart: true,
     softStart: false,
     idleTimeout: 5,
     theme: 'starcourt',

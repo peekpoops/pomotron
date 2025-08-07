@@ -17,7 +17,7 @@ const defaultSettings: SettingsType = {
   breakDuration: 5,
   longBreakDuration: 15,
   cyclesBeforeLongBreak: 4,
-  autoStart: false,
+  autoStart: true,
   softStart: false,
   idleTimeout: 5,
   theme: 'starcourt',
@@ -327,6 +327,37 @@ export default function Settings() {
           </CardContent>
         </Card>
       </div>
+
+      {/* About Pomodoro Technique */}
+      <Card className="neon-border glass-morphism mt-8">
+        <CardHeader>
+          <CardTitle className="section-title text-base sm:text-lg text-secondary flex items-center">
+            <Target className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
+            About the Pomodoro Technique
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4 text-xs sm:text-sm text-muted-foreground">
+          <p>
+            The Pomodoro Technique is a time management method developed by Francesco Cirillo in the late 1980s. 
+            It uses a timer to break work into intervals, typically 25 minutes in length, separated by short breaks.
+          </p>
+          <div className="space-y-2">
+            <p className="font-semibold text-secondary">How it works:</p>
+            <ul className="space-y-1 ml-4 list-disc">
+              <li>Choose a task to work on</li>
+              <li>Set the timer for 25 minutes (one "Pomodoro")</li>
+              <li>Work on the task until the timer rings</li>
+              <li>Take a 5-minute break</li>
+              <li>After 4 Pomodoros, take a longer 15-30 minute break</li>
+            </ul>
+          </div>
+          <div className="pt-4 border-t border-border/20">
+            <p className="text-xs text-muted-foreground/80">
+              Created by Francesco Cirillo • Named after the tomato-shaped kitchen timer he used as a university student
+            </p>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Save Settings */}
       <div className="text-center">

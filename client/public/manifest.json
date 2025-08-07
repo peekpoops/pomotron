@@ -1,7 +1,7 @@
 {
-  "name": "Pomotron - Retro Pomodoro Timer",
+  "name": "Pomotron - Enter the Focus Grid",
   "short_name": "Pomotron",
-  "description": "A retro-themed Pomodoro timer with intention-setting, website blocking, and productivity analytics",
+  "description": "Enter the Focus Grid with Pomotron - A retro-themed Pomodoro timer featuring intention-setting, website blocking, and productivity analytics in a nostalgic 1980s synthwave environment",
   "version": "2.1.0",
   "start_url": "/",
   "display": "standalone",

@@ -128,7 +128,7 @@ export default function Timer({ onOpenSettings }: TimerProps) {
     breakDuration: 5,
     longBreakDuration: 15,
     cyclesBeforeLongBreak: 4,
-    autoStart: false,
+    autoStart: true,
     softStart: false,
     idleTimeout: 5,
     theme: 'starcourt',
@@ -261,7 +261,7 @@ export default function Timer({ onOpenSettings }: TimerProps) {
       {/* Motivational Quote Banner */}
       {settings.showQuotes && (
         <Card className="glass-morphism animate-float">
-          <CardContent className="p-4 sm:p-6 relative">
+          <CardContent className="p-4 sm:p-6 relative pr-12 sm:pr-16">
             <div className="text-center">
               <p className="text-sm sm:text-lg italic text-secondary font-tech-mono quote-text-mobile">
                 "{showFullQuote ? currentQuote.text : currentQuote.text.length > 120 ? `${currentQuote.text.substring(0, 120)}...` : currentQuote.text}"
@@ -287,7 +287,7 @@ export default function Timer({ onOpenSettings }: TimerProps) {
               variant="ghost"
               size="sm"
               onClick={() => setShowFullQuote(!showFullQuote)}
-              className="absolute top-4 right-4 text-accent hover:text-primary p-1"
+              className="absolute top-2 right-2 text-accent hover:text-primary p-2 min-w-8 min-h-8 flex items-center justify-center z-10"
             >
               {showFullQuote ? '↑' : '↓'}
             </Button>
