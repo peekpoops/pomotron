@@ -96,9 +96,6 @@ export default function Home() {
                     >
                       <Icon className="h-5 w-5 mr-3 relative z-10" />
                       <span className="relative z-10">{item.label}</span>
-                      <div className="absolute top-1 right-1 w-6 h-6 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 flex items-center justify-center opacity-60 group-hover:opacity-100 transition-opacity">
-                        <span className="text-xs font-bold font-tech-mono">{item.shortcut}</span>
-                      </div>
                       {/* Animated background gradient */}
                       <div className={`absolute inset-0 rounded-lg transition-opacity duration-300 ${
                         currentView === item.id 
