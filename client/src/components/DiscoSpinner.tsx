@@ -28,8 +28,6 @@ export function DiscoSpinner({ isOpen, onClose }: DiscoSpinnerProps) {
   const [showScoreBoost, setShowScoreBoost] = useState(false);
   
   const audioContextRef = useRef<AudioContext | null>(null);
-  const gainNodeRef = useRef<GainNode | null>(null);
-  const oscillatorRef = useRef<OscillatorNode | null>(null);
   const gameTimerRef = useRef<NodeJS.Timeout | null>(null);
   const beatTimerRef = useRef<NodeJS.Timeout | null>(null);
   const particleTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -38,33 +36,6 @@ export function DiscoSpinner({ isOpen, onClose }: DiscoSpinnerProps) {
   // Beat timing (120 BPM = 500ms per beat)
   const BEAT_INTERVAL = 500;
   const TIMING_TOLERANCE = 150;
-
-  const createSynthBeat = useCallback(() => {
-    if (audioContextRef.current && gainNodeRef.current) {
-      const oscillator = audioContextRef.current.createOscillator();
-      const filter = audioContextRef.current.createBiquadFilter();
-      
-      oscillator.connect(filter);
-      filter.connect(gainNodeRef.current);
-      
-      oscillator.type = 'sawtooth';
-      oscillator.frequency.setValueAtTime(80, audioContextRef.current.currentTime);
-      
-      filter.type = 'lowpass';
-      filter.frequency.setValueAtTime(400, audioContextRef.current.currentTime);
-      filter.Q.setValueAtTime(10, audioContextRef.current.currentTime);
-      
-      gainNodeRef.current.gain.setValueAtTime(0, audioContextRef.current.currentTime);
-      gainNodeRef.current.gain.linearRampToValueAtTime(0.3, audioContextRef.current.currentTime + 0.01);
-      gainNodeRef.current.gain.exponentialRampToValueAtTime(0.01, audioContextRef.current.currentTime + 0.1);
-      
-      oscillator.start(audioContextRef.current.currentTime);
-      oscillator.stop(audioContextRef.current.currentTime + 0.1);
-      
-      setBeatPulse(true);
-      setTimeout(() => setBeatPulse(false), 100);
-    }
-  }, []);
 
   const createParticle = useCallback((x: number, y: number) => {
     const colors = ['#ff00ff', '#00ffff', '#ffff00', '#ff4081', '#7c4dff'];
@@ -95,6 +66,55 @@ export function DiscoSpinner({ isOpen, onClose }: DiscoSpinnerProps) {
     })).filter(p => p.opacity > 0));
   }, []);
 
+  const createSynthBeat = useCallback(() => {
+    if (audioContextRef.current) {
+      try {
+        const oscillator = audioContextRef.current.createOscillator();
+        const gainNode = audioContextRef.current.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContextRef.current.destination);
+        
+        oscillator.type = 'sawtooth';
+        oscillator.frequency.setValueAtTime(80, audioContextRef.current.currentTime);
+        
+        gainNode.gain.setValueAtTime(0, audioContextRef.current.currentTime);
+        gainNode.gain.linearRampToValueAtTime(0.2, audioContextRef.current.currentTime + 0.01);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContextRef.current.currentTime + 0.1);
+        
+        oscillator.start(audioContextRef.current.currentTime);
+        oscillator.stop(audioContextRef.current.currentTime + 0.1);
+        
+        setBeatPulse(true);
+        setTimeout(() => setBeatPulse(false), 100);
+      } catch (error) {
+        console.error('Error creating synth beat:', error);
+      }
+    }
+  }, []);
+
+  const playHitSound = useCallback(() => {
+    if (audioContextRef.current) {
+      try {
+        const hitOsc = audioContextRef.current.createOscillator();
+        const hitGain = audioContextRef.current.createGain();
+        
+        hitOsc.connect(hitGain);
+        hitGain.connect(audioContextRef.current.destination);
+        
+        hitOsc.type = 'sine';
+        hitOsc.frequency.setValueAtTime(800, audioContextRef.current.currentTime);
+        hitGain.gain.setValueAtTime(0.1, audioContextRef.current.currentTime);
+        hitGain.gain.exponentialRampToValueAtTime(0.01, audioContextRef.current.currentTime + 0.1);
+        
+        hitOsc.start();
+        hitOsc.stop(audioContextRef.current.currentTime + 0.1);
+      } catch (error) {
+        console.error('Error playing hit sound:', error);
+      }
+    }
+  }, []);
+
   const handleKeyPress = useCallback((event: KeyboardEvent) => {
     if (!isPlaying || event.code !== 'Space') return;
     
@@ -116,26 +136,28 @@ export function DiscoSpinner({ isOpen, onClose }: DiscoSpinnerProps) {
         setTimeout(() => createParticle(centerX, centerY), i * 50);
       }
       
-      // Play hit sound
-      if (audioContextRef.current && gainNodeRef.current) {
-        const hitOsc = audioContextRef.current.createOscillator();
-        const hitGain = audioContextRef.current.createGain();
-        
-        hitOsc.connect(hitGain);
-        hitGain.connect(audioContextRef.current.destination);
-        
-        hitOsc.type = 'sine';
-        hitOsc.frequency.setValueAtTime(800, audioContextRef.current.currentTime);
-        hitGain.gain.setValueAtTime(0.2, audioContextRef.current.currentTime);
-        hitGain.gain.exponentialRampToValueAtTime(0.01, audioContextRef.current.currentTime + 0.1);
-        
-        hitOsc.start();
-        hitOsc.stop(audioContextRef.current.currentTime + 0.1);
-      }
+      playHitSound();
     }
-  }, [isPlaying, createParticle]);
+  }, [isPlaying, createParticle, playHitSound]);
 
-  const startGame = useCallback(() => {
+  const endGame = useCallback(() => {
+    setIsPlaying(false);
+    
+    // Clear all timers
+    if (gameTimerRef.current) clearInterval(gameTimerRef.current);
+    if (beatTimerRef.current) clearInterval(beatTimerRef.current);
+    if (particleTimerRef.current) clearInterval(particleTimerRef.current);
+    
+    // Remove keyboard listener
+    document.removeEventListener('keydown', handleKeyPress);
+    
+    // Auto-close after showing final score
+    setTimeout(() => {
+      onClose();
+    }, 2000);
+  }, [handleKeyPress, onClose]);
+
+  const startGame = useCallback(async () => {
     setScore(0);
     setTimeLeft(10);
     setIsPlaying(true);
@@ -144,15 +166,16 @@ export function DiscoSpinner({ isOpen, onClose }: DiscoSpinnerProps) {
     // Initialize audio context
     if (!audioContextRef.current) {
       audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
-      gainNodeRef.current = audioContextRef.current.createGain();
-      gainNodeRef.current.connect(audioContextRef.current.destination);
-      gainNodeRef.current.gain.setValueAtTime(0.1, audioContextRef.current.currentTime);
+    }
+    
+    // Resume audio context for modern browsers
+    if (audioContextRef.current.state === 'suspended') {
+      await audioContextRef.current.resume();
     }
     
     // Start beat loop
     lastBeatTimeRef.current = Date.now();
     const beatLoop = () => {
-      if (!isPlaying) return;
       createSynthBeat();
       lastBeatTimeRef.current = Date.now();
     };
@@ -176,24 +199,7 @@ export function DiscoSpinner({ isOpen, onClose }: DiscoSpinnerProps) {
     
     // Add keyboard listener
     document.addEventListener('keydown', handleKeyPress);
-  }, [isPlaying, createSynthBeat, handleKeyPress, updateParticles]);
-
-  const endGame = useCallback(() => {
-    setIsPlaying(false);
-    
-    // Clear all timers
-    if (gameTimerRef.current) clearInterval(gameTimerRef.current);
-    if (beatTimerRef.current) clearInterval(beatTimerRef.current);
-    if (particleTimerRef.current) clearInterval(particleTimerRef.current);
-    
-    // Remove keyboard listener
-    document.removeEventListener('keydown', handleKeyPress);
-    
-    // Auto-close after showing final score
-    setTimeout(() => {
-      onClose();
-    }, 2000);
-  }, [handleKeyPress, onClose]);
+  }, [createSynthBeat, handleKeyPress, updateParticles, endGame]);
 
   useEffect(() => {
     if (isOpen && !isPlaying && timeLeft === 10) {
@@ -222,7 +228,7 @@ export function DiscoSpinner({ isOpen, onClose }: DiscoSpinnerProps) {
       {particles.map(particle => (
         <div
           key={particle.id}
-          className="absolute pointer-events-none"
+          className="absolute pointer-events-none sparkle-particle"
           style={{
             left: particle.x,
             top: particle.y,
@@ -269,26 +275,25 @@ export function DiscoSpinner({ isOpen, onClose }: DiscoSpinnerProps) {
           {/* Disco Ball */}
           <div className="relative mb-6">
             <div 
-              className={`w-24 h-24 rounded-full bg-gradient-to-r from-primary via-accent to-secondary relative animate-spin ${
-                beatPulse ? 'scale-110 shadow-2xl' : ''
+              className={`disco-ball w-24 h-24 rounded-full relative ${
+                beatPulse ? 'scale-110' : ''
               } transition-all duration-100`}
               style={{
                 background: 'conic-gradient(from 0deg, #ff00ff, #00ffff, #ffff00, #ff4081, #7c4dff, #ff00ff)',
                 boxShadow: beatPulse 
                   ? '0 0 40px #ff00ff, 0 0 80px #00ffff, 0 0 120px #ffff00' 
                   : '0 0 20px #ff00ff, 0 0 40px #00ffff',
-                animationDuration: '2s',
               }}
             >
               {/* Disco ball segments */}
               <div className="absolute inset-2 rounded-full bg-black/20 overflow-hidden">
-                {[...Array(8)].map((_, i) => (
+                {[...Array(12)].map((_, i) => (
                   <div
                     key={i}
-                    className="absolute w-2 h-2 bg-white/30 rounded-full"
+                    className="absolute w-2 h-2 bg-white/40 rounded-full animate-pulse"
                     style={{
-                      left: `${20 + (i % 4) * 15}%`,
-                      top: `${20 + Math.floor(i / 4) * 30}%`,
+                      left: `${15 + (i % 4) * 20}%`,
+                      top: `${15 + Math.floor(i / 4) * 25}%`,
                       animationDelay: `${i * 0.1}s`,
                     }}
                   />
