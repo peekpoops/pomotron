@@ -99,28 +99,10 @@ export function useTimer() {
     if (timerState.isRunning && !timerState.isPaused) {
       intervalRef.current = setInterval(() => {
         setTimerState(prev => {
-          // Calculate actual time elapsed since start
-          const now = Date.now();
-          const elapsedSinceStart = prev.startTime ? (now - prev.startTime) / 1000 : 0;
+          // Simple countdown - just decrement timeLeft by 1 second
+          const newTimeLeft = Math.max(0, prev.timeLeft - 1);
           
-          // Calculate total session duration
-          let totalDuration: number;
-          switch (prev.sessionType) {
-            case 'focus':
-              totalDuration = settings.focusDuration * 60;
-              break;
-            case 'break':
-              totalDuration = settings.breakDuration * 60;
-              break;
-            case 'longBreak':
-              totalDuration = settings.longBreakDuration * 60;
-              break;
-          }
-          
-          // Calculate accurate time left
-          const accurateTimeLeft = Math.max(0, totalDuration - elapsedSinceStart);
-          
-          if (accurateTimeLeft <= 0) {
+          if (newTimeLeft <= 0) {
             // Timer finished
             const isBreakNext = prev.sessionType === 'focus';
             const isLongBreak = prev.currentCycle >= settings.cyclesBeforeLongBreak && isBreakNext;
@@ -212,7 +194,7 @@ export function useTimer() {
             return newState;
           }
           
-          return { ...prev, timeLeft: Math.round(accurateTimeLeft) };
+          return { ...prev, timeLeft: newTimeLeft };
         });
       }, 1000);
       
@@ -347,15 +329,13 @@ export function useTimer() {
 
   const pauseSession = useCallback(() => {
     setTimerState(prev => {
-      if (!prev.startTime || !prev.isRunning) return prev; // Can't pause if not running
-      
-      // Just pause without changing timeLeft - it will be calculated in real-time
-      console.log('Pausing timer at timeLeft:', prev.timeLeft);
+      if (!prev.isRunning) return prev;
       
       return {
         ...prev,
         isRunning: false,
         isPaused: true,
+        startTime: null, // Clear startTime so countdown stops
       };
     });
     
@@ -364,37 +344,13 @@ export function useTimer() {
 
   const resumeSession = useCallback(() => {
     setTimerState(prev => {
-      if (!prev.isPaused) return prev; // Can't resume if not paused
-      
-      // Calculate how much time should have elapsed based on remaining time
-      let totalDuration: number;
-      switch (prev.sessionType) {
-        case 'focus':
-          totalDuration = settings.focusDuration * 60;
-          break;
-        case 'break':
-          totalDuration = settings.breakDuration * 60;
-          break;
-        case 'longBreak':
-          totalDuration = settings.longBreakDuration * 60;
-          break;
-      }
-      
-      const timeElapsed = totalDuration - prev.timeLeft;
-      const newStartTime = Date.now() - (timeElapsed * 1000);
-      
-      console.log('Resuming timer:', {
-        currentTimeLeft: prev.timeLeft,
-        totalDuration,
-        timeElapsed,
-        newStartTime: new Date(newStartTime).toLocaleTimeString()
-      });
+      if (!prev.isPaused) return prev;
       
       return {
         ...prev,
         isRunning: true,
         isPaused: false,
-        startTime: newStartTime,
+        startTime: Date.now(), // Fresh start time for remaining duration
       };
     });
     
