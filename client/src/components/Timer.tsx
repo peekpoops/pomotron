@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Clock, Play, Pause, RotateCcw, Square, Settings2, Target, Zap, Flame, TrendingUp } from 'lucide-react';
+import { Clock, Play, Pause, RotateCcw, Square, Settings2, Target, Zap, Flame, TrendingUp, Heart, Lightbulb } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -362,25 +362,83 @@ export default function Timer({ onOpenSettings }: TimerProps) {
 
         {/* Sidebar */}
         <div className="space-y-6">
-          {/* Current Intention - Only show if user has started and entered text */}
+          {/* Current Intention - Enhanced Retro Style */}
           {timerState.currentIntention.task && (
-            <Card className="neon-border glass-morphism">
-              <CardContent className="p-6">
-                <h3 className="section-title text-lg mb-4 text-secondary flex items-center">
-                  <Clock className="h-5 w-5 mr-2" />
-                  Current Intention
-                </h3>
-                <div className="space-y-2">
-                  <div className="text-sm text-muted-foreground">
-                    <span className="text-primary font-medium">What are you working on today:</span>{' '}
-                    <span className="text-foreground">{timerState.currentIntention.task}</span>
+            <Card className="neon-border glass-morphism relative overflow-hidden animate-pulse-slow">
+              <div className="absolute inset-0 bg-gradient-to-br from-accent/10 via-primary/5 to-secondary/10 opacity-60"></div>
+              <CardContent className="p-6 relative z-10">
+                <div className="mb-6">
+                  <h3 className="section-title text-lg text-secondary flex items-center font-orbitron font-bold">
+                    <div className="relative mr-3">
+                      <Lightbulb className="h-6 w-6 text-accent animate-pulse" style={{ filter: 'drop-shadow(0 0 8px currentColor)' }} />
+                      <div className="absolute inset-0 animate-ping">
+                        <div className="h-6 w-6 border-2 border-transparent border-t-accent/40 rounded-full animate-spin"></div>
+                      </div>
+                    </div>
+                    <span className="bg-gradient-to-r from-accent to-secondary bg-clip-text text-transparent">
+                      CURRENT FOCUS
+                    </span>
+                  </h3>
+                  <div className="h-0.5 w-full bg-gradient-to-r from-transparent via-accent to-transparent mt-2 opacity-60"></div>
+                </div>
+                
+                <div className="space-y-5">
+                  {/* Task Section */}
+                  <div className="relative p-4 rounded-xl bg-gradient-to-r from-primary/15 to-accent/10 border border-primary/20 hover:border-primary/40 transition-all duration-300">
+                    <div className="flex items-start space-x-3">
+                      <div className="relative mt-1">
+                        <Target className="h-5 w-5 text-primary animate-pulse" />
+                        <div className="absolute -top-1 -right-1 w-2 h-2 bg-accent rounded-full animate-ping opacity-75"></div>
+                      </div>
+                      <div className="flex-1">
+                        <div className="text-xs font-tech-mono text-primary font-bold uppercase mb-2 tracking-wider">
+                          TARGET OBJECTIVE
+                        </div>
+                        <div className="text-sm text-foreground font-medium leading-relaxed bg-black/20 p-3 rounded-lg border border-white/10">
+                          {timerState.currentIntention.task}
+                        </div>
+                      </div>
+                    </div>
                   </div>
+
+                  {/* Why Section */}
                   {timerState.currentIntention.why && (
-                    <div className="text-sm text-muted-foreground">
-                      <span className="text-primary font-medium">Why is this important to you:</span>{' '}
-                      <span className="text-foreground">{timerState.currentIntention.why}</span>
+                    <div className="relative p-4 rounded-xl bg-gradient-to-r from-secondary/15 to-accent/10 border border-secondary/20 hover:border-secondary/40 transition-all duration-300">
+                      <div className="flex items-start space-x-3">
+                        <div className="relative mt-1">
+                          <Heart className="h-5 w-5 text-secondary animate-pulse" style={{ filter: 'drop-shadow(0 0 6px currentColor)' }} />
+                          <div className="absolute -inset-1 bg-secondary/20 rounded-full animate-ping opacity-50"></div>
+                        </div>
+                        <div className="flex-1">
+                          <div className="text-xs font-tech-mono text-secondary font-bold uppercase mb-2 tracking-wider">
+                            MOTIVATION CORE
+                          </div>
+                          <div className="text-sm text-foreground font-medium leading-relaxed bg-black/20 p-3 rounded-lg border border-white/10 italic">
+                            "{timerState.currentIntention.why}"
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   )}
+                </div>
+
+                {/* Animated circuit decoration */}
+                <div className="absolute top-2 right-2 opacity-15">
+                  <div className="flex space-x-1">
+                    {[...Array(4)].map((_, i) => (
+                      <div 
+                        key={i} 
+                        className="w-1 h-1 bg-accent rounded-full animate-pulse"
+                        style={{ animationDelay: `${i * 0.3}s` }}
+                      ></div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Status indicator */}
+                <div className="absolute bottom-2 right-2 flex items-center space-x-2 opacity-60">
+                  <div className="w-2 h-2 bg-accent rounded-full animate-ping"></div>
+                  <span className="text-xs font-tech-mono text-accent uppercase">ACTIVE</span>
                 </div>
               </CardContent>
             </Card>
