@@ -320,6 +320,14 @@ export default function Settings() {
                 }))}
               />
             </div>
+
+            {/* Auto-save notification */}
+            <div className="pt-4 border-t border-border/20">
+              <div className="flex items-center justify-center space-x-2 text-xs sm:text-sm text-muted-foreground">
+                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                <span>Settings auto-save as you change them</span>
+              </div>
+            </div>
           </CardContent>
         </Card>
 
@@ -384,13 +392,7 @@ export default function Settings() {
         </CardContent>
       </Card>
 
-      {/* Auto-save notification */}
-      <div className="text-center">
-        <div className="flex items-center justify-center space-x-2 text-sm text-muted-foreground">
-          <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-          <span>Settings auto-save as you change them</span>
-        </div>
-      </div>
+
     </div>
   );
 }
