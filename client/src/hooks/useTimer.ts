@@ -37,6 +37,7 @@ export function useTimer() {
   const idleTimeRef = useRef<number>(0);
   const idleIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const lastActivityRef = useRef<number>(Date.now());
+  const startTimeRef = useRef<number | null>(null);
   const { toast } = useToast();
 
   // Reset idle detection on user activity
@@ -76,12 +77,30 @@ export function useTimer() {
     }
   }, []);
 
-  // Timer countdown effect
+  // Timer countdown effect with precise timing
   useEffect(() => {
     if (timerState.isRunning && !timerState.isPaused) {
+      // Record the exact start time for precision
+      if (!startTimeRef.current) {
+        startTimeRef.current = Date.now();
+      }
+      
       intervalRef.current = setInterval(() => {
         setTimerState(prev => {
-          if (prev.timeLeft <= 1) {
+          // Calculate elapsed time more precisely
+          const currentTime = Date.now();
+          const elapsedSeconds = Math.floor((currentTime - (startTimeRef.current || currentTime)) / 1000);
+          const originalDuration = (() => {
+            switch (prev.sessionType) {
+              case 'focus': return settings.focusDuration * 60;
+              case 'break': return settings.breakDuration * 60;
+              case 'longBreak': return settings.longBreakDuration * 60;
+            }
+          })();
+          
+          const preciseTimeLeft = Math.max(0, originalDuration - elapsedSeconds);
+          
+          if (preciseTimeLeft <= 0) {
             // Timer finished
             const isBreakNext = prev.sessionType === 'focus';
             const isLongBreak = prev.currentCycle >= settings.cyclesBeforeLongBreak && isBreakNext;
@@ -142,6 +161,9 @@ export function useTimer() {
               duration: 5000,
             });
             
+            // Reset start time for next session
+            startTimeRef.current = settings.autoStart ? Date.now() : null;
+            
             return {
               ...prev,
               isRunning: settings.autoStart,
@@ -153,7 +175,8 @@ export function useTimer() {
             };
           }
           
-          return { ...prev, timeLeft: prev.timeLeft - 1 };
+          // Use precise timing instead of simple decrement
+          return { ...prev, timeLeft: preciseTimeLeft };
         });
       }, 1000);
       
@@ -163,6 +186,8 @@ export function useTimer() {
         clearInterval(intervalRef.current);
         intervalRef.current = null;
       }
+      // Reset start time when timer stops
+      startTimeRef.current = null;
       stopIdleDetection();
     }
 
@@ -215,6 +240,8 @@ export function useTimer() {
   }, [resetIdleDetection]);
 
   const startSession = useCallback((intention?: { task: string; why: string }) => {
+    // Set precise start time when session begins
+    startTimeRef.current = Date.now();
     const sessionId = crypto.randomUUID();
     const currentTime = new Date();
     

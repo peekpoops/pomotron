@@ -93,7 +93,7 @@ export default function Analytics() {
         'Completed': session.completed ? 'Yes' : 'No',
         'Task': session.task || '',
         'Why Important': session.why || '',
-        'Cycle': session.cycle || 1
+        'Cycle': session.cycleNumber || 1
       }));
 
       // Create workbook and worksheet
