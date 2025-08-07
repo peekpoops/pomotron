@@ -13,7 +13,6 @@ const defaultTimerState: TimerState = {
   currentCycle: 1,
   currentIntention: { task: '', why: '' },
   startTime: null,
-  pausedDuration: 0,
 };
 
 export function useTimer() {
@@ -46,7 +45,6 @@ export function useTimer() {
         isRunning: false,
         isPaused: false,
         startTime: null,
-        pausedDuration: 0,
         currentSessionId: undefined,
       }));
     }
@@ -103,7 +101,7 @@ export function useTimer() {
         setTimerState(prev => {
           // Calculate actual time elapsed since start
           const now = Date.now();
-          const elapsedSinceStart = prev.startTime ? (now - prev.startTime - prev.pausedDuration) / 1000 : 0;
+          const elapsedSinceStart = prev.startTime ? (now - prev.startTime) / 1000 : 0;
           
           // Calculate total session duration
           let totalDuration: number;
@@ -207,7 +205,6 @@ export function useTimer() {
               currentSessionId: undefined,
               currentIntention: nextSessionType === 'focus' ? { task: '', why: '' } : prev.currentIntention,
               startTime: null, // Always clear startTime when session ends
-              pausedDuration: 0,
             };
             
             console.log('Session ended, timer stopped, new state:', newState);
@@ -339,7 +336,6 @@ export function useTimer() {
       currentSessionId: sessionId,
       currentIntention: intention || prev.currentIntention,
       startTime: Date.now(),
-      pausedDuration: 0,
     }));
     
     if (timerState.sessionType === 'focus' && settings.websiteBlockingEnabled) {
@@ -353,44 +349,18 @@ export function useTimer() {
     setTimerState(prev => {
       if (!prev.startTime || !prev.isRunning) return prev; // Can't pause if not running
       
-      const now = Date.now();
-      const timeElapsedSinceStart = (now - prev.startTime) / 1000; // in seconds
-      const timeElapsedMinusPausedTime = timeElapsedSinceStart - (prev.pausedDuration / 1000);
-      
-      // Calculate total session duration
-      let totalDuration: number;
-      switch (prev.sessionType) {
-        case 'focus':
-          totalDuration = settings.focusDuration * 60;
-          break;
-        case 'break':
-          totalDuration = settings.breakDuration * 60;
-          break;
-        case 'longBreak':
-          totalDuration = settings.longBreakDuration * 60;
-          break;
-      }
-      
-      const newTimeLeft = Math.max(0, totalDuration - timeElapsedMinusPausedTime);
-      
-      console.log('Pausing timer:', {
-        timeElapsedSinceStart,
-        previousPausedDuration: prev.pausedDuration / 1000,
-        timeElapsedMinusPausedTime,
-        newTimeLeft,
-        totalDuration
-      });
+      // Just pause without changing timeLeft - it will be calculated in real-time
+      console.log('Pausing timer at timeLeft:', prev.timeLeft);
       
       return {
         ...prev,
         isRunning: false,
         isPaused: true,
-        timeLeft: Math.round(newTimeLeft),
       };
     });
     
     deactivateWebsiteBlocking();
-  }, [settings]);
+  }, []);
 
   const resumeSession = useCallback(() => {
     setTimerState(prev => {
@@ -425,7 +395,6 @@ export function useTimer() {
         isRunning: true,
         isPaused: false,
         startTime: newStartTime,
-        pausedDuration: 0, // Reset paused duration since we're adjusting start time
       };
     });
     
@@ -478,7 +447,6 @@ export function useTimer() {
       timeLeft: duration,
       currentSessionId: undefined,
       startTime: null,
-      pausedDuration: 0,
     };
     
     setTimerState(newTimerState);
@@ -517,7 +485,6 @@ export function useTimer() {
       ...defaultTimerState,
       timeLeft: settings.focusDuration * 60,
       startTime: null,
-      pausedDuration: 0,
       sessionType: 'focus' as const,
       currentCycle: 1,
       currentSessionId: undefined,
