@@ -1,4 +1,6 @@
 import { z } from "zod";
+import { pgTable, text, integer, timestamp, boolean, serial } from "drizzle-orm/pg-core";
+import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 
 // Session Schema
 export const sessionSchema = z.object({
@@ -80,3 +82,23 @@ export const insertFeedbackSchema = feedbackSchema.omit({ id: true, createdAt: t
 
 export type Feedback = z.infer<typeof feedbackSchema>;
 export type InsertFeedback = z.infer<typeof insertFeedbackSchema>;
+
+// Drizzle Database Tables
+export const feedback = pgTable('feedback', {
+  id: serial('id').primaryKey(),
+  rating: integer('rating').notNull(),
+  comment: text('comment'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+});
+
+// Drizzle schema types
+export type FeedbackSelect = typeof feedback.$inferSelect;
+export type FeedbackInsert = typeof feedback.$inferInsert;
+
+// Drizzle Zod schemas
+export const insertFeedbackSchemaDb = createInsertSchema(feedback).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const selectFeedbackSchemaDb = createSelectSchema(feedback);

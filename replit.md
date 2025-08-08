@@ -90,3 +90,5 @@ Preferred communication style: Simple, everyday language.
 - **Support Section**: Added bottom section to Settings page with feedback and Ko-fi buttons
 - **Feedback System**: Complete feedback collection system with database storage and admin viewing
 - **Performance Optimizations**: React.memo, throttled events, optimized calculations for better performance
+- **Vercel Deployment**: Added serverless API functions for full-stack deployment with PostgreSQL database
+- **Browser Tab Title**: Updated to "Pomotron – 💿 Retro Pomodoro Timer // Session_001 Engaged" format

@@ -1,12 +1,13 @@
 # Vercel Deployment Configuration
 
 ## Overview
-This project is configured for Vercel deployment with the frontend and backend in a monorepo structure.
+This project is configured for Vercel deployment as a full-stack application with serverless API functions and a React frontend.
 
 ## File Structure
 ```
+├── api/              # Vercel serverless API functions
 ├── client/           # Frontend React app
-├── server/           # Backend Express app  
+├── server/           # Backend Express app (dev only)
 ├── shared/           # Shared types and schemas
 ├── index.html        # Root HTML file for Vercel build
 ├── vite.vercel.config.ts  # Vercel-specific Vite config
@@ -16,7 +17,8 @@ This project is configured for Vercel deployment with the frontend and backend i
 
 ## Build Process
 - **Build Command**: `npx vite build --config vite.vercel.config.ts`
-- **Output Directory**: `dist/`
+- **Output Directory**: `dist/` (frontend static files)
+- **API Functions**: `api/` directory (serverless functions)
 - **Entry Point**: `index.html` (root level)
 
 ## Key Configuration Files
@@ -25,9 +27,24 @@ This project is configured for Vercel deployment with the frontend and backend i
 ```json
 {
   "buildCommand": "npm install && npx vite build --config vite.vercel.config.ts",
-  "outputDirectory": "dist"
+  "outputDirectory": "dist",
+  "functions": {
+    "api/**/*.js": {
+      "runtime": "nodejs20.x"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/((?!api).*)",
+      "destination": "/index.html"
+    }
+  ]
 }
 ```
+
+## API Routes
+- `/api/feedback` - POST/GET for feedback collection and retrieval
+- `/api/health` - GET for health check
 
 ### vite.vercel.config.ts
 - Uses root directory as build base
