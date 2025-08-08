@@ -98,7 +98,7 @@ export default function Settings() {
         </h1>
         <p className="text-sm sm:text-base text-secondary font-tech-mono">Customize your Pomotron experience</p>
       </div>
-
+      
       <div className="grid lg:grid-cols-2 gap-4 sm:gap-8 settings-grid-mobile">
         {/* Timer Configuration */}
         <Card className="neon-border glass-morphism">
@@ -336,14 +336,6 @@ export default function Settings() {
             {/* Bottom action buttons */}
             <div className="flex justify-center sm:justify-end space-x-2 pt-4 border-t border-border/20">
               <Button
-                variant="outline"
-                onClick={handleResetToDefaults}
-                className="px-4 sm:px-6 py-2 text-xs sm:text-sm"
-              >
-                <RotateCcw className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
-                Reset to Defaults
-              </Button>
-              <Button
                 onClick={handleSave}
                 className="btn-primary px-4 sm:px-6 py-2 text-xs sm:text-sm"
               >
@@ -354,8 +346,7 @@ export default function Settings() {
           </CardContent>
         </Card>
 
-        {/* 👇 This whole section is now commented out safely */}
-        {/* 
+        {/* Keyboard Shortcuts */}
         <Card className="neon-border glass-morphism">
           <CardHeader className="settings-card-mobile">
             <CardTitle className="section-title text-base sm:text-lg text-secondary flex items-center">
@@ -378,7 +369,6 @@ export default function Settings() {
             </div>
           </CardContent>
         </Card>
-        */}
 
       </div>
 
@@ -413,7 +403,7 @@ export default function Settings() {
         </CardContent>
       </Card>
 
-      {/* Save Settings */}
+      {/* 
       <div className="text-center">
         <Button
           onClick={handleSave}
@@ -423,6 +413,7 @@ export default function Settings() {
           Save Settings
         </Button>
       </div>
+      */}
     </div>
   );
 }
