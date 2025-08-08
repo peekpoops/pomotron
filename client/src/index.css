@@ -906,3 +906,16 @@
 .neon-text {
   text-shadow: 0 0 5px currentColor, 0 0 10px currentColor, 0 0 15px currentColor;
 }
+
+/* Faint timer glow effects */
+.timer-glow {
+  text-shadow: 0 0 8px rgba(255, 107, 157, 0.3), 0 0 16px rgba(255, 107, 157, 0.1);
+}
+
+.timer-glow-green {
+  text-shadow: 0 0 8px rgba(16, 185, 129, 0.3), 0 0 16px rgba(16, 185, 129, 0.1);
+}
+
+.timer-glow-purple {
+  text-shadow: 0 0 8px rgba(168, 85, 247, 0.3), 0 0 16px rgba(168, 85, 247, 0.1);
+}

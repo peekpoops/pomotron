@@ -59,28 +59,8 @@ export function useTimer() {
     idleTimeRef.current = 0;
   }, []);
 
-  // Start idle detection
-  const startIdleDetection = useCallback(() => {
-    if (idleIntervalRef.current) clearInterval(idleIntervalRef.current);
-    
-    // Don't start idle detection if it's disabled (idleTimeout = 0)
-    if (settings.idleTimeout === 0) return;
-    
-    idleIntervalRef.current = setInterval(() => {
-      const now = Date.now();
-      const timeSinceActivity = (now - lastActivityRef.current) / 1000 / 60; // minutes
-      
-      if (timeSinceActivity >= settings.idleTimeout && timerState.isRunning && timerState.sessionType === 'focus') {
-        toast({
-          title: "Idle Detected",
-          description: `You've been idle for ${settings.idleTimeout} minutes. Stay focused!`,
-          duration: 5000,
-        });
-        playSound('idleNudge');
-        resetIdleDetection();
-      }
-    }, 30000); // Check every 30 seconds
-  }, [settings.idleTimeout, timerState.isRunning, timerState.sessionType, toast, resetIdleDetection]);
+  // Store cleanup function reference
+  const cleanupIdleDetectionRef = useRef<(() => void) | null>(null);
 
   // Stop idle detection
   const stopIdleDetection = useCallback(() => {
@@ -88,7 +68,77 @@ export function useTimer() {
       clearInterval(idleIntervalRef.current);
       idleIntervalRef.current = null;
     }
+    // Clean up event listeners
+    if (cleanupIdleDetectionRef.current) {
+      cleanupIdleDetectionRef.current();
+      cleanupIdleDetectionRef.current = null;
+    }
   }, []);
+
+  // Enhanced idle detection that considers page visibility and user interaction patterns
+  const startIdleDetection = useCallback(() => {
+    // Clean up any existing idle detection
+    stopIdleDetection();
+    
+    // Don't start idle detection if it's disabled (idleTimeout = 0)
+    if (settings.idleTimeout === 0) return;
+    
+    // Track global activity events
+    const activityEvents = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click'];
+    
+    const handleActivity = () => {
+      resetIdleDetection();
+    };
+
+    // Add activity listeners to the entire document
+    activityEvents.forEach(eventType => {
+      document.addEventListener(eventType, handleActivity, true);
+    });
+
+    // Track page visibility changes - if user switches tabs but comes back, reset idle timer
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        resetIdleDetection();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    // Track window focus changes - if user comes back to browser, reset idle timer
+    const handleFocus = () => {
+      resetIdleDetection();
+    };
+    window.addEventListener('focus', handleFocus);
+
+    // Store cleanup function for later use
+    cleanupIdleDetectionRef.current = () => {
+      activityEvents.forEach(eventType => {
+        document.removeEventListener(eventType, handleActivity, true);
+      });
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('focus', handleFocus);
+    };
+    
+    idleIntervalRef.current = setInterval(() => {
+      const now = Date.now();
+      const timeSinceActivity = (now - lastActivityRef.current) / 1000 / 60; // minutes
+      
+      // Only trigger idle detection during focus sessions and when timer is running
+      if (timeSinceActivity >= settings.idleTimeout && timerState.isRunning && timerState.sessionType === 'focus') {
+        // Additional check: only notify if page is currently visible
+        // This prevents false positives when user is working in other apps
+        if (!document.hidden) {
+          toast({
+            title: "Idle Detected",
+            description: `No activity detected for ${settings.idleTimeout} minutes. Still focused?`,
+            duration: 6000,
+          });
+          playSound('idleNudge');
+        }
+        resetIdleDetection();
+      }
+    }, 15000); // Check more frequently (every 15 seconds) for better responsiveness
+
+  }, [settings.idleTimeout, timerState.isRunning, timerState.sessionType, toast, resetIdleDetection, stopIdleDetection]);
 
   // Timer countdown effect with precise timing
   useEffect(() => {

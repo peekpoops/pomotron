@@ -283,11 +283,11 @@ export default function Timer({ onOpenSettings, timerHook: externalTimerHook, on
   const getTimerDisplayColor = () => {
     switch (timerState.sessionType) {
       case 'focus':
-        return 'text-primary';
+        return 'text-primary timer-glow';
       case 'break':
-        return 'text-emerald-400';
+        return 'text-emerald-400 timer-glow-green';
       case 'longBreak':
-        return 'text-purple-400';
+        return 'text-purple-400 timer-glow-purple';
     }
   };
 
