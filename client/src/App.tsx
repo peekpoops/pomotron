@@ -24,6 +24,11 @@ function App() {
   const [showInitialLoading, setShowInitialLoading] = useState(true);
 
   useEffect(() => {
+    // Set document title
+    document.title = "POMOTRON - ⚡ 80s UI. 2080s Output.";
+  }, []);
+
+  useEffect(() => {
     // Show initial loading screen on app startup
     const timer = setTimeout(() => {
       setShowInitialLoading(false);
