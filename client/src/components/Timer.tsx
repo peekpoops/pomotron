@@ -338,7 +338,7 @@ const Timer = memo(({ onOpenSettings, timerHook: externalTimerHook, onModalState
   }, [timerState.sessionType, timerState.isRunning, timerState.timeLeft, settings.focusDuration]);
 
   return (
-    <div className="max-w-6xl mx-auto space-y-8 px-4 sm:px-6 lg:px-8">
+    <div className="w-full space-y-6 lg:space-y-8">
       {/* Motivational Quote Banner */}
       {settings.motivationalQuotesEnabled && (
         <Card className="glass-morphism animate-float">
@@ -376,11 +376,11 @@ const Timer = memo(({ onOpenSettings, timerHook: externalTimerHook, onModalState
         </Card>
       )}
 
-      <div className="grid lg:grid-cols-3 gap-4 sm:gap-8 mobile-single-col">
+      <div className="grid xl:grid-cols-3 lg:grid-cols-2 gap-6 lg:gap-8 items-start">
         {/* Timer Section */}
-        <div className="lg:col-span-2">
+        <div className="xl:col-span-2 lg:col-span-2 w-full">
           <Card className={getCardClassName()}>
-            <CardContent className="p-4 sm:p-6 lg:p-8 mobile-padding-md">
+            <CardContent className="p-6 sm:p-8 lg:p-12 xl:p-16 mobile-padding-md">
               {/* Break Session Visual Enhancement */}
               {(timerState.sessionType === 'break' || timerState.sessionType === 'longBreak') && (
                 <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -411,7 +411,7 @@ const Timer = memo(({ onOpenSettings, timerHook: externalTimerHook, onModalState
               )}
               
               {/* Timer Display */}
-              <div className="text-center mb-6 sm:mb-8 relative z-10">
+              <div className="text-center mb-8 lg:mb-12 xl:mb-16 relative z-10">
                 {(timerState.sessionType === 'break' || timerState.sessionType === 'longBreak') && (
                   <div className="mb-4 animate-bounce">
                     <div className={`text-2xl sm:text-3xl font-orbitron font-bold ${
@@ -426,7 +426,7 @@ const Timer = memo(({ onOpenSettings, timerHook: externalTimerHook, onModalState
                     </div>
                   </div>
                 )}
-                <div className={`timer-display text-4xl sm:text-6xl md:text-8xl font-orbitron font-bold ${getTimerDisplayColor()} mb-4`}>
+                <div className={`timer-display text-6xl sm:text-8xl md:text-9xl lg:text-[8rem] xl:text-[10rem] font-orbitron font-black ${getTimerDisplayColor()} mb-6 lg:mb-8 leading-none`}>
                   {formatTime(timerState.timeLeft)}
                 </div>
                 <div className="flex items-center justify-center space-x-2 mb-2">
@@ -461,10 +461,10 @@ const Timer = memo(({ onOpenSettings, timerHook: externalTimerHook, onModalState
               </div>
 
               {/* Progress Bar */}
-              <div className="mb-8">
+              <div className="mb-8 lg:mb-12 xl:mb-16">
                 <Progress 
                   value={getProgress()} 
-                  className="h-3 mb-2"
+                  className="h-4 lg:h-6 mb-3 lg:mb-4"
                 />
                 <div className="flex justify-between text-xs text-muted-foreground">
                   <span>

@@ -159,7 +159,7 @@ export default function Home() {
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-2 sm:px-4 py-4 sm:py-8 relative">
+      <main className="container mx-auto px-2 sm:px-4 lg:px-6 xl:px-8 py-4 sm:py-8 lg:py-12 relative max-w-screen-2xl">
         {currentView === 'timer' && <Timer onOpenSettings={() => setCurrentView('settings')} timerHook={timerHook} onModalStateChange={setIsModalOpen}/>}   
         {currentView === 'analytics' && <Analytics />}
         {currentView === 'settings' && <SettingsComponent />}
