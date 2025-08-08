@@ -465,21 +465,25 @@ const Analytics = memo(() => {
       </div>
 
       {/* Data Management */}
-      <div className="flex justify-center space-x-4">
-        <Button
-          onClick={exportData}
-          className="btn-secondary px-6 py-3"
-        >
-          <Download className="h-4 w-4 mr-2" />
-          Export to Excel
-        </Button>
-        <Button
-          onClick={clearAllData}
-          className="btn-danger px-6 py-3"
-        >
-          <Trash2 className="h-4 w-4 mr-2" />
-          Clear All Data
-        </Button>
+      <div className="grid lg:grid-cols-3 gap-8">
+        <div className="lg:col-span-3">
+          <div className="flex justify-center space-x-4">
+            <Button
+              onClick={exportData}
+              className="btn-secondary px-6 py-3"
+            >
+              <Download className="h-4 w-4 mr-2" />
+              Export to Excel
+            </Button>
+            <Button
+              onClick={clearAllData}
+              className="btn-danger px-6 py-3"
+            >
+              <Trash2 className="h-4 w-4 mr-2" />
+              Clear All Data
+            </Button>
+          </div>
+        </div>
       </div>
     </div>
   );
