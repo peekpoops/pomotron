@@ -797,12 +797,12 @@
   }
 }
 
-/* Mobile timer enhancements - Force larger size on mobile with higher specificity */
+/* Mobile timer enhancements - 2x bigger for mobile */
 @media (max-width: 768px) {
   .timer-display,
   div.timer-display,
   .mobile-timer-large {
-    font-size: clamp(5rem, 14vw, 8rem) !important;
+    font-size: clamp(10rem, 28vw, 16rem) !important;
     line-height: 0.9 !important;
   }
 }
@@ -811,7 +811,7 @@
   .timer-display,
   div.timer-display,
   .mobile-timer-large {
-    font-size: clamp(4rem, 18vw, 7rem) !important;
+    font-size: clamp(8rem, 36vw, 14rem) !important;
     line-height: 0.85 !important;
   }
 }
