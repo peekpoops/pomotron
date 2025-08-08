@@ -366,84 +366,9 @@ const Analytics = memo(() => {
           </Card>
         </div>
 
-        {/* Focus Time by Intention */}
-        <Card className="neon-border glass-morphism">
-          <CardHeader className="pb-4">
-            <CardTitle className="section-title text-lg text-secondary flex items-center space-x-2">
-              <Clock className="h-5 w-5 text-secondary" />
-              <span>Focus Time by Intention</span>
-            </CardTitle>
-            <p className="text-sm text-muted-foreground mt-1">
-              Total actual work time per intention this week
-            </p>
-          </CardHeader>
-          <CardContent>
-            <ScrollArea className="h-64">
-              <div className="space-y-3">
-                {focusTimeByIntention.length === 0 ? (
-                  <div className="text-center text-muted-foreground py-8">
-                    <Clock className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                    <p className="text-sm">No completed focus sessions this week</p>
-                    <p className="text-xs">Complete focus sessions to track your intention-based work time</p>
-                  </div>
-                ) : (
-                  focusTimeByIntention.map(([intention, data]) => {
-                    const hours = Math.floor(data.totalTime / 60);
-                    const minutes = data.totalTime % 60;
-                    const timeString = hours > 0 
-                      ? `${hours}h ${minutes}m` 
-                      : `${minutes}m`;
-                    
-                    return (
-                      <div 
-                        key={intention} 
-                        className="bg-card/50 rounded-md p-4 border border-border/40 hover:border-accent/40 transition-colors"
-                      >
-                        <div className="flex items-start justify-between mb-2">
-                          <div className="flex-1 min-w-0">
-                            <h4 className="text-sm font-medium text-foreground truncate mb-1">
-                              {intention === 'Focus Session (No intention set)' ? (
-                                <span className="text-muted-foreground italic">⏱️ {intention}</span>
-                              ) : (
-                                intention
-                              )}
-                            </h4>
-                            <p className="text-xs text-muted-foreground">
-                              {data.sessionCount} session{data.sessionCount !== 1 ? 's' : ''}
-                            </p>
-                          </div>
-                          <div className="text-right">
-                            <div className="text-lg font-bold text-accent font-tech-mono">
-                              {timeString}
-                            </div>
-                            <div className="text-xs text-muted-foreground">
-                              focus time
-                            </div>
-                          </div>
-                        </div>
-                        
-                        {/* Progress bar showing relative time */}
-                        <div className="w-full bg-muted/30 rounded-full h-2 mt-2">
-                          <div 
-                            className="bg-gradient-to-r from-accent to-secondary h-2 rounded-full transition-all duration-300"
-                            style={{ 
-                              width: focusTimeByIntention.length === 1 
-                                ? '100%' 
-                                : `${Math.min((data.totalTime / Math.max(...focusTimeByIntention.map(([, d]) => d.totalTime))) * 100, 100)}%` 
-                            }}
-                          ></div>
-                        </div>
-                      </div>
-                    );
-                  })
-                )}
-              </div>
-            </ScrollArea>
-          </CardContent>
-        </Card>
       </div>
 
-      <div className="grid lg:grid-cols-1 gap-8">
+      <div className="grid lg:grid-cols-3 gap-8">
         {/* Weekly Sessions */}
         <Card className="neon-border glass-morphism">
           <CardHeader className="pb-4">
@@ -485,7 +410,16 @@ const Analytics = memo(() => {
                           
                           <div className="space-y-2">
                             {daySessions.map((session, index) => {
-                              const focusTimeMinutes = Math.round(session.duration / 60);
+                              // Calculate total focus time for this intention
+                              const intentionKey = session.task?.trim() || 'Focus Session (No intention set)';
+                              const intentionData = focusTimeByIntention.find(([intention]) => intention === intentionKey);
+                              const totalFocusTime = intentionData ? intentionData[1].totalTime : Math.round(session.duration / 60);
+                              const totalHours = Math.floor(totalFocusTime / 60);
+                              const totalMinutes = totalFocusTime % 60;
+                              const totalTimeString = totalHours > 0 
+                                ? `${totalHours}h ${totalMinutes}m` 
+                                : `${totalMinutes}m`;
+                              
                               return (
                                 <div 
                                   key={session.id} 
@@ -505,7 +439,7 @@ const Analytics = memo(() => {
                                         variant={session.completed ? "default" : "secondary"} 
                                         className="text-xs font-tech-mono"
                                       >
-                                        {focusTimeMinutes}min
+                                        {totalTimeString}
                                       </Badge>
                                       {session.completed && (
                                         <div className="w-2 h-2 bg-green-400 rounded-full" />
