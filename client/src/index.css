@@ -802,8 +802,12 @@
   .timer-display,
   div.timer-display,
   .mobile-timer-large {
-    font-size: clamp(5rem, 14vw, 8rem) !important;
+    font-size: clamp(6rem, 18vw, 10rem) !important;
     line-height: 0.9 !important;
+    max-width: 100vw !important;
+    overflow: hidden !important;
+    word-break: keep-all !important;
+    white-space: nowrap !important;
   }
 }
 
@@ -811,8 +815,38 @@
   .timer-display,
   div.timer-display,
   .mobile-timer-large {
-    font-size: clamp(4rem, 18vw, 7rem) !important;
+    font-size: clamp(5.5rem, 22vw, 9rem) !important;
     line-height: 0.85 !important;
+    max-width: 100vw !important;
+    overflow: hidden !important;
+    word-break: keep-all !important;
+    white-space: nowrap !important;
+  }
+}
+
+@media (max-width: 375px) {
+  .timer-display,
+  div.timer-display,
+  .mobile-timer-large {
+    font-size: clamp(5rem, 25vw, 8.5rem) !important;
+    line-height: 0.8 !important;
+    max-width: 100vw !important;
+    overflow: hidden !important;
+    word-break: keep-all !important;
+    white-space: nowrap !important;
+  }
+}
+
+@media (max-width: 375px) {
+  .timer-display,
+  div.timer-display,
+  .mobile-timer-large {
+    font-size: clamp(5rem, 25vw, 8.5rem) !important;
+    line-height: 0.8 !important;
+    max-width: 100vw !important;
+    overflow: hidden !important;
+    word-break: keep-all !important;
+    white-space: nowrap !important;
   }
 }
 
