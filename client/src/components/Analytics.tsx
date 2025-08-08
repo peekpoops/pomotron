@@ -66,7 +66,7 @@ export default function Analytics() {
     });
 
     return {
-      totalSessions: completedSessions.length,
+      totalSessions: totalSessions,
       successRate,
       totalFocusTime: Math.round(totalFocusTime / 3600), // Convert to hours
       currentStreak,
@@ -75,12 +75,12 @@ export default function Analytics() {
   }, [sessions]);
 
   const recentIntentions = useMemo(() => {
-    // Get all sessions with intentions from the past week
+    // Get all sessions from the past week (both with and without intentions)
     const oneWeekAgo = new Date();
     oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
     
     const weekSessions = sessions
-      .filter(s => s.task.trim() !== '' && new Date(s.startTime) >= oneWeekAgo)
+      .filter(s => new Date(s.startTime) >= oneWeekAgo)
       .sort((a, b) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime());
 
     // Group sessions by day
@@ -306,12 +306,12 @@ export default function Analytics() {
           </Card>
         </div>
 
-        {/* Recent Intentions */}
+        {/* Weekly Sessions */}
         <Card className="neon-border glass-morphism">
           <CardHeader className="pb-4">
             <CardTitle className="section-title text-lg text-secondary flex items-center space-x-2">
               <Target className="h-5 w-5 text-secondary" />
-              <span>Weekly Intentions</span>
+              <span>Weekly Sessions</span>
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -320,8 +320,8 @@ export default function Analytics() {
                 {Object.keys(recentIntentions).length === 0 ? (
                   <div className="text-center text-muted-foreground py-8">
                     <Target className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                    <p className="text-sm">No intentions recorded this week</p>
-                    <p className="text-xs">Start a focus session to see your intentions here</p>
+                    <p className="text-sm">No sessions recorded this week</p>
+                    <p className="text-xs">Start your first focus session to see your activity here</p>
                   </div>
                 ) : (
                   Object.entries(recentIntentions)
@@ -356,10 +356,10 @@ export default function Analytics() {
                                   <div className="flex items-start justify-between mb-2">
                                     <div className="flex-1 min-w-0">
                                       <div className="text-sm font-medium text-foreground truncate mb-1">
-                                        {session.task}
+                                        {session.task.trim() ? session.task : '⏱️ Focus Session (No intention set)'}
                                       </div>
                                       <div className="text-xs text-muted-foreground line-clamp-2">
-                                        {session.why}
+                                        {session.why.trim() ? session.why : 'Started without setting specific goal'}
                                       </div>
                                     </div>
                                     <div className="flex items-center space-x-1 ml-3">
