@@ -334,13 +334,14 @@ export default function Analytics() {
                       
                       return (
                         <div key={dateKey} className="space-y-3">
-                          <div className="flex items-center space-x-3 pb-2 mb-3 border-b border-accent/30">
-                            <div className="text-xs font-tech-mono uppercase tracking-wider text-accent/80 bg-accent/10 px-2 py-1 rounded">
-                              {dayLabel}
-                            </div>
-                            <div className="flex-1 h-px bg-accent/20" />
-                            <div className="text-xs text-muted-foreground font-tech-mono">
-                              {daySessions.length} session{daySessions.length !== 1 ? 's' : ''}
+                          <div className="mb-4 pb-3 border-b-2 border-accent/40">
+                            <div className="flex items-center justify-between">
+                              <h3 className="text-lg font-orbitron font-bold text-accent drop-shadow-neon">
+                                {dayLabel}
+                              </h3>
+                              <Badge variant="outline" className="font-tech-mono text-xs bg-accent/10 text-accent/80 border-accent/40">
+                                {daySessions.length} session{daySessions.length !== 1 ? 's' : ''}
+                              </Badge>
                             </div>
                           </div>
                           
