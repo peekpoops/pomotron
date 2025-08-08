@@ -25,7 +25,7 @@ function App() {
 
   useEffect(() => {
     // Set document title
-    document.title = "POMOTRON - ⚡ 80s UI. 2080s Output.";
+    document.title = "Pomotron – 💿 Retro Pomodoro Timer // Session_001 Engaged";
   }, []);
 
   useEffect(() => {
