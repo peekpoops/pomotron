@@ -885,6 +885,66 @@
   100% { opacity: 1; }
 }
 
+/* Enhanced button animations for feedback and coffee buttons */
+@keyframes pulse-soft {
+  0%, 100% { 
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% { 
+    opacity: 0.95;
+    transform: scale(1.005);
+  }
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+@keyframes float-gentle {
+  0%, 100% { 
+    transform: translateY(0px);
+  }
+  50% { 
+    transform: translateY(-2px);
+  }
+}
+
+@keyframes glow-pulse {
+  0%, 100% { 
+    box-shadow: 0 0 5px rgba(59, 130, 246, 0.3), 0 0 10px rgba(59, 130, 246, 0.2);
+  }
+  50% { 
+    box-shadow: 0 0 15px rgba(59, 130, 246, 0.5), 0 0 25px rgba(59, 130, 246, 0.3);
+  }
+}
+
+@keyframes coffee-glow {
+  0%, 100% { 
+    box-shadow: 0 0 5px rgba(245, 158, 11, 0.3), 0 0 10px rgba(245, 158, 11, 0.2);
+  }
+  50% { 
+    box-shadow: 0 0 15px rgba(245, 158, 11, 0.5), 0 0 25px rgba(245, 158, 11, 0.3);
+  }
+}
+
+.animate-pulse-soft {
+  animation: pulse-soft 3s ease-in-out infinite;
+}
+
+.animate-float-gentle {
+  animation: float-gentle 4s ease-in-out infinite;
+}
+
+.animate-glow-pulse {
+  animation: glow-pulse 2s ease-in-out infinite;
+}
+
+.animate-coffee-glow {
+  animation: coffee-glow 2s ease-in-out infinite;
+}
+
 /* Additional analytics enhancements */
 .analytics-card-hover {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);

@@ -411,11 +411,14 @@ export default function Settings() {
       </Card>
 
       {/* Support Section */}
-      <Card className="neon-border glass-morphism mt-8">
+      <Card className="neon-border glass-morphism mt-8 relative animate-float animate-glow-pulse">
+        <div className="absolute -top-1 -right-1 w-3 h-3 bg-accent rounded-full animate-ping"></div>
+        <div className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-accent rounded-full"></div>
         <CardHeader>
           <CardTitle className="section-title text-base sm:text-lg text-secondary flex items-center">
-            <Coffee className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
+            <Coffee className="h-4 w-4 sm:h-5 sm:w-5 mr-2 animate-pulse" />
             Support Pomotron
+            <span className="ml-2 text-xs bg-accent/20 text-accent px-2 py-1 rounded-full animate-pulse">New!</span>
           </CardTitle>
           <CardDescription className="text-xs sm:text-sm text-muted-foreground">
             Help improve Pomotron and support its development
@@ -426,23 +429,36 @@ export default function Settings() {
             <Button
               onClick={() => setShowFeedbackModal(true)}
               variant="outline"
-              className="flex-1 bg-gradient-to-r from-blue-500/10 to-purple-500/10 border-blue-500/20 hover:border-blue-400/40 transition-all"
+              className="group flex-1 bg-gradient-to-r from-blue-500/15 to-purple-500/15 border-blue-500/30 hover:border-blue-400/60 hover:shadow-xl hover:shadow-blue-500/30 transform hover:scale-[1.03] transition-all duration-500 animate-float-gentle relative overflow-hidden before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-white/10 before:to-transparent before:translate-x-[-100%] hover:before:translate-x-[100%] before:transition-transform before:duration-700 before:ease-out"
             >
-              <MessageCircle className="h-4 w-4 mr-2" />
-              Share Feedback
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-400/10 to-purple-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <div className="absolute inset-0 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 animate-glow-pulse" />
+              <MessageCircle className="h-4 w-4 mr-2 group-hover:animate-bounce group-hover:text-blue-300 relative z-10 transition-colors duration-300" />
+              <span className="relative z-10 font-medium group-hover:text-blue-100 transition-colors duration-300">✨ Share Feedback</span>
             </Button>
             <Button
               onClick={() => window.open('https://ko-fi.com/pomotron', '_blank')}
               variant="outline"
-              className="flex-1 bg-gradient-to-r from-yellow-500/10 to-orange-500/10 border-yellow-500/20 hover:border-yellow-400/40 transition-all"
+              className="group flex-1 bg-gradient-to-r from-yellow-500/15 to-orange-500/15 border-yellow-500/30 hover:border-yellow-400/60 hover:shadow-xl hover:shadow-yellow-500/30 transform hover:scale-[1.03] transition-all duration-500 animate-float-gentle relative overflow-hidden before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-white/10 before:to-transparent before:translate-x-[-100%] hover:before:translate-x-[100%] before:transition-transform before:duration-700 before:ease-out"
+              style={{ animationDelay: '1s' }}
             >
-              <Coffee className="h-4 w-4 mr-2" />
-              Buy me a coffee
+              <div className="absolute inset-0 bg-gradient-to-r from-yellow-400/10 to-orange-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              <div className="absolute inset-0 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 animate-coffee-glow" />
+              <Coffee className="h-4 w-4 mr-2 group-hover:animate-bounce group-hover:text-yellow-300 relative z-10 transition-colors duration-300" />
+              <span className="relative z-10 font-medium group-hover:text-yellow-100 transition-colors duration-300">☕ Buy me a coffee</span>
             </Button>
           </div>
-          <p className="text-xs text-muted-foreground/80 text-center mt-3">
-            Your feedback and support help make Pomotron better for everyone 💙
-          </p>
+          <div className="text-center mt-4 space-y-2">
+            <p className="text-xs text-muted-foreground/80 animate-pulse">
+              Your feedback and support help make Pomotron better for everyone
+            </p>
+            <div className="flex justify-center items-center space-x-1 text-xs text-accent/60">
+              <span className="animate-bounce" style={{ animationDelay: '0s' }}>💙</span>
+              <span className="animate-bounce" style={{ animationDelay: '0.2s' }}>Thank</span>
+              <span className="animate-bounce" style={{ animationDelay: '0.4s' }}>you!</span>
+              <span className="animate-bounce" style={{ animationDelay: '0.6s' }}>💙</span>
+            </div>
+          </div>
         </CardContent>
       </Card>
 
