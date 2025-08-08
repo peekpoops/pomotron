@@ -24,10 +24,11 @@ Preferred communication style: Simple, everyday language.
 - **Logging**: Custom request logging middleware for API endpoints with response capture
 
 ## Data Storage Solutions
-- **Database**: PostgreSQL with Drizzle ORM for type-safe database operations
+- **Database**: PostgreSQL with Drizzle ORM for type-safe database operations and feedback collection
 - **Schema Management**: Drizzle Kit for database migrations and schema management
 - **Local Storage**: Browser localStorage for offline-first data persistence including sessions, settings, and analytics
 - **Session Storage**: Browser sessionStorage for temporary state management
+- **Feedback System**: In-memory storage with PostgreSQL backend for user feedback collection
 
 ## Authentication and Authorization
 - **Current State**: Basic user schema defined but not implemented
@@ -77,3 +78,15 @@ Preferred communication style: Simple, everyday language.
 - **Type Safety**: Comprehensive TypeScript configuration with strict mode enabled
 - **Code Quality**: ESBuild for server-side bundling with external package optimization
 - **Environment Management**: Separate development and production configurations with environment variable support
+
+## User Feedback and Monetization
+- **Feedback Collection**: Simple 5-star rating system with optional comments, stored in PostgreSQL database
+- **Ko-fi Integration**: Direct monetization support through Ko-fi platform integration
+- **Admin Dashboard**: Simple feedback viewing interface at /feedback-admin for retrieving user feedback
+- **Low-Effort Implementation**: Minimal modal-based feedback collection with server-side storage
+
+## Recent Changes (August 2025)
+- **Motivational Quotes**: Default disabled (was enabled by default), controlled by motivationalQuotesEnabled setting
+- **Support Section**: Added bottom section to Settings page with feedback and Ko-fi buttons
+- **Feedback System**: Complete feedback collection system with database storage and admin viewing
+- **Performance Optimizations**: React.memo, throttled events, optimized calculations for better performance

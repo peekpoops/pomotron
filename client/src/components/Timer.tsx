@@ -141,8 +141,9 @@ const Timer = memo(({ onOpenSettings, timerHook: externalTimerHook, onModalState
     websiteBlockingEnabled: true,
     frictionOverride: false,
     blockedSites: [],
-    showQuotes: true,
+    showQuotes: false,
     soundsEnabled: true,
+    motivationalQuotesEnabled: false,
   });
   
   const [showIntentionModal, setShowIntentionModal] = useState(false);
@@ -339,7 +340,7 @@ const Timer = memo(({ onOpenSettings, timerHook: externalTimerHook, onModalState
   return (
     <div className="max-w-6xl mx-auto space-y-8 px-4 sm:px-6 lg:px-8">
       {/* Motivational Quote Banner */}
-      {settings.showQuotes && (
+      {settings.motivationalQuotesEnabled && (
         <Card className="glass-morphism animate-float">
           <CardContent className="p-4 sm:p-6 relative pr-12 sm:pr-16">
             <div className="text-center">

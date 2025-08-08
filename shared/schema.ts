@@ -31,6 +31,7 @@ export const settingsSchema = z.object({
   websiteBlockingEnabled: z.boolean().default(true),
   frictionOverride: z.boolean().default(false),
   blockedSites: z.array(z.string()).default([]),
+  motivationalQuotesEnabled: z.boolean().default(false),
 });
 
 export type Settings = z.infer<typeof settingsSchema>;
@@ -66,3 +67,16 @@ export const timerStateSchema = z.object({
 });
 
 export type TimerState = z.infer<typeof timerStateSchema>;
+
+// Feedback Schema
+export const feedbackSchema = z.object({
+  id: z.string(),
+  rating: z.number().min(1).max(5),
+  comment: z.string().optional(),
+  createdAt: z.date(),
+});
+
+export const insertFeedbackSchema = feedbackSchema.omit({ id: true, createdAt: true });
+
+export type Feedback = z.infer<typeof feedbackSchema>;
+export type InsertFeedback = z.infer<typeof insertFeedbackSchema>;

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Clock, Palette, Keyboard, Save, Info, Target, RotateCcw } from 'lucide-react';
+import { Clock, Palette, Keyboard, Save, Info, Target, RotateCcw, MessageCircle, Coffee } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -11,6 +11,7 @@ import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { useTheme } from '@/hooks/useTheme';
 import { Settings as SettingsType, Theme } from '@/types';
 import { useToast } from '@/hooks/use-toast';
+import { FeedbackModal } from '@/components/FeedbackModal';
 
 const defaultSettings: SettingsType = {
   focusDuration: 25,
@@ -24,8 +25,9 @@ const defaultSettings: SettingsType = {
   websiteBlockingEnabled: true,
   frictionOverride: false,
   blockedSites: ['facebook.com', 'twitter.com', 'reddit.com', 'youtube.com', 'instagram.com'],
-  showQuotes: true,
+  showQuotes: false,
   soundsEnabled: true,
+  motivationalQuotesEnabled: false,
 };
 
 export default function Settings() {
@@ -33,6 +35,7 @@ export default function Settings() {
   const { theme, setTheme } = useTheme();
   const [localSettings, setLocalSettings] = useState<SettingsType>(settings);
   const { toast } = useToast();
+  const [showFeedbackModal, setShowFeedbackModal] = useState(false);
 
   useEffect(() => {
     setLocalSettings(settings);
@@ -283,7 +286,7 @@ export default function Settings() {
 
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
               <div className="flex items-center space-x-2">
-                <Label htmlFor="show-quotes" className="text-xs sm:text-sm font-medium text-muted-foreground">
+                <Label htmlFor="motivational-quotes-enabled" className="text-xs sm:text-sm font-medium text-muted-foreground">
                   Show motivational quotes
                 </Label>
                 <Popover>
@@ -300,11 +303,11 @@ export default function Settings() {
                 </Popover>
               </div>
               <Switch
-                id="show-quotes"
-                checked={localSettings.showQuotes}
+                id="motivational-quotes-enabled"
+                checked={localSettings.motivationalQuotesEnabled}
                 onCheckedChange={(checked) => setLocalSettings(prev => ({
                   ...prev,
-                  showQuotes: checked
+                  motivationalQuotesEnabled: checked
                 }))}
               />
             </div>
@@ -407,17 +410,46 @@ export default function Settings() {
         </CardContent>
       </Card>
 
-      {/* 
-      <div className="text-center">
-        <Button
-          onClick={handleSave}
-          className="btn-primary px-6 sm:px-8 py-3 font-medium w-full sm:w-auto"
-        >
-          <Save className="h-4 w-4 mr-2" />
-          Save Settings
-        </Button>
-      </div>
-      */}
+      {/* Support Section */}
+      <Card className="neon-border glass-morphism mt-8">
+        <CardHeader>
+          <CardTitle className="section-title text-base sm:text-lg text-secondary flex items-center">
+            <Coffee className="h-4 w-4 sm:h-5 sm:w-5 mr-2" />
+            Support Pomotron
+          </CardTitle>
+          <CardDescription className="text-xs sm:text-sm text-muted-foreground">
+            Help improve Pomotron and support its development
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+            <Button
+              onClick={() => setShowFeedbackModal(true)}
+              variant="outline"
+              className="flex-1 bg-gradient-to-r from-blue-500/10 to-purple-500/10 border-blue-500/20 hover:border-blue-400/40 transition-all"
+            >
+              <MessageCircle className="h-4 w-4 mr-2" />
+              Share Feedback
+            </Button>
+            <Button
+              onClick={() => window.open('https://ko-fi.com/pomotron', '_blank')}
+              variant="outline"
+              className="flex-1 bg-gradient-to-r from-yellow-500/10 to-orange-500/10 border-yellow-500/20 hover:border-yellow-400/40 transition-all"
+            >
+              <Coffee className="h-4 w-4 mr-2" />
+              Buy me a coffee
+            </Button>
+          </div>
+          <p className="text-xs text-muted-foreground/80 text-center mt-3">
+            Your feedback and support help make Pomotron better for everyone 💙
+          </p>
+        </CardContent>
+      </Card>
+
+      <FeedbackModal
+        open={showFeedbackModal}
+        onOpenChange={setShowFeedbackModal}
+      />
     </div>
   );
 }

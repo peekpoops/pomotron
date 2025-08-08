@@ -31,4 +31,5 @@ export interface Settings {
   blockedSites: string[];
   showQuotes: boolean;
   soundsEnabled: boolean;
+  motivationalQuotesEnabled: boolean;
 }
