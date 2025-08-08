@@ -75,10 +75,25 @@ export default function Analytics() {
   }, [sessions]);
 
   const recentIntentions = useMemo(() => {
-    return sessions
-      .filter(s => s.task.trim() !== '')
-      .sort((a, b) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime())
-      .slice(0, 10);
+    // Get all sessions with intentions from the past week
+    const oneWeekAgo = new Date();
+    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+    
+    const weekSessions = sessions
+      .filter(s => s.task.trim() !== '' && new Date(s.startTime) >= oneWeekAgo)
+      .sort((a, b) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime());
+
+    // Group sessions by day
+    const groupedByDay = weekSessions.reduce((acc, session) => {
+      const dayKey = format(new Date(session.startTime), 'yyyy-MM-dd');
+      if (!acc[dayKey]) {
+        acc[dayKey] = [];
+      }
+      acc[dayKey].push(session);
+      return acc;
+    }, {} as Record<string, Session[]>);
+
+    return groupedByDay;
   }, [sessions]);
 
   const exportData = () => {
@@ -172,7 +187,7 @@ export default function Analytics() {
               <Calendar className="h-8 w-8 mx-auto text-primary drop-shadow-neon retro-pulse" />
               <div className="absolute -inset-2 bg-primary/10 rounded-full blur-md group-hover:bg-primary/20 transition-all duration-300" />
             </div>
-            <div className="text-4xl font-orbitron font-black text-primary mb-2 drop-shadow-neon neon-text">
+            <div className="text-4xl font-orbitron font-black text-primary mb-2">
               {analytics.totalSessions}
             </div>
             <div className="text-xs text-primary/80 font-tech-mono uppercase tracking-wider">
@@ -191,11 +206,14 @@ export default function Analytics() {
               <Target className="h-8 w-8 mx-auto text-secondary drop-shadow-neon retro-pulse" style={{ animationDelay: '0.5s' }} />
               <div className="absolute -inset-2 bg-secondary/10 rounded-full blur-md group-hover:bg-secondary/20 transition-all duration-300" />
             </div>
-            <div className="text-4xl font-orbitron font-black text-secondary mb-2 drop-shadow-neon neon-text">
+            <div className="text-4xl font-orbitron font-black text-secondary mb-2">
               {analytics.successRate}%
             </div>
             <div className="text-xs text-secondary/80 font-tech-mono uppercase tracking-wider">
               Success Rate
+            </div>
+            <div className="text-xs text-muted-foreground mt-1 font-tech-mono">
+              Completed ÷ Total Sessions
             </div>
             <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-secondary to-transparent opacity-50 group-hover:opacity-100 transition-opacity" />
             <div className="absolute top-2 right-2 w-2 h-2 bg-secondary rounded-full animate-ping" style={{ animationDelay: '0.5s' }} />
@@ -210,7 +228,7 @@ export default function Analytics() {
               <Clock className="h-8 w-8 mx-auto text-accent drop-shadow-neon retro-pulse" style={{ animationDelay: '1s' }} />
               <div className="absolute -inset-2 bg-accent/10 rounded-full blur-md group-hover:bg-accent/20 transition-all duration-300" />
             </div>
-            <div className="text-4xl font-orbitron font-black text-accent mb-2 drop-shadow-neon neon-text">
+            <div className="text-4xl font-orbitron font-black text-accent mb-2">
               {analytics.totalFocusTime}h
             </div>
             <div className="text-xs text-accent/80 font-tech-mono uppercase tracking-wider">
@@ -229,7 +247,7 @@ export default function Analytics() {
               <TrendingUp className="h-8 w-8 mx-auto text-green-400 drop-shadow-neon retro-pulse" style={{ animationDelay: '1.5s' }} />
               <div className="absolute -inset-2 bg-green-400/10 rounded-full blur-md group-hover:bg-green-400/20 transition-all duration-300" />
             </div>
-            <div className="text-4xl font-orbitron font-black text-green-400 mb-2 drop-shadow-neon neon-text">
+            <div className="text-4xl font-orbitron font-black text-green-400 mb-2">
               {analytics.currentStreak}
             </div>
             <div className="text-xs text-green-400/80 font-tech-mono uppercase tracking-wider">
@@ -294,48 +312,86 @@ export default function Analytics() {
         {/* Recent Intentions */}
         <Card className="neon-border glass-morphism">
           <CardHeader>
-            <CardTitle className="section-title text-lg text-secondary">Recent Intentions</CardTitle>
+            <CardTitle className="section-title text-lg text-secondary">Weekly Intentions</CardTitle>
+            <CardDescription className="font-tech-mono text-xs">
+              Past 7 days • Organized by day
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <ScrollArea className="h-96">
-              <div className="space-y-4">
-                {recentIntentions.length === 0 ? (
+              <div className="space-y-6">
+                {Object.keys(recentIntentions).length === 0 ? (
                   <div className="text-center text-muted-foreground py-8">
                     <Target className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                    <p className="text-sm">No intentions recorded yet</p>
+                    <p className="text-sm">No intentions recorded this week</p>
                     <p className="text-xs">Start a focus session to see your intentions here</p>
                   </div>
                 ) : (
-                  recentIntentions.map((session, index) => (
-                    <div 
-                      key={session.id} 
-                      className={`border-l-2 pl-4 pb-4 ${
-                        index % 4 === 0 ? 'border-primary/50' :
-                        index % 4 === 1 ? 'border-secondary/50' :
-                        index % 4 === 2 ? 'border-accent/50' :
-                        'border-green-400/50'
-                      }`}
-                    >
-                      <div className="text-sm font-medium text-foreground mb-1">
-                        📌 {session.task}
-                      </div>
-                      <div className="text-xs text-muted-foreground mb-2">
-                        💭 {session.why}
-                      </div>
-                      <div className="text-xs text-secondary flex items-center">
-                        <Clock className="h-3 w-3 mr-1" />
-                        {isToday(new Date(session.startTime)) 
-                          ? `Today, ${format(new Date(session.startTime), 'h:mm a')}`
-                          : format(new Date(session.startTime), 'MMM d, h:mm a')
-                        }
-                        {session.completed && (
-                          <Badge variant="secondary" className="ml-2 text-xs">
-                            ✓ Completed
-                          </Badge>
-                        )}
-                      </div>
-                    </div>
-                  ))
+                  Object.entries(recentIntentions)
+                    .sort(([a], [b]) => b.localeCompare(a)) // Sort by date descending
+                    .map(([dateKey, daySessions]) => {
+                      const date = new Date(dateKey);
+                      const dayLabel = isToday(date) 
+                        ? 'Today' 
+                        : format(date, 'EEEE, MMM d');
+                      
+                      return (
+                        <div key={dateKey} className="space-y-3">
+                          <div className="flex items-center space-x-2">
+                            <div className="text-sm font-orbitron font-bold text-accent">
+                              {dayLabel}
+                            </div>
+                            <div className="flex-1 h-px bg-gradient-to-r from-accent/50 to-transparent" />
+                            <Badge variant="outline" className="text-xs font-tech-mono">
+                              {daySessions.length} session{daySessions.length !== 1 ? 's' : ''}
+                            </Badge>
+                          </div>
+                          
+                          <div className="space-y-2 ml-4">
+                            {daySessions.map((session, index) => {
+                              const focusTimeMinutes = Math.round(session.duration / 60);
+                              return (
+                                <div 
+                                  key={session.id} 
+                                  className={`border-l-2 pl-3 pb-3 ${
+                                    index % 4 === 0 ? 'border-primary/40' :
+                                    index % 4 === 1 ? 'border-secondary/40' :
+                                    index % 4 === 2 ? 'border-accent/40' :
+                                    'border-green-400/40'
+                                  }`}
+                                >
+                                  <div className="text-sm font-medium text-foreground mb-1">
+                                    📌 {session.task}
+                                  </div>
+                                  <div className="text-xs text-muted-foreground mb-2">
+                                    💭 {session.why}
+                                  </div>
+                                  <div className="flex items-center justify-between">
+                                    <div className="text-xs text-secondary flex items-center">
+                                      <Clock className="h-3 w-3 mr-1" />
+                                      {format(new Date(session.startTime), 'h:mm a')}
+                                    </div>
+                                    <div className="flex items-center space-x-2">
+                                      <Badge 
+                                        variant={session.completed ? "default" : "destructive"} 
+                                        className="text-xs font-tech-mono"
+                                      >
+                                        {focusTimeMinutes}min
+                                      </Badge>
+                                      {session.completed && (
+                                        <Badge variant="secondary" className="text-xs">
+                                          ✓
+                                        </Badge>
+                                      )}
+                                    </div>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      );
+                    })
                 )}
               </div>
             </ScrollArea>
