@@ -32,6 +32,19 @@ export function useTimer() {
     soundsEnabled: true,
   });
   const [sessions, setSessions] = useLocalStorage<Session[]>('pomotron-sessions', []);
+
+  // Initialize timer with correct duration from settings
+  useEffect(() => {
+    if (timerState.timeLeft === 1500) { // Only if still using default value
+      const correctDuration = settings.focusDuration * 60;
+      if (correctDuration !== 1500) {
+        setTimerState(prev => ({
+          ...prev,
+          timeLeft: correctDuration
+        }));
+      }
+    }
+  }, [settings.focusDuration, timerState.timeLeft]);
   
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const idleTimeRef = useRef<number>(0);
