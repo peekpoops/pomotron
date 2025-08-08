@@ -164,31 +164,79 @@ export default function Analytics() {
 
       {/* Key Metrics Cards */}
       <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <Card className="neon-border glass-morphism text-center">
-          <CardContent className="p-6">
-            <div className="text-3xl font-bold text-primary mb-2">{analytics.totalSessions}</div>
-            <div className="text-sm text-muted-foreground">Total Sessions</div>
+        {/* Total Sessions */}
+        <Card className="neon-border glass-morphism text-center relative overflow-hidden group hover:scale-105 analytics-card-hover scanlines">
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-primary/5 group-hover:from-primary/20 group-hover:to-primary/10 transition-all duration-300" />
+          <CardContent className="p-6 relative z-10">
+            <div className="mb-3 relative">
+              <Calendar className="h-8 w-8 mx-auto text-primary drop-shadow-neon retro-pulse" />
+              <div className="absolute -inset-2 bg-primary/10 rounded-full blur-md group-hover:bg-primary/20 transition-all duration-300" />
+            </div>
+            <div className="text-4xl font-orbitron font-black text-primary mb-2 drop-shadow-neon neon-text">
+              {analytics.totalSessions}
+            </div>
+            <div className="text-xs text-primary/80 font-tech-mono uppercase tracking-wider">
+              Total Sessions
+            </div>
+            <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-50 group-hover:opacity-100 transition-opacity" />
+            <div className="absolute top-2 right-2 w-2 h-2 bg-primary rounded-full animate-ping" />
           </CardContent>
         </Card>
         
-        <Card className="neon-border glass-morphism text-center">
-          <CardContent className="p-6">
-            <div className="text-3xl font-bold text-secondary mb-2">{analytics.successRate}%</div>
-            <div className="text-sm text-muted-foreground">Success Rate</div>
+        {/* Success Rate */}
+        <Card className="neon-border glass-morphism text-center relative overflow-hidden group hover:scale-105 analytics-card-hover scanlines">
+          <div className="absolute inset-0 bg-gradient-to-br from-secondary/10 via-transparent to-secondary/5 group-hover:from-secondary/20 group-hover:to-secondary/10 transition-all duration-300" />
+          <CardContent className="p-6 relative z-10">
+            <div className="mb-3 relative">
+              <Target className="h-8 w-8 mx-auto text-secondary drop-shadow-neon retro-pulse" style={{ animationDelay: '0.5s' }} />
+              <div className="absolute -inset-2 bg-secondary/10 rounded-full blur-md group-hover:bg-secondary/20 transition-all duration-300" />
+            </div>
+            <div className="text-4xl font-orbitron font-black text-secondary mb-2 drop-shadow-neon neon-text">
+              {analytics.successRate}%
+            </div>
+            <div className="text-xs text-secondary/80 font-tech-mono uppercase tracking-wider">
+              Success Rate
+            </div>
+            <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-secondary to-transparent opacity-50 group-hover:opacity-100 transition-opacity" />
+            <div className="absolute top-2 right-2 w-2 h-2 bg-secondary rounded-full animate-ping" style={{ animationDelay: '0.5s' }} />
           </CardContent>
         </Card>
         
-        <Card className="neon-border glass-morphism text-center">
-          <CardContent className="p-6">
-            <div className="text-3xl font-bold text-accent mb-2">{analytics.totalFocusTime}h</div>
-            <div className="text-sm text-muted-foreground">Total Focus Time</div>
+        {/* Total Focus Time */}
+        <Card className="neon-border glass-morphism text-center relative overflow-hidden group hover:scale-105 analytics-card-hover scanlines">
+          <div className="absolute inset-0 bg-gradient-to-br from-accent/10 via-transparent to-accent/5 group-hover:from-accent/20 group-hover:to-accent/10 transition-all duration-300" />
+          <CardContent className="p-6 relative z-10">
+            <div className="mb-3 relative">
+              <Clock className="h-8 w-8 mx-auto text-accent drop-shadow-neon retro-pulse" style={{ animationDelay: '1s' }} />
+              <div className="absolute -inset-2 bg-accent/10 rounded-full blur-md group-hover:bg-accent/20 transition-all duration-300" />
+            </div>
+            <div className="text-4xl font-orbitron font-black text-accent mb-2 drop-shadow-neon neon-text">
+              {analytics.totalFocusTime}h
+            </div>
+            <div className="text-xs text-accent/80 font-tech-mono uppercase tracking-wider">
+              Focus Hours
+            </div>
+            <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-accent to-transparent opacity-50 group-hover:opacity-100 transition-opacity" />
+            <div className="absolute top-2 right-2 w-2 h-2 bg-accent rounded-full animate-ping" style={{ animationDelay: '1s' }} />
           </CardContent>
         </Card>
         
-        <Card className="neon-border glass-morphism text-center">
-          <CardContent className="p-6">
-            <div className="text-3xl font-bold text-green-400 mb-2">{analytics.currentStreak}</div>
-            <div className="text-sm text-muted-foreground">Day Streak</div>
+        {/* Day Streak */}
+        <Card className="neon-border glass-morphism text-center relative overflow-hidden group hover:scale-105 analytics-card-hover scanlines">
+          <div className="absolute inset-0 bg-gradient-to-br from-green-400/10 via-transparent to-emerald-400/5 group-hover:from-green-400/20 group-hover:to-emerald-400/10 transition-all duration-300" />
+          <CardContent className="p-6 relative z-10">
+            <div className="mb-3 relative">
+              <TrendingUp className="h-8 w-8 mx-auto text-green-400 drop-shadow-neon retro-pulse" style={{ animationDelay: '1.5s' }} />
+              <div className="absolute -inset-2 bg-green-400/10 rounded-full blur-md group-hover:bg-green-400/20 transition-all duration-300" />
+            </div>
+            <div className="text-4xl font-orbitron font-black text-green-400 mb-2 drop-shadow-neon neon-text">
+              {analytics.currentStreak}
+            </div>
+            <div className="text-xs text-green-400/80 font-tech-mono uppercase tracking-wider">
+              Day Streak
+            </div>
+            <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-green-400 to-transparent opacity-50 group-hover:opacity-100 transition-opacity" />
+            <div className="absolute top-2 right-2 w-2 h-2 bg-green-400 rounded-full animate-ping" style={{ animationDelay: '1.5s' }} />
           </CardContent>
         </Card>
       </div>
