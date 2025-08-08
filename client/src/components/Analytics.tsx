@@ -366,9 +366,6 @@ const Analytics = memo(() => {
           </Card>
         </div>
 
-      </div>
-
-      <div className="grid lg:grid-cols-3 gap-8">
         {/* Weekly Sessions */}
         <Card className="neon-border glass-morphism">
           <CardHeader className="pb-4">
