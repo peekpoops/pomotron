@@ -354,7 +354,8 @@ export default function Settings() {
           </CardContent>
         </Card>
 
-        {/* Keyboard Shortcuts */}
+        {/* 👇 This whole section is now commented out safely */}
+        {/* 
         <Card className="neon-border glass-morphism">
           <CardHeader className="settings-card-mobile">
             <CardTitle className="section-title text-base sm:text-lg text-secondary flex items-center">
@@ -366,7 +367,9 @@ export default function Settings() {
             <div className="space-y-2 sm:space-y-3">
               {keyboardShortcuts.map((shortcut) => (
                 <div key={shortcut.action} className="flex justify-between items-center">
-                  <span className="text-xs sm:text-sm text-muted-foreground">{shortcut.action}</span>
+                  <span className="text-xs sm:text-sm text-muted-foreground">
+                    {shortcut.action}
+                  </span>
                   <Badge variant="secondary" className="text-xs font-mono">
                     {shortcut.key}
                   </Badge>
@@ -375,6 +378,8 @@ export default function Settings() {
             </div>
           </CardContent>
         </Card>
+        */}
+
       </div>
 
       {/* About Pomodoro Technique */}

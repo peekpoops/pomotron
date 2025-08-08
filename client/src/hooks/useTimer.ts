@@ -155,11 +155,17 @@ export function useTimer() {
               deactivateWebsiteBlocking();
             }
             
-            toast({
-              title: prev.sessionType === 'focus' ? 'Focus Session Complete!' : 'Break Complete!',
-              description: nextSessionType === 'focus' ? 'Time for a break!' : 'Ready for the next focus session?',
-              duration: 5000,
-            });
+              toast({
+                title:
+                  prev.sessionType === 'focus'
+                    ? '✅ Focus Session Complete!'
+                    : '☕ Break Complete!',
+                description:
+                  prev.sessionType === 'focus'
+                    ? 'Time for a break!'
+                    : 'Ready for the next focus session?',
+              })
+;
             
             // Reset start time for next session
             startTimeRef.current = settings.autoStart ? Date.now() : null;
