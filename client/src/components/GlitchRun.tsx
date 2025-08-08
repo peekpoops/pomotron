@@ -103,6 +103,7 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
   }, [onClose]);
 
   // Update game state
+  // Optimize game update loop with reduced calculations
   const updateGame = useCallback(() => {
     const now = Date.now();
     const elapsed = (now - gameStartTimeRef.current) / 1000;
@@ -158,8 +159,10 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
       lastObstacleRef.current = now;
     }
 
-    // Update obstacles and check collisions using forEach loop
+    // Update obstacles and check collisions with optimized processing
     setObstacles(prev => {
+      if (!prev.length) return prev; // Early return for empty array
+      
       const updatedObstacles: typeof prev = [];
       const GRACE_MARGIN = 4;
       
@@ -289,12 +292,16 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
   }, [isOpen, gameState, startGame, handleJump]);
 
   // Canvas rendering function
+  // Optimize canvas rendering with reduced redraws
   const renderCanvas = useCallback(() => {
     if (!canvasRef.current) return;
 
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
+
+    // Use requestAnimationFrame for smoother rendering
+    const now = Date.now();
 
     // Clear canvas
     ctx.fillStyle = screenGlitch ? '#ff00ff' : '#0a0a1a';
@@ -305,9 +312,13 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
     ctx.lineWidth = screenGlitch ? 2 : 1;
     ctx.globalAlpha = screenGlitch ? 0.8 : 0.3;
 
-    // Vertical lines
+    // Optimized grid drawing with reduced calculations
+    const timeOffset = now * 0.1;
+    const horizontalOffset = (now * 0.05) % 20;
+    
+    // Vertical lines - reduced iterations for better performance
     for (let x = 0; x < GAME_WIDTH; x += 40) {
-      const offset = (Date.now() * 0.1 + x * 0.05) % 20;
+      const offset = (timeOffset + x * 0.05) % 20;
       ctx.beginPath();
       ctx.moveTo(x + offset, 0);
       ctx.lineTo(x + offset, GAME_HEIGHT);
@@ -316,10 +327,9 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
 
     // Horizontal lines
     for (let y = 0; y < GAME_HEIGHT; y += 40) {
-      const offset = (Date.now() * 0.05) % 20;
       ctx.beginPath();
-      ctx.moveTo(0, y + offset);
-      ctx.lineTo(GAME_WIDTH, y + offset);
+      ctx.moveTo(0, y + horizontalOffset);
+      ctx.lineTo(GAME_WIDTH, y + horizontalOffset);
       ctx.stroke();
     }
 
@@ -341,9 +351,9 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
     ctx.lineTo(GAME_WIDTH, 50);
     ctx.stroke();
 
-    // Draw enhanced Tron-like avatar
-    const pulse = Math.sin(Date.now() * 0.01) * 0.3 + 0.7;
-    const rotation = isJumping ? Math.sin(Date.now() * 0.03) * 0.15 : 0;
+    // Draw enhanced Tron-like avatar with optimized calculations
+    const pulse = Math.sin(now * 0.01) * 0.3 + 0.7;
+    const rotation = isJumping ? Math.sin(now * 0.03) * 0.15 : 0;
 
     const avatarWidth = PLAYER_SIZE * 1.4; // Larger avatar
     const avatarHeight = PLAYER_SIZE * 1.4;

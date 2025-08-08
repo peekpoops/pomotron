@@ -28,7 +28,7 @@ export function useLocalStorage<T>(key: string, initialValue: T) {
     }
   };
 
-  // Listen for localStorage changes from other components
+  // Optimize localStorage event handling with dependency optimization
   useEffect(() => {
     const handleStorageChange = (e: CustomEvent) => {
       if (e.detail.key === key) {
@@ -39,23 +39,30 @@ export function useLocalStorage<T>(key: string, initialValue: T) {
     const handleNativeStorageChange = (e: StorageEvent) => {
       if (e.key === key && e.newValue !== null) {
         try {
-          setStoredValue(JSON.parse(e.newValue));
+          const parsed = JSON.parse(e.newValue);
+          // Only update if value actually changed to prevent unnecessary re-renders
+          setStoredValue(prev => {
+            if (JSON.stringify(prev) !== JSON.stringify(parsed)) {
+              return parsed;
+            }
+            return prev;
+          });
         } catch (error) {
           console.error(`Error parsing localStorage value for key "${key}":`, error);
         }
       }
     };
 
-    // Listen for custom events (same tab)
-    window.addEventListener('localStorageChange', handleStorageChange as EventListener);
+    // Listen for custom events (same tab) with passive flag for better performance
+    window.addEventListener('localStorageChange', handleStorageChange as EventListener, { passive: true });
     // Listen for storage events (different tabs)
-    window.addEventListener('storage', handleNativeStorageChange);
+    window.addEventListener('storage', handleNativeStorageChange, { passive: true });
 
     return () => {
       window.removeEventListener('localStorageChange', handleStorageChange as EventListener);
       window.removeEventListener('storage', handleNativeStorageChange);
     };
-  }, [key]);
+  }, [key]); // Only depend on key, not stored value
 
   return [storedValue, setValue] as const;
 }

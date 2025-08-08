@@ -75,7 +75,7 @@ export function useTimer() {
     }
   }, []);
 
-  // Enhanced idle detection that considers page visibility and user interaction patterns
+  // Enhanced idle detection with throttled event handling for better performance
   const startIdleDetection = useCallback(() => {
     // Clean up any existing idle detection
     stopIdleDetection();
@@ -83,16 +83,23 @@ export function useTimer() {
     // Don't start idle detection if it's disabled (idleTimeout = 0)
     if (settings.idleTimeout === 0) return;
     
-    // Track global activity events
+    // Track global activity events with throttling to improve performance
     const activityEvents = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click'];
     
+    // Throttle activity updates to reduce excessive function calls
+    let throttleTimeout: NodeJS.Timeout | null = null;
     const handleActivity = () => {
-      resetIdleDetection();
+      if (throttleTimeout) return; // Skip if already throttled
+      
+      throttleTimeout = setTimeout(() => {
+        resetIdleDetection();
+        throttleTimeout = null;
+      }, 1000); // Only update once per second max
     };
 
-    // Add activity listeners to the entire document
+    // Add activity listeners with passive flag for better performance
     activityEvents.forEach(eventType => {
-      document.addEventListener(eventType, handleActivity, true);
+      document.addEventListener(eventType, handleActivity, { passive: true, capture: true });
     });
 
     // Track page visibility changes - if user switches tabs but comes back, reset idle timer
@@ -111,6 +118,10 @@ export function useTimer() {
 
     // Store cleanup function for later use
     cleanupIdleDetectionRef.current = () => {
+      if (throttleTimeout) {
+        clearTimeout(throttleTimeout);
+        throttleTimeout = null;
+      }
       activityEvents.forEach(eventType => {
         document.removeEventListener(eventType, handleActivity, true);
       });
@@ -136,7 +147,7 @@ export function useTimer() {
         }
         resetIdleDetection();
       }
-    }, 15000); // Check more frequently (every 15 seconds) for better responsiveness
+    }, 30000); // Reduced frequency to improve performance (30 seconds)
 
   }, [settings.idleTimeout, timerState.isRunning, timerState.sessionType, toast, resetIdleDetection, stopIdleDetection]);
 

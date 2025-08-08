@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, memo, useCallback } from 'react';
 import { Clock, Play, Pause, RotateCcw, Square, Settings2, Target, Zap, Flame, TrendingUp, Heart, Lightbulb } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -125,7 +125,7 @@ const motivationalQuotes = [
   { text: "We must be free not because we claim freedom, but because we practice it.", author: "William Faulkner" }
 ];
 
-export default function Timer({ onOpenSettings, timerHook: externalTimerHook, onModalStateChange }: TimerProps) {
+const Timer = memo(({ onOpenSettings, timerHook: externalTimerHook, onModalStateChange }: TimerProps) => {
   const internalTimerHook = useTimer();
   const timerHook = externalTimerHook || internalTimerHook;
   const { timerState, startSession, pauseSession, resumeSession, resetSession, endSession, formatTime, getProgress, sessions: timerSessions } = timerHook;
@@ -155,18 +155,19 @@ export default function Timer({ onOpenSettings, timerHook: externalTimerHook, on
   }, [showIntentionModal]);
   
   // Helper function to get a random quote
-  const getRandomQuote = () => {
+  // Memoize quote selection functions to prevent recreation on each render
+  const getRandomQuote = useCallback(() => {
     const randomIndex = Math.floor(Math.random() * motivationalQuotes.length);
     return motivationalQuotes[randomIndex];
-  };
+  }, []);
+
+  const getShuffledQuotes = useCallback(() => {
+    const shuffled = [...motivationalQuotes].sort(() => Math.random() - 0.5);
+    return shuffled;
+  }, []);
 
   const [currentQuote, setCurrentQuote] = useState(() => getRandomQuote());
   const [showFullQuote, setShowFullQuote] = useState(false);
-  // Initialize shuffled quotes
-  const getShuffledQuotes = () => {
-    const shuffled = [...motivationalQuotes].sort(() => Math.random() - 0.5);
-    return shuffled;
-  };
   const [availableQuotes, setAvailableQuotes] = useLocalStorage<typeof motivationalQuotes>('pomotron-available-quotes', getShuffledQuotes());
   const [usedQuotes, setUsedQuotes] = useLocalStorage<typeof motivationalQuotes>('pomotron-used-quotes', []);
   const [showGlitchRun, setShowGlitchRun] = useState(false);
@@ -199,11 +200,11 @@ export default function Timer({ onOpenSettings, timerHook: externalTimerHook, on
     }
   }, []);
 
-  const getNextQuote = () => {
+  const getNextQuote = useCallback(() => {
     // If no available quotes, reset the cycle with shuffled quotes
     if (availableQuotes.length === 0) {
       // Create a shuffled copy of all quotes
-      const shuffledQuotes = [...motivationalQuotes].sort(() => Math.random() - 0.5);
+      const shuffledQuotes = getShuffledQuotes();
       setAvailableQuotes(shuffledQuotes);
       setUsedQuotes([]);
       
@@ -223,7 +224,7 @@ export default function Timer({ onOpenSettings, timerHook: externalTimerHook, on
     setCurrentQuote(selectedQuote);
     setAvailableQuotes(prev => prev.filter((_, index) => index !== randomIndex));
     setUsedQuotes(prev => [...prev, selectedQuote]);
-  };
+  }, [availableQuotes, getShuffledQuotes, setAvailableQuotes, setUsedQuotes, getRandomQuote, setCurrentQuote]);
 
   const handleStartSession = () => {
     if (timerState.sessionType === 'focus') {
@@ -789,4 +790,8 @@ export default function Timer({ onOpenSettings, timerHook: externalTimerHook, on
       */}
     </div>
   );
-}
+});
+
+Timer.displayName = 'Timer';
+
+export default Timer;

@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, memo } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { Calendar, Clock, Target, TrendingUp, Download, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -9,23 +9,36 @@ import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { Session } from '@/types';
 import { format, isToday, isThisWeek, startOfWeek, endOfWeek, eachDayOfInterval } from 'date-fns';
 
-export default function Analytics() {
+const Analytics = memo(() => {
   const [sessions] = useLocalStorage<Session[]>('pomotron-sessions', []);
 
+  // Optimize analytics calculation with better performance
   const analytics = useMemo(() => {
+    // Early return for empty sessions to avoid unnecessary calculations
+    if (!sessions.length) {
+      return {
+        totalSessions: 0,
+        successRate: 0,
+        totalFocusTime: 0,
+        currentStreak: 0,
+        weeklyData: [],
+      };
+    }
+
     const completedSessions = sessions.filter(s => s.completed);
     const totalSessions = sessions.length;
-    const successRate = totalSessions > 0 ? Math.round((completedSessions.length / totalSessions) * 100) : 0;
-    const totalFocusTime = completedSessions
-      .filter(s => s.sessionType === 'focus')
-      .reduce((acc, s) => acc + s.duration, 0);
+    const successRate = Math.round((completedSessions.length / totalSessions) * 100);
+    
+    // More efficient calculation using reduce for both filter and sum
+    const totalFocusTime = sessions.reduce((acc, s) => {
+      return s.sessionType === 'focus' && s.completed ? acc + s.duration : acc;
+    }, 0);
 
-    // Calculate current streak based on any session activity (not just completed)
-    const sessionDates = sessions
-      .map(s => format(new Date(s.startTime), 'yyyy-MM-dd'))
-      .filter((date, index, arr) => arr.indexOf(date) === index)
-      .sort()
-      .reverse();
+    // Calculate current streak with optimized date processing
+    const uniqueDates = new Set(
+      sessions.map(s => format(new Date(s.startTime), 'yyyy-MM-dd'))
+    );
+    const sessionDates = Array.from(uniqueDates).sort().reverse();
 
     let currentStreak = 0;
     const today = format(new Date(), 'yyyy-MM-dd');
@@ -45,28 +58,38 @@ export default function Analytics() {
       }
     }
 
-    // Weekly data
+    // Weekly data with more efficient processing
     const weekStart = startOfWeek(new Date());
     const weekEnd = endOfWeek(new Date());
     const weekDays = eachDayOfInterval({ start: weekStart, end: weekEnd });
     
+    // Group sessions by date first to avoid repeated filtering
+    const sessionsByDate = new Map<string, typeof sessions>();
+    sessions.forEach(s => {
+      const dayStr = format(new Date(s.startTime), 'yyyy-MM-dd');
+      if (!sessionsByDate.has(dayStr)) {
+        sessionsByDate.set(dayStr, []);
+      }
+      sessionsByDate.get(dayStr)!.push(s);
+    });
+    
     const weeklyData = weekDays.map(day => {
       const dayStr = format(day, 'yyyy-MM-dd');
-      const daySessions = sessions.filter(s => 
-        format(new Date(s.startTime), 'yyyy-MM-dd') === dayStr
-      );
+      const daySessions = sessionsByDate.get(dayStr) || [];
+      
+      const focusTime = daySessions.reduce((acc, s) => {
+        return s.sessionType === 'focus' && s.completed ? acc + s.duration : acc;
+      }, 0) / 60; // Convert to minutes
       
       return {
         date: format(day, 'EEE'),
         sessions: daySessions.length,
-        focusTime: daySessions
-          .filter(s => s.sessionType === 'focus' && s.completed)
-          .reduce((acc, s) => acc + s.duration, 0) / 60, // Convert to minutes
+        focusTime,
       };
     });
 
     return {
-      totalSessions: totalSessions,
+      totalSessions,
       successRate,
       totalFocusTime: Math.round(totalFocusTime / 3600), // Convert to hours
       currentStreak,
@@ -411,4 +434,8 @@ export default function Analytics() {
       </div>
     </div>
   );
-}
+});
+
+Analytics.displayName = 'Analytics';
+
+export default Analytics;
