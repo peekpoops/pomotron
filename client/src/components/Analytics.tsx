@@ -326,84 +326,57 @@ export default function Analytics() {
                 ) : (
                   Object.entries(recentIntentions)
                     .sort(([a], [b]) => b.localeCompare(a)) // Sort by date descending
-                    .map(([dateKey, daySessions], index) => {
+                    .map(([dateKey, daySessions]) => {
                       const date = new Date(dateKey);
                       const dayLabel = isToday(date) 
                         ? 'Today' 
                         : format(date, 'EEEE, MMM d');
                       
                       return (
-                        <div key={dateKey} className="relative">
-                          {/* Timeline connector */}
-                          {index !== 0 && (
-                            <div className="absolute -top-4 left-6 w-0.5 h-4 bg-gradient-to-b from-accent/40 to-transparent" />
-                          )}
-                          
-                          {/* Day header with timeline node */}
-                          <div className="flex items-center space-x-4 mb-4">
-                            <div className="relative flex-shrink-0">
-                              <div className="w-3 h-3 bg-accent rounded-full border-2 border-background shadow-lg" />
-                              <div className="absolute inset-0 w-3 h-3 bg-accent/30 rounded-full animate-ping" />
+                        <div key={dateKey} className="space-y-3">
+                          <div className="flex items-center space-x-3 bg-gradient-to-r from-accent/10 to-transparent rounded-lg p-3 border-l-4 border-accent/60">
+                            <div className="text-sm font-orbitron font-bold text-foreground">
+                              {dayLabel}
                             </div>
-                            <div className="flex items-center justify-between flex-1 min-w-0">
-                              <h3 className="text-base font-orbitron font-bold text-foreground">
-                                {dayLabel}
-                              </h3>
-                              <div className="flex items-center space-x-2 text-xs text-muted-foreground">
-                                <span className="font-tech-mono">
-                                  {daySessions.reduce((total, s) => total + Math.round(s.duration / 60), 0)}min total
-                                </span>
-                                <div className="w-1 h-1 bg-muted-foreground/50 rounded-full" />
-                                <span>{daySessions.length} session{daySessions.length !== 1 ? 's' : ''}</span>
-                              </div>
-                            </div>
+                            <div className="flex-1" />
+                            <Badge variant="secondary" className="text-xs font-tech-mono bg-accent/20 text-accent border-accent/40">
+                              {daySessions.length} session{daySessions.length !== 1 ? 's' : ''}
+                            </Badge>
                           </div>
                           
-                          {/* Sessions list */}
-                          <div className="ml-7 space-y-3 pb-6">
-                            {daySessions.map((session, sessionIndex) => {
+                          <div className="space-y-2">
+                            {daySessions.map((session, index) => {
                               const focusTimeMinutes = Math.round(session.duration / 60);
-                              const colorIndex = sessionIndex % 4;
-                              const borderColor = colorIndex === 0 ? 'border-l-primary/60' :
-                                                 colorIndex === 1 ? 'border-l-secondary/60' :
-                                                 colorIndex === 2 ? 'border-l-accent/60' :
-                                                 'border-l-green-400/60';
-                              
                               return (
                                 <div 
                                   key={session.id} 
-                                  className={`relative p-4 rounded-lg bg-gradient-to-r from-background/80 to-background/40 border-l-4 ${borderColor} hover:from-background/90 hover:to-background/60 transition-all duration-200 group`}
+                                  className="bg-card/50 rounded-md p-3 border border-border/40 hover:border-accent/40 transition-colors"
                                 >
-                                  <div className="flex items-start justify-between">
+                                  <div className="flex items-start justify-between mb-2">
                                     <div className="flex-1 min-w-0">
-                                      <div className="flex items-center space-x-2 mb-2">
-                                        <div className="text-sm font-medium text-foreground truncate">
-                                          {session.task}
-                                        </div>
-                                        {session.completed && (
-                                          <div className="w-1.5 h-1.5 bg-green-400 rounded-full flex-shrink-0" />
-                                        )}
+                                      <div className="text-sm font-medium text-foreground truncate mb-1">
+                                        {session.task}
                                       </div>
-                                      <p className="text-xs text-muted-foreground mb-3 leading-relaxed">
+                                      <div className="text-xs text-muted-foreground line-clamp-2">
                                         {session.why}
-                                      </p>
-                                      <div className="flex items-center justify-between">
-                                        <div className="text-xs text-muted-foreground flex items-center">
-                                          <Clock className="h-3 w-3 mr-1.5" />
-                                          {format(new Date(session.startTime), 'h:mm a')}
-                                        </div>
-                                        <Badge 
-                                          variant={session.completed ? "default" : "outline"} 
-                                          className="text-xs font-tech-mono"
-                                        >
-                                          {focusTimeMinutes}min
-                                        </Badge>
                                       </div>
                                     </div>
+                                    <div className="flex items-center space-x-1 ml-3">
+                                      <Badge 
+                                        variant={session.completed ? "default" : "secondary"} 
+                                        className="text-xs font-tech-mono"
+                                      >
+                                        {focusTimeMinutes}min
+                                      </Badge>
+                                      {session.completed && (
+                                        <div className="w-2 h-2 bg-green-400 rounded-full" />
+                                      )}
+                                    </div>
                                   </div>
-                                  
-                                  {/* Hover effect indicator */}
-                                  <div className="absolute inset-0 border border-transparent group-hover:border-accent/20 rounded-lg pointer-events-none transition-all duration-200" />
+                                  <div className="text-xs text-muted-foreground flex items-center">
+                                    <Clock className="h-3 w-3 mr-1" />
+                                    {format(new Date(session.startTime), 'h:mm a')}
+                                  </div>
                                 </div>
                               );
                             })}
