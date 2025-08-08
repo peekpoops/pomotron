@@ -828,7 +828,7 @@
   .timer-display,
   div.timer-display,
   .mobile-timer-large {
-    font-size: clamp(5rem, 25vw, 8.5rem) !important;
+    font-size: clamp(4rem, 18vw, 6.5rem) !important;
     line-height: 0.8 !important;
     max-width: 100vw !important;
     overflow: hidden !important;
@@ -837,12 +837,13 @@
   }
 }
 
-@media (max-width: 375px) {
+/* iPhone SE and very small screens */
+@media (max-width: 320px) {
   .timer-display,
   div.timer-display,
   .mobile-timer-large {
-    font-size: clamp(5rem, 25vw, 8.5rem) !important;
-    line-height: 0.8 !important;
+    font-size: clamp(3.5rem, 16vw, 5.5rem) !important;
+    line-height: 0.75 !important;
     max-width: 100vw !important;
     overflow: hidden !important;
     word-break: keep-all !important;
