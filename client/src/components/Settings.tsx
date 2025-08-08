@@ -411,17 +411,21 @@ export default function Settings() {
       </Card>
 
       {/* Support Section */}
-      <Card className="neon-border glass-morphism mt-8 relative animate-float animate-glow-pulse">
-        <div className="absolute -top-1 -right-1 w-3 h-3 bg-accent rounded-full animate-ping"></div>
-        <div className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-accent rounded-full"></div>
+      <Card className="neon-border glass-morphism mt-8 relative animate-float retro-support-card">
+        <div className="absolute inset-0 neon-scanlines opacity-10 pointer-events-none rounded-lg"></div>
+        <div className="absolute inset-0 retro-grid opacity-5 pointer-events-none rounded-lg"></div>
+        <div className="absolute -top-1 -right-1 w-3 h-3 bg-neon-pink rounded-full animate-ping shadow-lg shadow-neon-pink/50"></div>
+        <div className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-neon-pink rounded-full shadow-sm shadow-neon-pink/50"></div>
         <CardHeader>
-          <CardTitle className="section-title text-base sm:text-lg text-secondary flex items-center">
-            <Coffee className="h-4 w-4 sm:h-5 sm:w-5 mr-2 animate-pulse" />
-            Support Pomotron
-            <span className="ml-2 text-xs bg-accent/20 text-accent px-2 py-1 rounded-full animate-pulse">New!</span>
+          <CardTitle className="section-title text-base sm:text-lg flex items-center font-mono tracking-wide">
+            <Coffee className="h-4 w-4 sm:h-5 sm:w-5 mr-2 drop-shadow-neon text-electric-blue animate-pulse" />
+            <span className="text-electric-blue neon-text">&gt; SUPPORT_POMOTRON</span>
+            <span className="ml-2 text-xs bg-neon-pink/20 text-neon-pink px-2 py-1 rounded border border-neon-pink/30 animate-pulse font-mono">
+              NEW!
+            </span>
           </CardTitle>
-          <CardDescription className="text-xs sm:text-sm text-muted-foreground">
-            Help improve Pomotron and support its development
+          <CardDescription className="text-xs sm:text-sm text-muted-foreground font-mono tracking-wide">
+            &lt; Enhance productivity &amp;&amp; support development /&gt;
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -429,34 +433,45 @@ export default function Settings() {
             <Button
               onClick={() => setShowFeedbackModal(true)}
               variant="outline"
-              className="group flex-1 bg-gradient-to-r from-blue-500/15 to-purple-500/15 border-blue-500/30 hover:border-blue-400/60 hover:shadow-xl hover:shadow-blue-500/30 transform hover:scale-[1.03] transition-all duration-500 animate-float-gentle relative overflow-hidden before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-white/10 before:to-transparent before:translate-x-[-100%] hover:before:translate-x-[100%] before:transition-transform before:duration-700 before:ease-out"
+              className="group flex-1 relative overflow-hidden retro-feedback-btn animate-float-gentle"
             >
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-400/10 to-purple-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              <div className="absolute inset-0 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 animate-glow-pulse" />
-              <MessageCircle className="h-4 w-4 mr-2 group-hover:animate-bounce group-hover:text-blue-300 relative z-10 transition-colors duration-300" />
-              <span className="relative z-10 font-medium group-hover:text-blue-100 transition-colors duration-300">✨ Share Feedback</span>
+              <div className="absolute inset-0 bg-gradient-to-r from-electric-blue/20 to-synthwave-purple/20 opacity-80" />
+              <div className="absolute inset-0 neon-scanlines opacity-30" />
+              <div className="absolute inset-0 retro-grid opacity-20" />
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000 ease-out" />
+              <MessageCircle className="h-4 w-4 mr-2 relative z-10 drop-shadow-neon group-hover:animate-pulse transition-all duration-300" />
+              <span className="relative z-10 font-mono font-bold text-sm tracking-wide neon-text group-hover:text-electric-blue transition-all duration-300">
+                &gt; SHARE_FEEDBACK
+              </span>
             </Button>
             <Button
               onClick={() => window.open('https://ko-fi.com/pomotron', '_blank')}
               variant="outline"
-              className="group flex-1 bg-gradient-to-r from-yellow-500/15 to-orange-500/15 border-yellow-500/30 hover:border-yellow-400/60 hover:shadow-xl hover:shadow-yellow-500/30 transform hover:scale-[1.03] transition-all duration-500 animate-float-gentle relative overflow-hidden before:absolute before:inset-0 before:bg-gradient-to-r before:from-transparent before:via-white/10 before:to-transparent before:translate-x-[-100%] hover:before:translate-x-[100%] before:transition-transform before:duration-700 before:ease-out"
+              className="group flex-1 relative overflow-hidden retro-coffee-btn animate-float-gentle"
               style={{ animationDelay: '1s' }}
             >
-              <div className="absolute inset-0 bg-gradient-to-r from-yellow-400/10 to-orange-400/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              <div className="absolute inset-0 rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 animate-coffee-glow" />
-              <Coffee className="h-4 w-4 mr-2 group-hover:animate-bounce group-hover:text-yellow-300 relative z-10 transition-colors duration-300" />
-              <span className="relative z-10 font-medium group-hover:text-yellow-100 transition-colors duration-300">☕ Buy me a coffee</span>
+              <div className="absolute inset-0 bg-gradient-to-r from-sunset-orange/20 to-neon-pink/20 opacity-80" />
+              <div className="absolute inset-0 neon-scanlines opacity-30" />
+              <div className="absolute inset-0 retro-grid opacity-20" />
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000 ease-out" />
+              <Coffee className="h-4 w-4 mr-2 relative z-10 drop-shadow-neon group-hover:animate-pulse transition-all duration-300" />
+              <span className="relative z-10 font-mono font-bold text-sm tracking-wide neon-text group-hover:text-sunset-orange transition-all duration-300">
+                &gt; BUY_COFFEE
+              </span>
             </Button>
           </div>
-          <div className="text-center mt-4 space-y-2">
-            <p className="text-xs text-muted-foreground/80 animate-pulse">
-              Your feedback and support help make Pomotron better for everyone
-            </p>
-            <div className="flex justify-center items-center space-x-1 text-xs text-accent/60">
-              <span className="animate-bounce" style={{ animationDelay: '0s' }}>💙</span>
-              <span className="animate-bounce" style={{ animationDelay: '0.2s' }}>Thank</span>
-              <span className="animate-bounce" style={{ animationDelay: '0.4s' }}>you!</span>
-              <span className="animate-bounce" style={{ animationDelay: '0.6s' }}>💙</span>
+          <div className="text-center mt-4 space-y-3">
+            <div className="relative">
+              <p className="text-xs font-mono tracking-wide text-electric-blue/80 neon-text animate-pulse">
+                &lt; HELP_IMPROVE_POMOTRON /&gt;
+              </p>
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-electric-blue/10 to-transparent animate-pulse"></div>
+            </div>
+            <div className="flex justify-center items-center space-x-2 text-xs">
+              <span className="font-mono text-synthwave-purple/70 animate-bounce" style={{ animationDelay: '0s' }}>[</span>
+              <span className="font-mono text-neon-pink/80 animate-bounce neon-text" style={{ animationDelay: '0.2s' }}>THANK</span>
+              <span className="font-mono text-electric-blue/80 animate-bounce neon-text" style={{ animationDelay: '0.4s' }}>YOU</span>
+              <span className="font-mono text-synthwave-purple/70 animate-bounce" style={{ animationDelay: '0.6s' }}>]</span>
             </div>
           </div>
         </CardContent>

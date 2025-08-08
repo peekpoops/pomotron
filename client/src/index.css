@@ -37,6 +37,13 @@
   --charcoal: hsl(240, 20%, 15%);
 }
 
+/* Retro color utility classes */
+.text-neon-pink { color: var(--neon-pink); }
+.text-electric-blue { color: var(--electric-blue); }
+.text-synthwave-purple { color: var(--synthwave-purple); }
+.text-sunset-orange { color: var(--sunset-orange); }
+.text-lime-green { color: var(--lime-green); }
+
 .minimal-theme {
   --background: hsl(0, 0%, 100%);
   --foreground: hsl(224, 71%, 4%);
@@ -943,6 +950,93 @@
 
 .animate-coffee-glow {
   animation: coffee-glow 2s ease-in-out infinite;
+}
+
+/* Retro aesthetic classes for support buttons */
+.retro-feedback-btn {
+  border: 2px solid var(--electric-blue);
+  background: rgba(78, 205, 196, 0.05);
+  box-shadow: 
+    0 0 10px rgba(78, 205, 196, 0.3),
+    inset 0 0 10px rgba(78, 205, 196, 0.1);
+  transition: all 0.3s ease;
+}
+
+.retro-feedback-btn:hover {
+  border-color: var(--electric-blue);
+  box-shadow: 
+    0 0 20px rgba(78, 205, 196, 0.6),
+    0 0 40px rgba(78, 205, 196, 0.3),
+    inset 0 0 20px rgba(78, 205, 196, 0.2);
+  transform: scale(1.02) translateY(-2px);
+}
+
+.retro-coffee-btn {
+  border: 2px solid var(--sunset-orange);
+  background: rgba(255, 165, 102, 0.05);
+  box-shadow: 
+    0 0 10px rgba(255, 165, 102, 0.3),
+    inset 0 0 10px rgba(255, 165, 102, 0.1);
+  transition: all 0.3s ease;
+}
+
+.retro-coffee-btn:hover {
+  border-color: var(--sunset-orange);
+  box-shadow: 
+    0 0 20px rgba(255, 165, 102, 0.6),
+    0 0 40px rgba(255, 165, 102, 0.3),
+    inset 0 0 20px rgba(255, 165, 102, 0.2);
+  transform: scale(1.02) translateY(-2px);
+}
+
+.neon-scanlines {
+  background-image: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(255, 255, 255, 0.03) 2px,
+    rgba(255, 255, 255, 0.03) 4px
+  );
+  animation: scanlines-flicker 0.1s linear infinite;
+}
+
+.retro-grid {
+  background-image: 
+    linear-gradient(90deg, rgba(255, 107, 157, 0.1) 1px, transparent 1px),
+    linear-gradient(rgba(255, 107, 157, 0.1) 1px, transparent 1px);
+  background-size: 20px 20px;
+  animation: grid-drift 10s linear infinite;
+}
+
+@keyframes scanlines-flicker {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.5; }
+}
+
+@keyframes grid-drift {
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(20px, 20px); }
+}
+
+/* Retro support card styling */
+.retro-support-card {
+  border: 2px solid var(--neon-pink);
+  background: linear-gradient(135deg, 
+    rgba(255, 107, 157, 0.05) 0%, 
+    rgba(78, 205, 196, 0.05) 50%, 
+    rgba(139, 95, 191, 0.05) 100%);
+  box-shadow: 
+    0 0 20px rgba(255, 107, 157, 0.2),
+    inset 0 0 20px rgba(255, 107, 157, 0.05);
+  transition: all 0.3s ease;
+}
+
+.retro-support-card:hover {
+  box-shadow: 
+    0 0 30px rgba(255, 107, 157, 0.4),
+    0 0 50px rgba(255, 107, 157, 0.2),
+    inset 0 0 30px rgba(255, 107, 157, 0.1);
+  transform: translateY(-3px) scale(1.01);
 }
 
 /* Additional analytics enhancements */
