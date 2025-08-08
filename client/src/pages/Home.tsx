@@ -9,12 +9,26 @@ import { useTimer } from '@/hooks/useTimer';
 import { initializeAudio } from '@/lib/sounds';
 import { ViewType } from '@/types';
 
+
 export default function Home() {
   const [currentView, setCurrentView] = useState<ViewType>('timer');
   const { theme } = useTheme();
-  
+
+  // Tracks whether the intention modal is open, to prevent triggering shortcuts while it's visible
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   // Move timer state to Home level to persist across tab switches
   const timerHook = useTimer();
+  
+  // 🔽 For keyboard shortcuts to work
+  const {
+    timerState,
+    startSession,
+    pauseSession,
+    resumeSession,
+    resetSession,
+    endSession,
+  } = useTimer();
 
   useEffect(() => {
     // Initialize audio on first user interaction
@@ -53,12 +67,29 @@ export default function Home() {
           event.preventDefault();
           setCurrentView('timer');
           break;
-      }
-    };
+        case 'r':
+          event.preventDefault();
+          timerHook.resetSession();
+          break; // Added break here
+        case 'escape': 
+          event.preventDefault();
+          timerHook.endSession();
+          break; // Added break here
+        case ' ':
+          event.preventDefault();
+          if (timerHook.timerState === 'running') {
+          timerHook.pauseSession();
+          } else if (timerHook.timerState === 'paused') {
+          timerHook.resumeSession();
+          } 
+          break; // Added break here
+        }
+     };
+          
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, []);
+  }, [setCurrentView, timerHook], []);
 
   const navigation = [
     { id: 'timer' as ViewType, label: 'Timer', icon: Zap, shortcut: 'T' },
@@ -119,7 +150,7 @@ export default function Home() {
 
       {/* Main Content */}
       <main className="container mx-auto px-2 sm:px-4 py-4 sm:py-8 relative">
-        {currentView === 'timer' && <Timer onOpenSettings={() => setCurrentView('settings')} timerHook={timerHook} />}
+        {currentView === 'timer' && <Timer onOpenSettings={() => setCurrentView('settings')} timerHook={timerHook} onModalStateChange={setIsModalOpen}/>}   
         {currentView === 'analytics' && <Analytics />}
         {currentView === 'settings' && <SettingsComponent />}
       </main>

@@ -15,6 +15,7 @@ import { GlitchRun } from './GlitchRun';
 interface TimerProps {
   onOpenSettings: () => void;
   timerHook?: ReturnType<typeof useTimer>;
+  onModalStateChange?: (isOpen: boolean) => void;
 }
 
 const motivationalQuotes = [
@@ -122,7 +123,7 @@ const motivationalQuotes = [
   { text: "We must be free not because we claim freedom, but because we practice it.", author: "William Faulkner" }
 ];
 
-export default function Timer({ onOpenSettings, timerHook: externalTimerHook }: TimerProps) {
+export default function Timer({ onOpenSettings, timerHook: externalTimerHook, onModalStateChange }: TimerProps) {
   const internalTimerHook = useTimer();
   const timerHook = externalTimerHook || internalTimerHook;
   const { timerState, startSession, pauseSession, resumeSession, resetSession, endSession, formatTime, getProgress, sessions: timerSessions } = timerHook;
@@ -143,6 +144,11 @@ export default function Timer({ onOpenSettings, timerHook: externalTimerHook }: 
   });
   
   const [showIntentionModal, setShowIntentionModal] = useState(false);
+  
+  // 🔽 Tell parent about modal state
+  useEffect(() => {
+    onModalStateChange?.(showIntentionModal);
+  }, [showIntentionModal]);
   
   // Helper function to get a random quote
   const getRandomQuote = () => {
