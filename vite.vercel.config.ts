@@ -17,7 +17,8 @@ export default defineConfig({
     emptyOutDir: true,
     rollupOptions: {
       input: "index.html"
-    }
+    },
+    assetsInlineLimit: 0, // Force favicon to be copied as separate file
   },
   publicDir: path.resolve(__dirname, "client", "public"),
 });
