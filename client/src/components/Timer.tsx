@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, memo, useCallback } from 'react';
-import { Clock, Play, Pause, RotateCcw, Square, Settings2, Target, Zap, Flame, TrendingUp, Heart, Lightbulb } from 'lucide-react';
+import { Clock, Play, Pause, RotateCcw, Square, Settings2, Target, Gamepad2, Flame, TrendingUp, Heart, Lightbulb } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -575,7 +575,7 @@ const Timer = memo(({ onOpenSettings, timerHook: externalTimerHook, onModalState
                         : 'Play GlitchRun - Quick 10s dopamine boost!'
                     }
                   >
-                    <Zap className="h-4 w-4 mr-1 button-icon" />
+                    <Gamepad2 className="h-4 w-4 mr-1 button-icon" />
                     <span className="button-text">GlitchRun</span>
                   </Button>
                 )}
@@ -699,7 +699,7 @@ const Timer = memo(({ onOpenSettings, timerHook: externalTimerHook, onModalState
                 <div className="flex items-center justify-between p-3 rounded-lg bg-gradient-to-r from-accent/10 to-secondary/10 border border-accent/20 hover:border-accent/40 transition-all duration-300">
                   <div className="flex items-center space-x-3">
                     <div className="relative">
-                      <Zap className="h-6 w-6 text-accent animate-bounce" />
+                      <Clock className="h-6 w-6 text-accent animate-bounce" />
                       <div className="absolute inset-0 animate-spin">
                         <div className="h-6 w-6 border-2 border-transparent border-t-accent/30 rounded-full"></div>
                       </div>
