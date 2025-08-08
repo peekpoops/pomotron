@@ -1,4 +1,5 @@
 import express, { type Request, Response, NextFunction } from "express";
+import path from "path";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 
@@ -34,6 +35,18 @@ app.use((req, res, next) => {
   });
 
   next();
+});
+
+// Add favicon route with proper cache headers
+app.get('/favicon.ico', (req, res) => {
+  res.setHeader('Cache-Control', 'public, max-age=31536000'); // 1 year cache
+  res.setHeader('Content-Type', 'image/x-icon');
+  res.sendFile(path.resolve(__dirname, '../favicon.ico'), (err) => {
+    if (err) {
+      // Fallback to the public folder version
+      res.sendFile(path.resolve(__dirname, '../client/public/pomotron-favicon.ico'));
+    }
+  });
 });
 
 (async () => {
