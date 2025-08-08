@@ -8,14 +8,14 @@ import { useTheme } from '@/hooks/useTheme';
 import { useTimer } from '@/hooks/useTimer';
 import { initializeAudio } from '@/lib/sounds';
 import { ViewType } from '@/types';
-import LoadingScreen from '@/components/LoadingScreen';
-import PixelTransition from '@/components/PixelTransition';
+// import LoadingScreen from '@/components/LoadingScreen';
+// import PixelTransition from '@/components/PixelTransition';
 
 
 export default function Home() {
   const [currentView, setCurrentView] = useState<ViewType>('timer');
-  const [showViewTransition, setShowViewTransition] = useState(false);
-  const [showAnalyticsLoading, setShowAnalyticsLoading] = useState(false);
+  // const [showViewTransition, setShowViewTransition] = useState(false);
+  // const [showAnalyticsLoading, setShowAnalyticsLoading] = useState(false);
   const { theme } = useTheme();
 
   // Tracks whether the intention modal is open, to prevent triggering shortcuts while it's visible
@@ -95,23 +95,10 @@ export default function Home() {
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [setCurrentView, timerHook]);
 
-  // Handle view transitions with loading screens
+  // Handle view changes - simplified without loading screens
   const handleViewChange = (newView: ViewType) => {
     if (newView === currentView) return;
-
-    if (newView === 'analytics') {
-      setShowAnalyticsLoading(true);
-      setTimeout(() => {
-        setCurrentView(newView);
-        setShowAnalyticsLoading(false);
-      }, 2000);
-    } else {
-      setShowViewTransition(true);
-      setTimeout(() => {
-        setCurrentView(newView);
-        setShowViewTransition(false);
-      }, 1000);
-    }
+    setCurrentView(newView);
   };
 
   const navigation = [
@@ -178,7 +165,7 @@ export default function Home() {
         {currentView === 'settings' && <SettingsComponent onClose={() => handleViewChange('timer')} />}
       </main>
 
-      {/* Loading Screens */}
+      {/* Loading Screens - COMMENTED OUT
       <LoadingScreen
         isLoading={showAnalyticsLoading}
         loadingType="data-sync"
@@ -192,6 +179,7 @@ export default function Home() {
         direction="in"
         pattern="diagonal"
       />
+      */}
     </div>
   );
 }

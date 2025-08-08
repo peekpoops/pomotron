@@ -40,6 +40,12 @@ Preferred communication style: Simple, everyday language.
 - **Caching Strategy**: Static asset caching with dynamic content management
 - **Offline Support**: Local storage persistence enables full offline functionality
 
+## Loading Screen System
+- **Initial Startup Loading**: 8-bit pixel art loading screen with retro synthwave aesthetic on app initialization
+- **Retro Visual Effects**: Animated pixel art frames, scanlines, CRT screen effects, and neon glows
+- **Loading Messages**: Context-aware retro-themed loading messages with animated progress bars
+- **Simplified Implementation**: Only startup loading retained, timer and navigation transitions removed for simplicity
+
 ## Core Timer Logic
 - **Timer State Management**: Custom useTimer hook managing Pomodoro cycles with focus/break transitions
 - **Settings Integration**: Configurable durations, auto-start, and cycle management with real-time settings updates

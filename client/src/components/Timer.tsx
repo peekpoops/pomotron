@@ -11,8 +11,8 @@ import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { Settings, Session } from '@/types';
 import IntentionModal from './IntentionModal';
 import { GlitchRun } from './GlitchRun';
-import LoadingScreen from './LoadingScreen';
-import PixelTransition from './PixelTransition';
+// import LoadingScreen from './LoadingScreen';
+// import PixelTransition from './PixelTransition';
 
 interface TimerProps {
   onOpenSettings: () => void;
@@ -146,8 +146,8 @@ export default function Timer({ onOpenSettings, timerHook: externalTimerHook, on
   });
   
   const [showIntentionModal, setShowIntentionModal] = useState(false);
-  const [showTimerLoading, setShowTimerLoading] = useState(false);
-  const [showTransition, setShowTransition] = useState(false);
+  // const [showTimerLoading, setShowTimerLoading] = useState(false);
+  // const [showTransition, setShowTransition] = useState(false);
   
   // 🔽 Tell parent about modal state
   useEffect(() => {
@@ -229,23 +229,13 @@ export default function Timer({ onOpenSettings, timerHook: externalTimerHook, on
     if (timerState.sessionType === 'focus') {
       setShowIntentionModal(true);
     } else {
-      // Show loading screen before starting break session
-      setShowTimerLoading(true);
-      setTimeout(() => {
-        startSession();
-        setShowTimerLoading(false);
-      }, 1500);
+      startSession();
     }
   };
 
   const handleIntentionSet = (intention?: { task: string; why: string }) => {
     setShowIntentionModal(false);
-    // Show loading screen before starting focus session
-    setShowTimerLoading(true);
-    setTimeout(() => {
-      startSession(intention);
-      setShowTimerLoading(false);
-    }, 1500);
+    startSession(intention);
   };
 
   // Calculate today's completed focus cycles with reactive updates from timer hook
@@ -293,11 +283,11 @@ export default function Timer({ onOpenSettings, timerHook: externalTimerHook, on
   const getTimerDisplayColor = () => {
     switch (timerState.sessionType) {
       case 'focus':
-        return 'text-primary neon-text';
+        return 'text-primary';
       case 'break':
-        return 'text-emerald-400 break-glow';
+        return 'text-emerald-400';
       case 'longBreak':
-        return 'text-purple-400 long-break-glow';
+        return 'text-purple-400';
     }
   };
 
@@ -781,7 +771,7 @@ export default function Timer({ onOpenSettings, timerHook: externalTimerHook, on
         onClose={handleGlitchRunClose}
       />
 
-      {/* Loading Screen for Timer Start */}
+      {/* Loading Screen for Timer Start - COMMENTED OUT
       <LoadingScreen
         isLoading={showTimerLoading}
         loadingType="timer-start"
@@ -789,13 +779,14 @@ export default function Timer({ onOpenSettings, timerHook: externalTimerHook, on
         onComplete={() => setShowTimerLoading(false)}
       />
 
-      {/* Pixel Transition Effect */}
+      Pixel Transition Effect - COMMENTED OUT
       <PixelTransition
         isActive={showTransition}
         onComplete={() => setShowTransition(false)}
         direction="in"
         pattern="blocks"
       />
+      */}
     </div>
   );
 }
