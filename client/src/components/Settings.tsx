@@ -341,13 +341,14 @@ export default function Settings() {
             </div>
 
             {/* Bottom action buttons */}
-            <div className="flex justify-center sm:justify-end space-x-2 pt-4 border-t border-border/20">
+            <div className="flex justify-center space-x-2 pt-4 border-t border-border/20">
               <Button
                 onClick={handleSave}
-                className="btn-primary px-4 sm:px-6 py-2 text-xs sm:text-sm"
+                size="sm"
+                className="btn-primary p-2 sm:px-3 sm:py-2 text-xs sm:text-sm"
               >
-                <Save className="h-3 w-3 sm:h-4 sm:w-4 mr-2" />
-                Save Changes
+                <Save className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-2" />
+                <span className="hidden sm:inline">Save</span>
               </Button>
             </div>
           </CardContent>
