@@ -750,11 +750,10 @@
   }
 }
 
-/* Large Display Optimizations */
+/* Large Display Optimizations - Subtle glow matching normal intensity */
 @media (min-width: 1024px) {
   .timer-display {
-    text-shadow: 0 0 8px currentColor, 0 0 12px currentColor, 0 0 16px currentColor;
-    filter: drop-shadow(0 0 6px currentColor);
+    text-shadow: 0 0 20px currentColor, 0 0 40px currentColor, 0 0 60px currentColor;
   }
 
   .glass-morphism {
@@ -776,8 +775,7 @@
 
 @media (min-width: 1280px) {
   .timer-display {
-    text-shadow: 0 0 10px currentColor, 0 0 15px currentColor, 0 0 20px currentColor;
-    filter: drop-shadow(0 0 8px currentColor);
+    text-shadow: 0 0 20px currentColor, 0 0 40px currentColor, 0 0 60px currentColor;
   }
 
   .glass-morphism {
@@ -794,33 +792,27 @@
     @apply px-4;
   }
 
-  .timer-display {
-    @apply text-7xl;
-    line-height: 0.9;
-  }
-
   .btn-primary, .btn-secondary, .btn-tertiary, .btn-danger {
     @apply px-6 py-3 text-sm;
   }
 }
 
-@media (max-width: 480px) {
-  .timer-display {
-    @apply text-6xl;
-    line-height: 0.85;
+/* Mobile timer enhancements - Force larger size on mobile with higher specificity */
+@media (max-width: 768px) {
+  .timer-display,
+  div.timer-display,
+  .mobile-timer-large {
+    font-size: clamp(5rem, 14vw, 8rem) !important;
+    line-height: 0.9 !important;
   }
 }
 
-/* Mobile timer enhancements */
-.mobile-timer-large {
-  @media (max-width: 768px) {
-    font-size: clamp(4rem, 12vw, 7rem) !important;
-    line-height: 0.9;
-  }
-  
-  @media (max-width: 480px) {
-    font-size: clamp(3.5rem, 15vw, 6rem) !important;
-    line-height: 0.85;
+@media (max-width: 480px) {
+  .timer-display,
+  div.timer-display,
+  .mobile-timer-large {
+    font-size: clamp(4rem, 18vw, 7rem) !important;
+    line-height: 0.85 !important;
   }
 }
 
