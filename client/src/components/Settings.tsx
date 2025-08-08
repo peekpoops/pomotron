@@ -338,10 +338,10 @@ export default function Settings() {
               <Button
                 onClick={handleSave}
                 size="sm"
-                  className="btn-primary p-2 sm:px-3 sm:py-2 text-xs sm:text-sm"
-                >
-                  <Save className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-2" />
-                  <span className="hidden sm:inline">Save</span>
+                className="btn-primary p-2 sm:px-3 sm:py-2 text-xs sm:text-sm"
+              >
+                <Save className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-2" />
+                <span className="hidden sm:inline">Save</span>
               </Button>
             </div>
           </CardContent>
