@@ -20,8 +20,8 @@ export default function Analytics() {
       .filter(s => s.sessionType === 'focus')
       .reduce((acc, s) => acc + s.duration, 0);
 
-    // Calculate current streak
-    const sessionDates = completedSessions
+    // Calculate current streak based on any session activity (not just completed)
+    const sessionDates = sessions
       .map(s => format(new Date(s.startTime), 'yyyy-MM-dd'))
       .filter((date, index, arr) => arr.indexOf(date) === index)
       .sort()
@@ -52,7 +52,7 @@ export default function Analytics() {
     
     const weeklyData = weekDays.map(day => {
       const dayStr = format(day, 'yyyy-MM-dd');
-      const daySessions = completedSessions.filter(s => 
+      const daySessions = sessions.filter(s => 
         format(new Date(s.startTime), 'yyyy-MM-dd') === dayStr
       );
       
@@ -60,7 +60,7 @@ export default function Analytics() {
         date: format(day, 'EEE'),
         sessions: daySessions.length,
         focusTime: daySessions
-          .filter(s => s.sessionType === 'focus')
+          .filter(s => s.sessionType === 'focus' && s.completed)
           .reduce((acc, s) => acc + s.duration, 0) / 60, // Convert to minutes
       };
     });
