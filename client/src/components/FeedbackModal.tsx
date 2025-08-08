@@ -21,15 +21,26 @@ export function FeedbackModal({ open, onOpenChange }: FeedbackModalProps) {
 
   const submitFeedbackMutation = useMutation({
     mutationFn: async (feedback: InsertFeedback) => {
-      const response = await fetch("/api/feedback", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(feedback),
-      });
-      if (!response.ok) {
-        throw new Error("Failed to submit feedback");
+      try {
+        const response = await fetch("/api/feedback", {
+          method: "POST",
+          headers: { 
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+          },
+          body: JSON.stringify(feedback),
+        });
+        
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`);
+        }
+        
+        return await response.json();
+      } catch (error) {
+        console.error("Safari feedback submission error:", error);
+        throw error;
       }
-      return response.json();
     },
     onSuccess: () => {
       toast({
@@ -39,10 +50,11 @@ export function FeedbackModal({ open, onOpenChange }: FeedbackModalProps) {
       queryClient.invalidateQueries({ queryKey: ["/api/feedback"] });
       handleClose();
     },
-    onError: () => {
+    onError: (error: any) => {
+      console.error("Error submitting feedback:", error);
       toast({
         title: "Error",
-        description: "Failed to submit feedback. Please try again.",
+        description: `Failed to submit feedback: ${error?.message || 'Please try again.'}`,
         variant: "destructive",
       });
     },

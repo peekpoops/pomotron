@@ -753,8 +753,8 @@
 /* Large Display Optimizations */
 @media (min-width: 1024px) {
   .timer-display {
-    text-shadow: 0 0 40px currentColor, 0 0 80px currentColor, 0 0 120px currentColor;
-    filter: drop-shadow(0 0 30px currentColor);
+    text-shadow: 0 0 15px currentColor, 0 0 25px currentColor, 0 0 35px currentColor;
+    filter: drop-shadow(0 0 12px currentColor);
   }
 
   .glass-morphism {
@@ -776,8 +776,8 @@
 
 @media (min-width: 1280px) {
   .timer-display {
-    text-shadow: 0 0 50px currentColor, 0 0 100px currentColor, 0 0 150px currentColor;
-    filter: drop-shadow(0 0 40px currentColor);
+    text-shadow: 0 0 20px currentColor, 0 0 30px currentColor, 0 0 40px currentColor;
+    filter: drop-shadow(0 0 15px currentColor);
   }
 
   .glass-morphism {
