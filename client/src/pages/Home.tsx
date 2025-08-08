@@ -8,10 +8,14 @@ import { useTheme } from '@/hooks/useTheme';
 import { useTimer } from '@/hooks/useTimer';
 import { initializeAudio } from '@/lib/sounds';
 import { ViewType } from '@/types';
+import LoadingScreen from '@/components/LoadingScreen';
+import PixelTransition from '@/components/PixelTransition';
 
 
 export default function Home() {
   const [currentView, setCurrentView] = useState<ViewType>('timer');
+  const [showViewTransition, setShowViewTransition] = useState(false);
+  const [showAnalyticsLoading, setShowAnalyticsLoading] = useState(false);
   const { theme } = useTheme();
 
   // Tracks whether the intention modal is open, to prevent triggering shortcuts while it's visible
@@ -57,15 +61,15 @@ export default function Home() {
       switch (event.key.toLowerCase()) {
         case 'a':
           event.preventDefault();
-          setCurrentView('analytics');
+          handleViewChange('analytics');
           break;
         case 's':
           event.preventDefault();
-          setCurrentView('settings');
+          handleViewChange('settings');
           break;
         case 't':
           event.preventDefault();
-          setCurrentView('timer');
+          handleViewChange('timer');
           break;
         case 'r':
           event.preventDefault();
@@ -77,9 +81,9 @@ export default function Home() {
           break; // Added break here
         case ' ':
           event.preventDefault();
-          if (timerHook.timerState === 'running') {
+          if (timerHook.timerState.isRunning && !timerHook.timerState.isPaused) {
           timerHook.pauseSession();
-          } else if (timerHook.timerState === 'paused') {
+          } else if (timerHook.timerState.isPaused) {
           timerHook.resumeSession();
           } 
           break; // Added break here
@@ -89,7 +93,26 @@ export default function Home() {
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [setCurrentView, timerHook], []);
+  }, [setCurrentView, timerHook]);
+
+  // Handle view transitions with loading screens
+  const handleViewChange = (newView: ViewType) => {
+    if (newView === currentView) return;
+
+    if (newView === 'analytics') {
+      setShowAnalyticsLoading(true);
+      setTimeout(() => {
+        setCurrentView(newView);
+        setShowAnalyticsLoading(false);
+      }, 2000);
+    } else {
+      setShowViewTransition(true);
+      setTimeout(() => {
+        setCurrentView(newView);
+        setShowViewTransition(false);
+      }, 1000);
+    }
+  };
 
   const navigation = [
     { id: 'timer' as ViewType, label: 'Timer', icon: Zap, shortcut: 'T' },
@@ -123,7 +146,7 @@ export default function Home() {
                     <Button
                       key={item.id}
                       variant="ghost"
-                      onClick={() => setCurrentView(item.id)}
+                      onClick={() => handleViewChange(item.id)}
                       className={`nav-tab relative group font-medium transition-all duration-500 ${
                         currentView === item.id ? 'active' : ''
                       }`}
@@ -152,8 +175,23 @@ export default function Home() {
       <main className="container mx-auto px-2 sm:px-4 py-4 sm:py-8 relative">
         {currentView === 'timer' && <Timer onOpenSettings={() => setCurrentView('settings')} timerHook={timerHook} onModalStateChange={setIsModalOpen}/>}   
         {currentView === 'analytics' && <Analytics />}
-        {currentView === 'settings' && <SettingsComponent />}
+        {currentView === 'settings' && <SettingsComponent onClose={() => handleViewChange('timer')} />}
       </main>
+
+      {/* Loading Screens */}
+      <LoadingScreen
+        isLoading={showAnalyticsLoading}
+        loadingType="data-sync"
+        duration={2000}
+        onComplete={() => setShowAnalyticsLoading(false)}
+      />
+
+      <PixelTransition
+        isActive={showViewTransition}
+        onComplete={() => setShowViewTransition(false)}
+        direction="in"
+        pattern="diagonal"
+      />
     </div>
   );
 }

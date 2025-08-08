@@ -777,3 +777,132 @@
 .cycle-dot {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
+
+/* Loading screen and pixel art effects */
+.pixel-art {
+  font-family: 'Courier New', monospace;
+  line-height: 1;
+  letter-spacing: 0;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+}
+
+.scanlines {
+  position: relative;
+}
+
+.scanlines::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(255, 107, 157, 0.03) 2px,
+    rgba(255, 107, 157, 0.03) 4px
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* 8-bit loading animations */
+.loading-pixel-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  grid-template-rows: repeat(8, 1fr);
+  gap: 2px;
+}
+
+.loading-pixel {
+  width: 8px;
+  height: 8px;
+  background: var(--primary);
+  animation: pixel-glow 1s ease-in-out infinite alternate;
+}
+
+@keyframes pixel-glow {
+  from {
+    box-shadow: 0 0 5px var(--primary);
+    opacity: 0.7;
+  }
+  to {
+    box-shadow: 0 0 15px var(--primary), 0 0 25px var(--primary);
+    opacity: 1;
+  }
+}
+
+/* Pixel transition effects */
+.pixel-transition {
+  animation: pixel-fade-in 0.2s ease-out forwards;
+}
+
+@keyframes pixel-fade-in {
+  from {
+    opacity: 0;
+    transform: scale(0);
+  }
+  to {
+    opacity: 0.9;
+    transform: scale(1);
+  }
+}
+
+/* Retro CRT screen effect */
+.crt-screen {
+  position: relative;
+  background: radial-gradient(ellipse at center, #1a1a2e 0%, #0a0a0f 100%);
+}
+
+.crt-screen::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    linear-gradient(90deg, transparent 50%, rgba(255, 255, 255, 0.03) 50%),
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 1px,
+      rgba(0, 0, 0, 0.3) 1px,
+      rgba(0, 0, 0, 0.3) 2px
+    );
+  pointer-events: none;
+  animation: crt-flicker 0.15s linear infinite;
+}
+
+@keyframes crt-flicker {
+  0% { opacity: 1; }
+  98% { opacity: 1; }
+  99% { opacity: 0.98; }
+  100% { opacity: 1; }
+}
+
+/* Additional analytics enhancements */
+.analytics-card-hover {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.analytics-card-hover:hover {
+  transform: translateY(-2px) scale(1.02);
+}
+
+.retro-pulse {
+  animation: retro-pulse 2s ease-in-out infinite;
+}
+
+@keyframes retro-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(1.1); }
+}
+
+.neon-text {
+  text-shadow: 0 0 5px currentColor, 0 0 10px currentColor, 0 0 15px currentColor;
+}
