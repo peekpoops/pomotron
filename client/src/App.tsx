@@ -6,7 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { Toaster } from "@/components/ui/toaster";
 import Home from "@/pages/Home";
 import NotFound from "@/pages/not-found";
-import FeedbackAdmin from "@/pages/FeedbackAdmin";
+import FeedbackAdmin from "./pages/FeedbackAdmin";
 import LoadingScreen from "@/components/LoadingScreen";
 import { useLoading } from "@/hooks/useLoading";
 
@@ -15,7 +15,7 @@ function Router() {
     <Switch>
       <Route path="/" component={Home} />
       <Route path="/feedback-admin" component={FeedbackAdmin} />
-      <Route component={NotFound} />
+      <Route path="*" component={NotFound} />
     </Switch>
   );
 }
