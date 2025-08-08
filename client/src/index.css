@@ -797,16 +797,13 @@
   }
 }
 
-/* Mobile timer enhancements - Responsive to fit container width */
+/* Mobile timer enhancements - Force larger size on mobile with higher specificity */
 @media (max-width: 768px) {
   .timer-display,
   div.timer-display,
   .mobile-timer-large {
-    font-size: clamp(6rem, 20vw, 12rem) !important;
+    font-size: clamp(5rem, 14vw, 8rem) !important;
     line-height: 0.9 !important;
-    max-width: 100% !important;
-    width: fit-content !important;
-    text-align: center !important;
   }
 }
 
@@ -814,39 +811,8 @@
   .timer-display,
   div.timer-display,
   .mobile-timer-large {
-    font-size: clamp(4.5rem, 18vw, 10rem) !important;
+    font-size: clamp(4rem, 18vw, 7rem) !important;
     line-height: 0.85 !important;
-    max-width: 100% !important;
-    width: fit-content !important;
-    text-align: center !important;
-  }
-}
-
-/* Ensure timer container doesn't overflow */
-@media (max-width: 768px) {
-  .timer-container,
-  .timer-display-container {
-    width: 100% !important;
-    max-width: 100% !important;
-    overflow: hidden !important;
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-  }
-}
-
-/* Desktop timer sizes */
-@media (min-width: 769px) {
-  .timer-display,
-  div.timer-display {
-    font-size: clamp(6rem, 8vw, 10rem) !important;
-  }
-}
-
-@media (min-width: 1024px) {
-  .timer-display,
-  div.timer-display {
-    font-size: clamp(8rem, 10vw, 12rem) !important;
   }
 }
 
