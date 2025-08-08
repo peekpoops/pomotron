@@ -420,21 +420,21 @@ const Analytics = memo(() => {
                               return (
                                 <div 
                                   key={session.id} 
-                                  className="bg-card/50 rounded-md p-3 border border-border/40 hover:border-accent/40 transition-colors"
+                                  className="bg-card/50 rounded-md p-3 border border-border/40 hover:border-accent/40 transition-colors max-w-full"
                                 >
-                                  <div className="flex items-start justify-between mb-2">
-                                    <div className="flex-1 min-w-0">
+                                  <div className="flex items-start justify-between mb-2 gap-2">
+                                    <div className="flex-1 min-w-0 overflow-hidden">
                                       <div className="text-sm font-medium text-foreground truncate mb-1">
                                         {session.task.trim() ? session.task : '⏱️ Focus Session (No intention set)'}
                                       </div>
-                                      <div className="text-xs text-muted-foreground line-clamp-2">
+                                      <div className="text-xs text-muted-foreground truncate">
                                         {session.why.trim() ? session.why : 'Started without setting specific goal'}
                                       </div>
                                     </div>
-                                    <div className="flex items-center space-x-1 ml-3">
+                                    <div className="flex items-center space-x-1 flex-shrink-0">
                                       <Badge 
                                         variant={session.completed ? "default" : "secondary"} 
-                                        className="text-xs font-tech-mono"
+                                        className="text-xs font-tech-mono whitespace-nowrap"
                                       >
                                         {totalTimeString}
                                       </Badge>
@@ -444,8 +444,8 @@ const Analytics = memo(() => {
                                     </div>
                                   </div>
                                   <div className="text-xs text-muted-foreground flex items-center">
-                                    <Clock className="h-3 w-3 mr-1" />
-                                    {format(new Date(session.startTime), 'h:mm a')}
+                                    <Clock className="h-3 w-3 mr-1 flex-shrink-0" />
+                                    <span className="truncate">{format(new Date(session.startTime), 'h:mm a')}</span>
                                   </div>
                                 </div>
                               );
