@@ -428,28 +428,30 @@ export default function Timer({ onOpenSettings, timerHook: externalTimerHook, on
                     {getSessionTypeLabel()}
                   </Badge>
                 </div>
-                {/* Visual Cycle Progress */}
-                <div className="flex items-center justify-center space-x-2 mb-2">
-                  {Array.from({ length: settings.cyclesBeforeLongBreak }, (_, index) => {
-                    const cycleNumber = index + 1;
-                    const isCompleted = cycleNumber < timerState.currentCycle;
-                    const isCurrent = cycleNumber === timerState.currentCycle && timerState.sessionType === 'focus';
-                    
-                    return (
-                      <div
-                        key={cycleNumber}
-                        className={`w-3 h-3 rounded-full border-2 transition-all duration-300 ${
-                          isCompleted
-                            ? 'bg-primary border-primary shadow-lg shadow-primary/50'
-                            : isCurrent
-                            ? 'bg-gradient-to-br from-accent to-secondary border-accent shadow-md shadow-accent/40'
-                            : 'bg-muted border-muted-foreground/30'
-                        }`}
-                        title={`Focus Cycle ${cycleNumber}${isCompleted ? ' (Completed)' : isCurrent ? ' (Current)' : ''}`}
-                      />
-                    );
-                  })}
-                </div>
+                {/* Visual Cycle Progress - Only show during focus sessions */}
+                {timerState.sessionType === 'focus' && (
+                  <div className="flex items-center justify-center space-x-2 mb-2">
+                    {Array.from({ length: settings.cyclesBeforeLongBreak }, (_, index) => {
+                      const cycleNumber = index + 1;
+                      const isCompleted = cycleNumber < timerState.currentCycle;
+                      const isCurrent = cycleNumber === timerState.currentCycle && timerState.sessionType === 'focus';
+                      
+                      return (
+                        <div
+                          key={cycleNumber}
+                          className={`w-3 h-3 rounded-full border-2 transition-all duration-300 ${
+                            isCompleted
+                              ? 'bg-primary border-primary shadow-lg shadow-primary/50'
+                              : isCurrent
+                              ? 'bg-gradient-to-br from-accent to-secondary border-accent shadow-md shadow-accent/40'
+                              : 'bg-muted border-muted-foreground/30'
+                          }`}
+                          title={`Focus Cycle ${cycleNumber}${isCompleted ? ' (Completed)' : isCurrent ? ' (Current)' : ''}`}
+                        />
+                      );
+                    })}
+                  </div>
+                )}
               </div>
 
               {/* Progress Bar */}
