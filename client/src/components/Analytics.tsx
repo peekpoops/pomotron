@@ -376,7 +376,7 @@ const Analytics = memo(() => {
           </CardHeader>
           <CardContent>
             <ScrollArea className="h-96">
-              <div className="space-y-6">
+              <div className="space-y-6 pr-2">
                 {Object.keys(recentIntentions).length === 0 ? (
                   <div className="text-center text-muted-foreground py-8">
                     <Target className="h-8 w-8 mx-auto mb-2 opacity-50" />
@@ -405,7 +405,7 @@ const Analytics = memo(() => {
                             </div>
                           </div>
                           
-                          <div className="space-y-2">
+                          <div className="space-y-2 pr-1">
                             {daySessions.map((session, index) => {
                               // Calculate total focus time for this intention
                               const intentionKey = session.task?.trim() || 'Focus Session (No intention set)';
