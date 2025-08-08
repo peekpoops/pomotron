@@ -51,6 +51,10 @@ export default function Settings() {
 
   const handleResetToDefaults = () => {
     setLocalSettings(defaultSettings);
+    setSettings(defaultSettings); // Actually save the defaults to localStorage
+    if (defaultSettings.theme !== theme) {
+      setTheme(defaultSettings.theme);
+    }
     toast({
       title: "Settings Reset",
       description: "All settings have been reset to default values.",
