@@ -212,9 +212,6 @@ export default function Analytics() {
             <div className="text-xs text-secondary/80 font-tech-mono uppercase tracking-wider">
               Success Rate
             </div>
-            <div className="text-xs text-muted-foreground mt-1 font-tech-mono">
-              Completed ÷ Total Sessions
-            </div>
             <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-secondary to-transparent opacity-50 group-hover:opacity-100 transition-opacity" />
             <div className="absolute top-2 right-2 w-2 h-2 bg-secondary rounded-full animate-ping" style={{ animationDelay: '0.5s' }} />
           </CardContent>
@@ -311,11 +308,11 @@ export default function Analytics() {
 
         {/* Recent Intentions */}
         <Card className="neon-border glass-morphism">
-          <CardHeader>
-            <CardTitle className="section-title text-lg text-secondary">Weekly Intentions</CardTitle>
-            <CardDescription className="font-tech-mono text-xs">
-              Past 7 days • Organized by day
-            </CardDescription>
+          <CardHeader className="pb-4">
+            <CardTitle className="section-title text-lg text-secondary flex items-center space-x-2">
+              <Target className="h-5 w-5 text-secondary" />
+              <span>Weekly Intentions</span>
+            </CardTitle>
           </CardHeader>
           <CardContent>
             <ScrollArea className="h-96">
@@ -337,53 +334,48 @@ export default function Analytics() {
                       
                       return (
                         <div key={dateKey} className="space-y-3">
-                          <div className="flex items-center space-x-2">
-                            <div className="text-sm font-orbitron font-bold text-accent">
+                          <div className="flex items-center space-x-3 bg-gradient-to-r from-accent/10 to-transparent rounded-lg p-3 border-l-4 border-accent/60">
+                            <div className="text-sm font-orbitron font-bold text-foreground">
                               {dayLabel}
                             </div>
-                            <div className="flex-1 h-px bg-gradient-to-r from-accent/50 to-transparent" />
-                            <Badge variant="outline" className="text-xs font-tech-mono">
+                            <div className="flex-1" />
+                            <Badge variant="secondary" className="text-xs font-tech-mono bg-accent/20 text-accent border-accent/40">
                               {daySessions.length} session{daySessions.length !== 1 ? 's' : ''}
                             </Badge>
                           </div>
                           
-                          <div className="space-y-2 ml-4">
+                          <div className="space-y-2">
                             {daySessions.map((session, index) => {
                               const focusTimeMinutes = Math.round(session.duration / 60);
                               return (
                                 <div 
                                   key={session.id} 
-                                  className={`border-l-2 pl-3 pb-3 ${
-                                    index % 4 === 0 ? 'border-primary/40' :
-                                    index % 4 === 1 ? 'border-secondary/40' :
-                                    index % 4 === 2 ? 'border-accent/40' :
-                                    'border-green-400/40'
-                                  }`}
+                                  className="bg-card/50 rounded-md p-3 border border-border/40 hover:border-accent/40 transition-colors"
                                 >
-                                  <div className="text-sm font-medium text-foreground mb-1">
-                                    📌 {session.task}
-                                  </div>
-                                  <div className="text-xs text-muted-foreground mb-2">
-                                    💭 {session.why}
-                                  </div>
-                                  <div className="flex items-center justify-between">
-                                    <div className="text-xs text-secondary flex items-center">
-                                      <Clock className="h-3 w-3 mr-1" />
-                                      {format(new Date(session.startTime), 'h:mm a')}
+                                  <div className="flex items-start justify-between mb-2">
+                                    <div className="flex-1 min-w-0">
+                                      <div className="text-sm font-medium text-foreground truncate mb-1">
+                                        {session.task}
+                                      </div>
+                                      <div className="text-xs text-muted-foreground line-clamp-2">
+                                        {session.why}
+                                      </div>
                                     </div>
-                                    <div className="flex items-center space-x-2">
+                                    <div className="flex items-center space-x-1 ml-3">
                                       <Badge 
-                                        variant={session.completed ? "default" : "destructive"} 
+                                        variant={session.completed ? "default" : "secondary"} 
                                         className="text-xs font-tech-mono"
                                       >
                                         {focusTimeMinutes}min
                                       </Badge>
                                       {session.completed && (
-                                        <Badge variant="secondary" className="text-xs">
-                                          ✓
-                                        </Badge>
+                                        <div className="w-2 h-2 bg-green-400 rounded-full" />
                                       )}
                                     </div>
+                                  </div>
+                                  <div className="text-xs text-muted-foreground flex items-center">
+                                    <Clock className="h-3 w-3 mr-1" />
+                                    {format(new Date(session.startTime), 'h:mm a')}
                                   </div>
                                 </div>
                               );
