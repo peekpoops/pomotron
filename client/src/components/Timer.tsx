@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, memo, useCallback } from 'react';
-import { Clock, Play, Pause, RotateCcw, Square, Settings2, Target, Gamepad2, Flame, TrendingUp, Heart, Lightbulb } from 'lucide-react';
+import { Clock, Play, Pause, RotateCcw, Square, Settings2, Target, Gamepad2, Flame, TrendingUp, Heart, Lightbulb, Volume2, VolumeX } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -129,7 +129,7 @@ const Timer = memo(({ onOpenSettings, timerHook: externalTimerHook, onModalState
   const internalTimerHook = useTimer();
   const timerHook = externalTimerHook || internalTimerHook;
   const { timerState, startSession, pauseSession, resumeSession, resetSession, endSession, formatTime, getProgress, sessions: timerSessions } = timerHook;
-  const [settings] = useLocalStorage<Settings>('pomotron-settings', {
+  const [settings, setSettings] = useLocalStorage<Settings>('pomotron-settings', {
     focusDuration: 25,
     breakDuration: 5,
     longBreakDuration: 15,
@@ -173,6 +173,14 @@ const Timer = memo(({ onOpenSettings, timerHook: externalTimerHook, onModalState
   const [usedQuotes, setUsedQuotes] = useLocalStorage<typeof motivationalQuotes>('pomotron-used-quotes', []);
   const [showGlitchRun, setShowGlitchRun] = useState(false);
   const [glitchRunUsedThisSession, setGlitchRunUsedThisSession] = useLocalStorage<boolean>('glitch-run-used', false);
+
+  // Sound toggle function
+  const toggleSound = useCallback(() => {
+    setSettings(prev => ({
+      ...prev,
+      soundsEnabled: !prev.soundsEnabled
+    }));
+  }, [setSettings]);
 
   // Initialize the first quote if we haven't set one yet
   useEffect(() => {
@@ -550,11 +558,22 @@ const Timer = memo(({ onOpenSettings, timerHook: externalTimerHook, onModalState
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={onOpenSettings}
-                  className="text-muted-foreground hover:text-foreground settings-button"
+                  onClick={toggleSound}
+                  className={`settings-button ${
+                    settings.soundsEnabled 
+                      ? 'text-muted-foreground hover:text-accent' 
+                      : 'text-muted-foreground/50 hover:text-muted-foreground'
+                  }`}
+                  title={settings.soundsEnabled ? 'Sound On - Click to mute' : 'Sound Off - Click to enable'}
                 >
-                  <Settings2 className="h-4 w-4 mr-1 button-icon" />
-                  <span className="button-text">Settings</span>
+                  {settings.soundsEnabled ? (
+                    <Volume2 className="h-4 w-4 mr-1 button-icon" />
+                  ) : (
+                    <VolumeX className="h-4 w-4 mr-1 button-icon" />
+                  )}
+                  <span className="button-text">
+                    {settings.soundsEnabled ? 'Sound On' : 'Sound Off'}
+                  </span>
                 </Button>
                 
                 {/* GlitchRun Button */}
