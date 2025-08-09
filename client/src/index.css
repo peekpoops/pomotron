@@ -861,6 +861,8 @@
     text-align: center !important;
     /* Scale down if still too large */
     transform-origin: center !important;
+    /* Add proper mobile spacing below timer */
+    margin-bottom: 1.5rem !important;
   }
 
   /* Ensure container doesn't add extra constraints */
