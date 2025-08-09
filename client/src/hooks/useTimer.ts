@@ -129,32 +129,62 @@ export function useTimer() {
     };
     document.addEventListener('visibilitychange', handleVisibilityChange);
 
-    // Track window focus/blur - assume user is active when switching windows frequently
-    let lastBlurTime = 0;
-    
+    // Extract interval creation to separate function for reuse
+    const startIdleDetectionInterval = () => {
+      if (idleIntervalRef.current) {
+        clearInterval(idleIntervalRef.current);
+      }
+      
+      idleIntervalRef.current = setInterval(() => {
+        const now = Date.now();
+        const timeSinceActivity = (now - lastActivityRef.current) / 1000 / 60; // minutes
+        
+        // Get current timer state from ref to avoid stale closure issues
+        const currentTimerState = timerStateRef.current;
+        console.log(`Idle check - Time since activity: ${timeSinceActivity.toFixed(2)} minutes, Timer running: ${currentTimerState.isRunning}, Session: ${currentTimerState.sessionType}, Idle timeout: ${settings.idleTimeout}`);
+        
+        // Only trigger when browser window is focused (not blurred)
+        // This ensures we only detect idle when user is actually in this browser
+        if (timeSinceActivity >= settings.idleTimeout && 
+            currentTimerState.isRunning &&
+            currentTimerState.sessionType === 'focus' && 
+            !document.hidden &&
+            document.hasFocus()) {
+          console.log('Triggering idle notification! User idle for', timeSinceActivity.toFixed(2), 'minutes');
+          
+          toast({
+            title: "Idle Detected",
+            description: `No activity detected for ${settings.idleTimeout} minutes. Still focused?`,
+            duration: 6000,
+          });
+          playSound('idleNudge');
+          resetIdleDetection();
+        }
+      }, 10000); // Check every 10 seconds for testing
+    };
+
+    // Track window focus/blur - pause idle detection when user switches away
     const handleFocus = () => {
-      const now = Date.now();
-      const timeSinceBlur = (now - lastBlurTime) / 1000; // seconds
-      const timeSinceActivity = (now - lastActivityRef.current) / 1000 / 60; // minutes
+      console.log('Browser window focused, restarting idle detection');
+      // User returned to this browser - restart idle detection fresh
+      resetIdleDetection();
       
-      console.log('Browser window focused after', timeSinceActivity.toFixed(2), 'minutes idle,', timeSinceBlur.toFixed(1), 'seconds since blur');
-      
-      // If user focused this window recently after blur, assume they're actively working
-      // Reset idle timer to give benefit of the doubt for cross-window activity
-      if (timeSinceBlur < 300) { // Less than 5 minutes since blur = probably active elsewhere
-        console.log('Recent window switch detected, assuming user was active elsewhere, resetting idle timer');
-        resetIdleDetection();
-      } else if (timeSinceActivity < 0.1) {
-        console.log('Quick focus with recent activity, resetting idle timer');
-        resetIdleDetection();  
-      } else {
-        console.log('Focus after long idle period, not resetting');
+      // Restart the idle interval if it was stopped
+      const currentTimerState = timerStateRef.current;
+      if (!idleIntervalRef.current && currentTimerState.isRunning && currentTimerState.sessionType === 'focus') {
+        console.log('Restarting idle interval after window focus');
+        startIdleDetectionInterval();
       }
     };
     
     const handleBlur = () => {
-      lastBlurTime = Date.now();
-      console.log('Browser window blurred at', new Date(lastBlurTime).toLocaleTimeString());
+      console.log('Browser window blurred, pausing idle detection');
+      // User switched away - pause idle detection completely
+      if (idleIntervalRef.current) {
+        clearInterval(idleIntervalRef.current);
+        idleIntervalRef.current = null;
+        console.log('Idle detection paused while away from browser');
+      }
     };
     
     window.addEventListener('focus', handleFocus);
@@ -171,34 +201,8 @@ export function useTimer() {
       window.removeEventListener('blur', handleBlur);
     };
     
-    // Check for idle more frequently for testing
-    idleIntervalRef.current = setInterval(() => {
-      const now = Date.now();
-      const timeSinceActivity = (now - lastActivityRef.current) / 1000 / 60; // minutes
-      
-      // Get current timer state from ref to avoid stale closure issues
-      const currentTimerState = timerStateRef.current;
-      console.log(`Idle check - Time since activity: ${timeSinceActivity.toFixed(2)} minutes, Timer running: ${currentTimerState.isRunning}, Session: ${currentTimerState.sessionType}, Idle timeout: ${settings.idleTimeout}`);
-      
-      // Trigger idle detection during focus sessions when timer is running
-      // Show notifications regardless of tab visibility - we want to detect true idleness
-      if (timeSinceActivity >= settings.idleTimeout && 
-          currentTimerState.isRunning &&
-          currentTimerState.sessionType === 'focus') {
-        console.log('Triggering idle notification! User idle for', timeSinceActivity.toFixed(2), 'minutes');
-        
-        // Show notification immediately regardless of tab visibility
-        // This allows sound/notification to work as a nudge even when on other tabs
-        console.log('Showing idle notification immediately');
-        toast({
-          title: "Idle Detected",
-          description: `No activity detected for ${settings.idleTimeout} minutes. Still focused?`,
-          duration: 6000,
-        });
-        playSound('idleNudge');
-        resetIdleDetection();
-      }
-    }, 10000); // Check every 10 seconds for testing
+    // Start the idle detection interval
+    startIdleDetectionInterval();
 
   }, [settings.idleTimeout, toast, resetIdleDetection, stopIdleDetection, playSound]);
 
