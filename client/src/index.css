@@ -789,6 +789,31 @@
     pointer-events: none;
     background-image: repeating-linear-gradient(45deg, transparent, transparent 2px, var(--neon-pink) 2px, var(--neon-pink) 4px);
   }
+
+  /* Mobile Timer Alignment with Progress Bar */
+  @media (max-width: 640px) {
+    .session-panel .timer-display {
+      font-size: clamp(4rem, 16vw, 6rem) !important;
+      letter-spacing: normal;
+      width: 100%;
+      padding: 0;
+      margin-left: 0;
+      margin-right: 0;
+    }
+    
+    /* Remove horizontal padding from timer container on mobile to match progress bar width */
+    .session-panel > div:first-child {
+      padding-left: 0 !important;
+      padding-right: 0 !important;
+    }
+  }
+
+  /* Extra small screens (iPhone SE, small Android) */
+  @media (max-width: 375px) {
+    .session-panel .timer-display {
+      font-size: clamp(3.5rem, 15vw, 5rem) !important;
+    }
+  }
 }
 
 @layer utilities {
