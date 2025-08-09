@@ -507,9 +507,20 @@ const Analytics = memo(() => {
                               <h3 className="text-lg font-orbitron font-bold text-accent drop-shadow-neon">
                                 {dayLabel}
                               </h3>
-                              <Badge variant="outline" className="font-tech-mono text-xs bg-accent/10 text-accent/80 border-accent/40">
-                                {daySessions.length} session{daySessions.length !== 1 ? 's' : ''}
-                              </Badge>
+                              <div className="relative">
+                                <Badge 
+                                  variant="default" 
+                                  className="font-tech-mono text-xs bg-gradient-to-r from-accent/90 to-secondary/90 text-white border-0 px-3 py-1 shadow-lg drop-shadow-neon relative overflow-hidden"
+                                >
+                                  <span className="relative z-10">
+                                    {daySessions.length} session{daySessions.length !== 1 ? 's' : ''}
+                                  </span>
+                                  {/* Subtle animated glow */}
+                                  <div className="absolute inset-0 bg-gradient-to-r from-accent/20 via-transparent to-accent/20 animate-pulse" />
+                                </Badge>
+                                {/* Neon glow effect */}
+                                <div className="absolute -inset-1 bg-gradient-to-r from-accent/30 to-secondary/30 rounded-full blur-sm -z-10" />
+                              </div>
                             </div>
                           </div>
                           
