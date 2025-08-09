@@ -422,7 +422,7 @@ const Timer = memo(({ onOpenSettings, timerHook: externalTimerHook, onModalState
               )}
               
               {/* Timer Display */}
-              <div className="text-center mb-8 lg:mb-12 xl:mb-16 relative z-10 w-full max-w-full sm:px-4">
+              <div className="text-center mb-8 lg:mb-12 xl:mb-16 relative z-10 w-full max-w-full px-2 sm:px-4">
                 {(timerState.sessionType === 'break' || timerState.sessionType === 'longBreak') && (
                   <div className="mb-4 animate-bounce">
                     <div className={`text-2xl sm:text-3xl font-orbitron font-bold ${
