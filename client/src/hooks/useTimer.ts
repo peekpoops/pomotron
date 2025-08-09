@@ -105,10 +105,32 @@ export function useTimer() {
       document.addEventListener(eventType, handleActivity, { passive: false, capture: true });
     });
 
-    // Track page visibility changes - if user switches tabs but comes back, reset idle timer
+    // Track page visibility changes - if user switches away, assume they're active
+    // If they come back after idle timeout, show notification
     const handleVisibilityChange = () => {
       console.log('Visibility changed, hidden:', document.hidden);
-      if (!document.hidden) {
+      
+      if (document.hidden) {
+        // User switched away - they might be working, so pause idle checking
+        console.log('User switched away from Pomotron, pausing idle detection');
+      } else {
+        // User returned - check how long they were away
+        const now = Date.now();
+        const timeSinceActivity = (now - lastActivityRef.current) / 1000 / 60;
+        console.log('User returned to Pomotron after', timeSinceActivity.toFixed(2), 'minutes');
+        
+        if (timeSinceActivity >= settings.idleTimeout) {
+          // They were away longer than idle timeout - show notification
+          console.log('User was away longer than idle timeout, showing notification');
+          toast({
+            title: "Welcome Back!",
+            description: `You've been away for ${Math.floor(timeSinceActivity)} minutes. Ready to refocus?`,
+            duration: 6000,
+          });
+          playSound('idleNudge');
+        }
+        
+        // Reset idle timer since they're back and active
         resetIdleDetection();
       }
     };
@@ -116,26 +138,10 @@ export function useTimer() {
 
     // Track window focus changes - if user comes back to browser, reset idle timer
     const handleFocus = () => {
-      console.log('Window focused');
+      console.log('Window focused, resetting idle detection');
       resetIdleDetection();
     };
     window.addEventListener('focus', handleFocus);
-
-    // Track page visibility to pause idle detection when user is on other tabs/apps
-    let wasHidden = document.hidden;
-    const handleVisibilityForIdlePause = () => {
-      const isNowHidden = document.hidden;
-      console.log('Visibility changed for idle pause, was hidden:', wasHidden, 'now hidden:', isNowHidden);
-      
-      if (wasHidden && !isNowHidden) {
-        // User came back to Pomotron tab - reset idle detection
-        console.log('User returned to Pomotron, resetting idle detection');
-        resetIdleDetection();
-      }
-      
-      wasHidden = isNowHidden;
-    };
-    document.addEventListener('visibilitychange', handleVisibilityForIdlePause);
 
     // Store cleanup function for later use
     cleanupIdleDetectionRef.current = () => {
@@ -143,7 +149,6 @@ export function useTimer() {
         document.removeEventListener(eventType, handleActivity, true);
       });
       document.removeEventListener('visibilitychange', handleVisibilityChange);
-      document.removeEventListener('visibilitychange', handleVisibilityForIdlePause);
       window.removeEventListener('focus', handleFocus);
     };
     
@@ -155,8 +160,8 @@ export function useTimer() {
       // Get current timer state directly from the current component state
       console.log(`Idle check - Time since activity: ${timeSinceActivity.toFixed(2)} minutes, Timer running: ${timerState.isRunning}, Session: ${timerState.sessionType}, Idle timeout: ${settings.idleTimeout}`);
       
-      // Only trigger idle detection during focus sessions, when timer is running, and when Pomotron tab is visible
-      // This prevents false positives when user is working on other apps/websites
+      // Only trigger idle detection during focus sessions when timer is running
+      // Only check when Pomotron tab is visible (we can't detect activity on other tabs/apps)
       if (timeSinceActivity >= settings.idleTimeout && 
           timerState.isRunning &&
           timerState.sessionType === 'focus' && 
@@ -169,8 +174,6 @@ export function useTimer() {
         });
         playSound('idleNudge');
         resetIdleDetection();
-      } else if (timeSinceActivity >= settings.idleTimeout && document.hidden) {
-        console.log('User idle but on different tab/app - not triggering notification');
       }
     }, 10000); // Check every 10 seconds for testing
 
