@@ -88,7 +88,7 @@ export default function Settings() {
   ];
 
   const keyboardShortcuts = [
-  //  { action: 'Pause Timer', key: 'Spacebar' },
+    { action: 'Start/Pause Timer', key: 'Spacebar' },
     { action: 'Reset Timer', key: 'R' },
     { action: 'End Session', key: 'Esc' },
     { action: 'Toggle Analytics', key: 'A' },
