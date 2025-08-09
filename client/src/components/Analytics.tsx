@@ -383,7 +383,7 @@ const Analytics = memo(() => {
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <div className="flex items-center gap-3">
                   <CardTitle className="section-title text-lg text-secondary">Weekly Progress</CardTitle>
-                  <Badge variant="default" className="text-xs font-tech-mono sm:hidden">sessions</Badge>
+                  <Badge variant="default" className="text-xs font-tech-mono sm:hidden">Sessions</Badge>
                 </div>
                 <div className="flex flex-col sm:flex-row sm:items-center gap-3">
                   <div className="flex items-center justify-center space-x-2">
