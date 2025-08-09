@@ -151,24 +151,12 @@ export function useTimer() {
 
   }, [settings.idleTimeout, timerState.isRunning, timerState.sessionType, toast, resetIdleDetection, stopIdleDetection]);
 
-  // Timer countdown effect with safer timing
+  // Timer countdown effect - simplified and stable
   useEffect(() => {
     if (timerState.isRunning && !timerState.isPaused) {
-      // Initialize start time only once per running session
-      if (!startTimeRef.current) {
-        startTimeRef.current = Date.now() - ((() => {
-          switch (timerState.sessionType) {
-            case 'focus': return settings.focusDuration * 60;
-            case 'break': return settings.breakDuration * 60;
-            case 'longBreak': return settings.longBreakDuration * 60;
-          }
-        })() - timerState.timeLeft) * 1000;
-      }
-      
+      startIdleDetection();
       intervalRef.current = setInterval(() => {
         setTimerState(prev => {
-          // Use simple decrement instead of complex time calculation
-          // This prevents timing drift issues when GlitchRun or other activities interfere
           const newTimeLeft = Math.max(0, prev.timeLeft - 1);
           
           if (newTimeLeft <= 0) {
@@ -190,42 +178,60 @@ export function useTimer() {
               }
             }
             
-            // Save completed session
+            // Save completed session using callback to avoid dependency issues
             if (prev.currentSessionId) {
-              const sessionToUpdate = sessions.find(s => s.id === prev.currentSessionId);
-              if (sessionToUpdate) {
-                const updatedSession: Session = {
-                  ...sessionToUpdate,
-                  endTime: new Date(),
-                  completed: true,
-                };
-                setSessions(prev => prev.map(s => s.id === updatedSession.id ? updatedSession : s));
-              }
+              setSessions(currentSessions => {
+                const sessionToUpdate = currentSessions.find(s => s.id === prev.currentSessionId);
+                if (sessionToUpdate) {
+                  const updatedSession: Session = {
+                    ...sessionToUpdate,
+                    endTime: new Date(),
+                    completed: true,
+                  };
+                  return currentSessions.map(s => s.id === updatedSession.id ? updatedSession : s);
+                }
+                return currentSessions;
+              });
             }
             
-            // Calculate next duration
+            // Calculate next duration based on current settings snapshot
+            const getCurrentSettings = () => {
+              const storedSettings = localStorage.getItem('pomotron-settings');
+              if (storedSettings) {
+                try {
+                  return JSON.parse(storedSettings);
+                } catch {
+                  return { focusDuration: 25, breakDuration: 5, longBreakDuration: 15, autoStart: false, websiteBlockingEnabled: true, blockedSites: [] };
+                }
+              }
+              return { focusDuration: 25, breakDuration: 5, longBreakDuration: 15, autoStart: false, websiteBlockingEnabled: true, blockedSites: [] };
+            };
+            
+            const currentSettings = getCurrentSettings();
             let nextDuration: number;
             switch (nextSessionType) {
               case 'focus':
-                nextDuration = settings.focusDuration * 60;
+                nextDuration = currentSettings.focusDuration * 60;
                 break;
               case 'break':
-                nextDuration = settings.breakDuration * 60;
+                nextDuration = currentSettings.breakDuration * 60;
                 break;
               case 'longBreak':
-                nextDuration = settings.longBreakDuration * 60;
+                nextDuration = currentSettings.longBreakDuration * 60;
                 break;
             }
             
-            playSound('sessionComplete');
-            
-            // Handle website blocking
-            if (nextSessionType === 'focus' && settings.websiteBlockingEnabled) {
-              activateWebsiteBlocking(settings.blockedSites);
-            } else {
-              deactivateWebsiteBlocking();
-            }
-            
+            // Use setTimeout to handle side effects outside the state update
+            setTimeout(() => {
+              playSound('sessionComplete');
+              
+              // Handle website blocking
+              if (nextSessionType === 'focus' && currentSettings.websiteBlockingEnabled) {
+                activateWebsiteBlocking(currentSettings.blockedSites);
+              } else {
+                deactivateWebsiteBlocking();
+              }
+              
               toast({
                 title:
                   prev.sessionType === 'focus'
@@ -235,15 +241,12 @@ export function useTimer() {
                   prev.sessionType === 'focus'
                     ? 'Time for a break!'
                     : 'Ready for the next focus session?',
-              })
-;
-            
-            // Reset start time for next session
-            startTimeRef.current = settings.autoStart ? Date.now() : null;
+              });
+            }, 0);
             
             return {
               ...prev,
-              isRunning: settings.autoStart,
+              isRunning: currentSettings.autoStart,
               timeLeft: nextDuration,
               sessionType: nextSessionType,
               currentCycle: nextCycle,
@@ -256,15 +259,11 @@ export function useTimer() {
           return { ...prev, timeLeft: newTimeLeft };
         });
       }, 1000);
-      
-      startIdleDetection();
     } else {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
         intervalRef.current = null;
       }
-      // Reset start time when timer stops
-      startTimeRef.current = null;
       stopIdleDetection();
     }
 
@@ -273,7 +272,7 @@ export function useTimer() {
         clearInterval(intervalRef.current);
       }
     };
-  }, [timerState.isRunning, timerState.isPaused, settings, sessions, setSessions, toast, startIdleDetection, stopIdleDetection]);
+  }, [timerState.isRunning, timerState.isPaused]); // Minimal dependencies to prevent restart loops
 
   // Update timer duration when settings change (only if timer is not running)
   useEffect(() => {
