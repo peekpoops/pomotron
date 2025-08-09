@@ -20,6 +20,9 @@ export default function Home() {
 
   // Tracks whether the intention modal is open, to prevent triggering shortcuts while it's visible
   const [isModalOpen, setIsModalOpen] = useState(false);
+  
+  // Track GlitchRun state to prevent spacebar conflicts
+  const [isGlitchRunOpen, setIsGlitchRunOpen] = useState(false);
 
   // Move timer state to Home level to persist across tab switches
   const timerHook = useTimer();
@@ -80,20 +83,24 @@ export default function Home() {
           timerHook.endSession();
           break; // Added break here
         case ' ':
+          // Don't trigger timer controls if GlitchRun is open
+          if (isGlitchRunOpen) {
+            return;
+          }
           event.preventDefault();
           if (timerHook.timerState.isRunning && !timerHook.timerState.isPaused) {
           timerHook.pauseSession();
           } else if (timerHook.timerState.isPaused) {
           timerHook.resumeSession();
           } 
-          break; // Added break here
+          break;
         }
      };
           
 
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [setCurrentView, timerHook]);
+  }, [setCurrentView, timerHook, isGlitchRunOpen]);
 
   // Handle view changes - simplified without loading screens
   const handleViewChange = (newView: ViewType) => {
@@ -160,7 +167,7 @@ export default function Home() {
 
       {/* Main Content */}
       <main className="container mx-auto px-2 sm:px-4 lg:px-6 xl:px-8 py-4 sm:py-8 lg:py-12 relative max-w-screen-2xl">
-        {currentView === 'timer' && <Timer onOpenSettings={() => setCurrentView('settings')} timerHook={timerHook} onModalStateChange={setIsModalOpen}/>}   
+        {currentView === 'timer' && <Timer onOpenSettings={() => setCurrentView('settings')} timerHook={timerHook} onModalStateChange={setIsModalOpen} onGlitchRunStateChange={setIsGlitchRunOpen}/>}   
         {currentView === 'analytics' && <Analytics />}
         {currentView === 'settings' && <SettingsComponent />}
       </main>

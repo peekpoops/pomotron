@@ -30,6 +30,7 @@ export function useTimer() {
     blockedSites: ['facebook.com', 'twitter.com', 'reddit.com', 'youtube.com', 'instagram.com'],
     showQuotes: true,
     soundsEnabled: true,
+    motivationalQuotesEnabled: false,
   });
   const [sessions, setSessions] = useLocalStorage<Session[]>('pomotron-sessions', []);
 
@@ -366,6 +367,9 @@ export function useTimer() {
   }, []);
 
   const resumeSession = useCallback(() => {
+    // Reset start time to current time when resuming to maintain accurate timing
+    startTimeRef.current = Date.now();
+    
     setTimerState(prev => ({
       ...prev,
       isRunning: true,

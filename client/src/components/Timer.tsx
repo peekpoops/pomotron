@@ -18,6 +18,7 @@ interface TimerProps {
   onOpenSettings: () => void;
   timerHook?: ReturnType<typeof useTimer>;
   onModalStateChange?: (isOpen: boolean) => void;
+  onGlitchRunStateChange?: (isOpen: boolean) => void;
 }
 
 const motivationalQuotes = [
@@ -125,7 +126,7 @@ const motivationalQuotes = [
   { text: "We must be free not because we claim freedom, but because we practice it.", author: "William Faulkner" }
 ];
 
-const Timer = memo(({ onOpenSettings, timerHook: externalTimerHook, onModalStateChange }: TimerProps) => {
+const Timer = memo(({ onOpenSettings, timerHook: externalTimerHook, onModalStateChange, onGlitchRunStateChange }: TimerProps) => {
   const internalTimerHook = useTimer();
   const timerHook = externalTimerHook || internalTimerHook;
   const { timerState, startSession, pauseSession, resumeSession, resetSession, endSession, formatTime, getProgress, sessions: timerSessions } = timerHook;
@@ -323,6 +324,7 @@ const Timer = memo(({ onOpenSettings, timerHook: externalTimerHook, onModalState
   const handleGlitchRun = () => {
     if (canPlayGlitchRun()) {
       setShowGlitchRun(true);
+      onGlitchRunStateChange?.(true);
       if (timerState.sessionType === 'focus' && timerState.isRunning) {
         setGlitchRunUsedThisSession(true);
       }
@@ -331,6 +333,7 @@ const Timer = memo(({ onOpenSettings, timerHook: externalTimerHook, onModalState
 
   const handleGlitchRunClose = () => {
     setShowGlitchRun(false);
+    onGlitchRunStateChange?.(false);
   };
 
   // Reset GlitchRun usage when new focus session starts
