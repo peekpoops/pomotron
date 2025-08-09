@@ -20,7 +20,7 @@ const defaultSettings: SettingsType = {
   cyclesBeforeLongBreak: 4,
   autoStart: true,
   softStart: false,
-  idleTimeout: 5,
+
   theme: 'starcourt',
   websiteBlockingEnabled: true,
   frictionOverride: false,
@@ -209,24 +209,7 @@ export default function Settings() {
               />
             </div>
 
-            <div>
-              <Label htmlFor="idle-timeout" className="text-xs sm:text-sm font-medium text-muted-foreground">
-                Idle nudge timeout (min)
-              </Label>
-              <Input
-                id="idle-timeout"
-                type="number"
-                min="0"
-                max="60"
-                value={localSettings.idleTimeout}
-                onChange={(e) => setLocalSettings(prev => ({
-                  ...prev,
-                  idleTimeout: parseInt(e.target.value) || 0
-                }))}
-                className="form-input mt-1 text-sm"
-              />
-              <p className="text-xs text-muted-foreground/70 mt-1">Set to 0 to disable idle detection</p>
-            </div>
+
 
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
               <div className="flex items-center space-x-2">

@@ -23,7 +23,7 @@ export function useTimer() {
     cyclesBeforeLongBreak: 4,
     autoStart: true,
     softStart: false,
-    idleTimeout: 5,
+
     theme: 'starcourt',
     websiteBlockingEnabled: true,
     frictionOverride: false,
@@ -48,199 +48,13 @@ export function useTimer() {
   }, [settings.focusDuration, timerState.timeLeft]);
   
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
-  const idleTimeRef = useRef<number>(0);
-  const idleIntervalRef = useRef<NodeJS.Timeout | null>(null);
-  const lastActivityRef = useRef<number>(Date.now());
   const startTimeRef = useRef<number | null>(null);
   const pausedTimeRef = useRef<number>(0); // Track total paused time
-  const timerStateRef = useRef(timerState); // Keep current timer state for idle detection
   const { toast } = useToast();
 
-  // Update timer state ref whenever timer state changes
-  useEffect(() => {
-    timerStateRef.current = timerState;
-  }, [timerState]);
 
-  // Reset idle detection on user activity
-  const resetIdleDetection = useCallback(() => {
-    lastActivityRef.current = Date.now();
-    idleTimeRef.current = 0;
-  }, []);
 
-  // Store cleanup function reference
-  const cleanupIdleDetectionRef = useRef<(() => void) | null>(null);
 
-  // Stop idle detection
-  const stopIdleDetection = useCallback(() => {
-    if (idleIntervalRef.current) {
-      clearInterval(idleIntervalRef.current);
-      idleIntervalRef.current = null;
-    }
-    // Clean up event listeners
-    if (cleanupIdleDetectionRef.current) {
-      cleanupIdleDetectionRef.current();
-      cleanupIdleDetectionRef.current = null;
-    }
-  }, []);
-
-  // Enhanced idle detection with throttled event handling for better performance
-  const startIdleDetection = useCallback(() => {
-    // Clean up any existing idle detection
-    stopIdleDetection();
-    
-    // Don't start idle detection if it's disabled (idleTimeout = 0)
-    if (settings.idleTimeout === 0) return;
-    
-    console.log('Starting idle detection with timeout:', settings.idleTimeout, 'minutes');
-    
-    // Initialize last activity to now
-    lastActivityRef.current = Date.now();
-    
-    // Track global activity events - Safari compatible
-    const activityEvents = ['mousedown', 'mousemove', 'keydown', 'keypress', 'keyup', 'scroll', 'touchstart', 'touchmove', 'click', 'wheel'];
-    
-    // Activity handler that works across browser contexts
-    const handleActivity = () => {
-      const now = Date.now();
-      console.log('Activity detected at:', new Date(now).toLocaleTimeString());
-      resetIdleDetection();
-    };
-
-    // Add activity listeners to document (works for current tab)
-    activityEvents.forEach(eventType => {
-      document.addEventListener(eventType, handleActivity, { passive: false, capture: true });
-    });
-
-    // Add activity listeners to window for broader activity detection
-    activityEvents.forEach(eventType => {
-      window.addEventListener(eventType, handleActivity, { passive: true, capture: true });
-    });
-
-    // Track page visibility changes - reset activity when tab becomes visible again
-    const handleVisibilityChange = () => {
-      console.log('Visibility changed, hidden:', document.hidden);
-      
-      // When tab becomes visible again, reset activity timer as user is now viewing this tab
-      if (!document.hidden) {
-        console.log('Tab became visible - resetting activity timer');
-        resetIdleDetection();
-      }
-    };
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-
-    // Extract interval creation to separate function for reuse
-    const startIdleDetectionInterval = () => {
-      if (idleIntervalRef.current) {
-        clearInterval(idleIntervalRef.current);
-      }
-      
-      idleIntervalRef.current = setInterval(() => {
-        const now = Date.now();
-        const timeSinceActivity = (now - lastActivityRef.current) / 1000 / 60; // minutes
-        
-        // Get current timer state from ref to avoid stale closure issues
-        const currentTimerState = timerStateRef.current;
-        console.log(`Idle check - Time since activity: ${timeSinceActivity.toFixed(2)} minutes, Timer running: ${currentTimerState.isRunning}, Session: ${currentTimerState.sessionType}, Idle timeout: ${settings.idleTimeout}`);
-        
-        // Trigger idle detection during focus sessions when timer is running
-        // Show notifications regardless of tab visibility to detect true idleness across tabs
-        if (timeSinceActivity >= settings.idleTimeout && 
-            currentTimerState.isRunning &&
-            currentTimerState.sessionType === 'focus') {
-          console.log('Triggering idle notification! User idle for', timeSinceActivity.toFixed(2), 'minutes');
-          
-          toast({
-            title: "Idle Detected",
-            description: `No activity detected for ${settings.idleTimeout} minutes. Still focused?`,
-            duration: 6000,
-          });
-          playSound('idleNudge');
-          resetIdleDetection();
-        }
-      }, 10000); // Check every 10 seconds for testing
-    };
-
-    // Track window focus/blur - distinguish between tab switches and actual window switches
-    let focusCheckTimeout: NodeJS.Timeout | null = null;
-    let wasVisible = !document.hidden; // Track previous visibility state
-    
-    const handleFocus = () => {
-      console.log('Window focus event - checking if this is actual window focus');
-      
-      // Clear any pending focus check
-      if (focusCheckTimeout) {
-        clearTimeout(focusCheckTimeout);
-        focusCheckTimeout = null;
-      }
-      
-      // Always reset activity timer when window gains focus (user returned)
-      resetIdleDetection();
-      
-      // Only restart idle detection if it was actually paused
-      if (!idleIntervalRef.current) {
-        console.log('Idle interval was paused, restarting after window focus');
-        
-        const currentTimerState = timerStateRef.current;
-        if (currentTimerState.isRunning && currentTimerState.sessionType === 'focus') {
-          startIdleDetectionInterval();
-        }
-      }
-    };
-    
-    const handleBlur = () => {
-      console.log('Window blur event - checking if this is actual window switch');
-      wasVisible = !document.hidden; // Store visibility state at blur time
-      
-      // Use a delay to distinguish between tab switches and actual window switches
-      focusCheckTimeout = setTimeout(() => {
-        const hasWindowFocus = document.hasFocus();
-        const isDocumentHidden = document.hidden;
-        
-        console.log(`Focus check after delay - Window has focus: ${hasWindowFocus}, Document hidden: ${isDocumentHidden}, Was visible at blur: ${wasVisible}`);
-        
-        // More nuanced detection:
-        // 1. If document was visible when blur happened but is now hidden = likely tab switch
-        // 2. If document was already hidden when blur happened = likely window switch
-        // 3. Always continue if document is still visible (side-by-side windows)
-        
-        if (!isDocumentHidden) {
-          console.log('Document still visible - continuing idle detection (side-by-side windows)');
-        } else if (wasVisible && isDocumentHidden) {
-          console.log('Tab switch detected (was visible, now hidden) - continuing idle detection');
-        } else {
-          console.log('Confirmed window switch - pausing idle detection');
-          if (idleIntervalRef.current) {
-            clearInterval(idleIntervalRef.current);
-            idleIntervalRef.current = null;
-            console.log('Idle detection paused while away from browser window');
-          }
-        }
-      }, 150);
-    };
-    
-    window.addEventListener('focus', handleFocus);
-    window.addEventListener('blur', handleBlur);
-
-    // Store cleanup function for later use
-    cleanupIdleDetectionRef.current = () => {
-      activityEvents.forEach(eventType => {
-        document.removeEventListener(eventType, handleActivity, true);
-        window.removeEventListener(eventType, handleActivity, true);
-      });
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-      window.removeEventListener('focus', handleFocus);
-      window.removeEventListener('blur', handleBlur);
-      
-      // Clear any pending timeout
-      if (focusCheckTimeout) {
-        clearTimeout(focusCheckTimeout);
-      }
-    };
-    
-    // Start the idle detection interval
-    startIdleDetectionInterval();
-
-  }, [settings.idleTimeout, toast, resetIdleDetection, stopIdleDetection, playSound]);
 
   // Timer countdown effect with precise timing
   useEffect(() => {
@@ -368,14 +182,8 @@ export function useTimer() {
     };
   }, [timerState.isRunning, timerState.isPaused, settings, sessions, setSessions, toast]);
 
-  // Separate useEffect for idle detection management
-  useEffect(() => {
-    if (timerState.isRunning && !timerState.isPaused && timerState.sessionType === 'focus') {
-      startIdleDetection();
-    } else {
-      stopIdleDetection();
-    }
-  }, [timerState.isRunning, timerState.isPaused, timerState.sessionType, startIdleDetection, stopIdleDetection]);
+
+
 
   // Update timer duration when settings change (only if timer is not running)
   useEffect(() => {
@@ -403,20 +211,7 @@ export function useTimer() {
     }
   }, [settings.focusDuration, settings.breakDuration, settings.longBreakDuration, timerState.sessionType, timerState.isRunning, timerState.isPaused, timerState.timeLeft]);
 
-  // Activity listeners for idle detection
-  useEffect(() => {
-    const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'];
-    
-    events.forEach(event => {
-      document.addEventListener(event, resetIdleDetection, true);
-    });
-    
-    return () => {
-      events.forEach(event => {
-        document.removeEventListener(event, resetIdleDetection, true);
-      });
-    };
-  }, [resetIdleDetection]);
+
 
   const startSession = useCallback((intention?: { task: string; why: string }) => {
     // Set precise start time when session begins

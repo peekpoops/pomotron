@@ -24,7 +24,7 @@ export interface Settings {
   cyclesBeforeLongBreak: number;
   autoStart: boolean;
   softStart: boolean;
-  idleTimeout: number;
+
   theme: Theme;
   websiteBlockingEnabled: boolean;
   frictionOverride: boolean;
