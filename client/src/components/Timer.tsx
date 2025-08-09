@@ -172,7 +172,7 @@ const Timer = memo(({ onOpenSettings, timerHook: externalTimerHook, onModalState
   const [availableQuotes, setAvailableQuotes] = useLocalStorage<typeof motivationalQuotes>('pomotron-available-quotes', getShuffledQuotes());
   const [usedQuotes, setUsedQuotes] = useLocalStorage<typeof motivationalQuotes>('pomotron-used-quotes', []);
   const [showGlitchRun, setShowGlitchRun] = useState(false);
-  const [glitchRunUsedThisSession, setGlitchRunUsedThisSession] = useState<boolean>(false);
+  const [glitchRunUsedThisSession, setGlitchRunUsedThisSession] = useLocalStorage<boolean>('glitch-run-used', false);
 
   // Sound toggle function
   const toggleSound = useCallback(() => {
@@ -331,22 +331,17 @@ const Timer = memo(({ onOpenSettings, timerHook: externalTimerHook, onModalState
 
   const handleGlitchRunClose = () => {
     setShowGlitchRun(false);
-    // Don't set used state on close - it's already set on open
-    // This prevents double state updates that can interfere with timer
   };
 
-  // Reset GlitchRun usage when new focus session starts - simplified logic
+  // Reset GlitchRun usage when new focus session starts
   useEffect(() => {
     if (timerState.sessionType === 'focus' && timerState.isRunning) {
-      // Reset usage at start of new focus session (when time is at maximum)
-      const sessionDurationSeconds = settings.focusDuration * 60;
+      // Reset usage at start of new focus session (when time is full)
+      const sessionDurationMinutes = settings.focusDuration;
+      const sessionDurationSeconds = sessionDurationMinutes * 60;
       if (timerState.timeLeft === sessionDurationSeconds) {
         setGlitchRunUsedThisSession(false);
       }
-    }
-    // Also reset when starting a break or when timer stops (session ends)
-    if (timerState.sessionType !== 'focus' || !timerState.isRunning) {
-      setGlitchRunUsedThisSession(false);
     }
   }, [timerState.sessionType, timerState.isRunning, timerState.timeLeft, settings.focusDuration]);
 

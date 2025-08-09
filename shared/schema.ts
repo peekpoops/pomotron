@@ -34,7 +34,6 @@ export const settingsSchema = z.object({
   frictionOverride: z.boolean().default(false),
   blockedSites: z.array(z.string()).default([]),
   motivationalQuotesEnabled: z.boolean().default(false),
-  soundsEnabled: z.boolean().default(true),
 });
 
 export type Settings = z.infer<typeof settingsSchema>;

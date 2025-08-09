@@ -28,9 +28,8 @@ export function useTimer() {
     websiteBlockingEnabled: true,
     frictionOverride: false,
     blockedSites: ['facebook.com', 'twitter.com', 'reddit.com', 'youtube.com', 'instagram.com'],
-    motivationalQuotesEnabled: false,
+    showQuotes: true,
     soundsEnabled: true,
-    showQuotes: false,
   });
   const [sessions, setSessions] = useLocalStorage<Session[]>('pomotron-sessions', []);
 
@@ -139,54 +138,136 @@ export function useTimer() {
         // Additional check: only notify if page is currently visible
         // This prevents false positives when user is working in other apps
         if (!document.hidden) {
-          // Use browser notification instead of toast to avoid dependencies
-          if ('Notification' in window && Notification.permission === 'granted') {
-            new Notification("Idle Detected", {
-              body: `No activity detected for ${settings.idleTimeout} minutes. Still focused?`,
-              icon: '/favicon.ico'
-            });
-          }
+          toast({
+            title: "Idle Detected",
+            description: `No activity detected for ${settings.idleTimeout} minutes. Still focused?`,
+            duration: 6000,
+          });
           playSound('idleNudge');
         }
         resetIdleDetection();
       }
     }, 30000); // Reduced frequency to improve performance (30 seconds)
 
-  }, [settings.idleTimeout, timerState.isRunning, timerState.sessionType]); // Remove unstable function dependencies
+  }, [settings.idleTimeout, timerState.isRunning, timerState.sessionType, toast, resetIdleDetection, stopIdleDetection]);
 
-  // Timer countdown effect - bulletproof implementation
+  // Timer countdown effect with precise timing
   useEffect(() => {
     if (timerState.isRunning && !timerState.isPaused) {
-      startIdleDetection();
+      // Record the exact start time for precision
+      if (!startTimeRef.current) {
+        startTimeRef.current = Date.now();
+      }
       
       intervalRef.current = setInterval(() => {
         setTimerState(prev => {
-          if (!prev.isRunning || prev.isPaused) {
-            return prev;
-          }
+          // Calculate elapsed time more precisely
+          const currentTime = Date.now();
+          const elapsedSeconds = Math.floor((currentTime - (startTimeRef.current || currentTime)) / 1000);
+          const originalDuration = (() => {
+            switch (prev.sessionType) {
+              case 'focus': return settings.focusDuration * 60;
+              case 'break': return settings.breakDuration * 60;
+              case 'longBreak': return settings.longBreakDuration * 60;
+            }
+          })();
           
-          const newTimeLeft = Math.max(0, prev.timeLeft - 1);
-          console.log('Timer tick:', newTimeLeft);
+          const preciseTimeLeft = Math.max(0, originalDuration - elapsedSeconds);
           
-          if (newTimeLeft <= 0) {
-            console.log('Timer completed, transitioning...');
+          if (preciseTimeLeft <= 0) {
+            // Timer finished
+            const isBreakNext = prev.sessionType === 'focus';
+            const isLongBreak = prev.currentCycle >= settings.cyclesBeforeLongBreak && isBreakNext;
+            
+            let nextSessionType: 'focus' | 'break' | 'longBreak';
+            let nextCycle = prev.currentCycle;
+            
+            if (isBreakNext) {
+              nextSessionType = isLongBreak ? 'longBreak' : 'break';
+            } else {
+              nextSessionType = 'focus';
+              if (prev.sessionType === 'longBreak') {
+                nextCycle = 1; // Reset cycle after long break
+              } else {
+                nextCycle = prev.currentCycle + 1;
+              }
+            }
+            
+            // Save completed session
+            if (prev.currentSessionId) {
+              const sessionToUpdate = sessions.find(s => s.id === prev.currentSessionId);
+              if (sessionToUpdate) {
+                const updatedSession: Session = {
+                  ...sessionToUpdate,
+                  endTime: new Date(),
+                  completed: true,
+                };
+                setSessions(prev => prev.map(s => s.id === updatedSession.id ? updatedSession : s));
+              }
+            }
+            
+            // Calculate next duration
+            let nextDuration: number;
+            switch (nextSessionType) {
+              case 'focus':
+                nextDuration = settings.focusDuration * 60;
+                break;
+              case 'break':
+                nextDuration = settings.breakDuration * 60;
+                break;
+              case 'longBreak':
+                nextDuration = settings.longBreakDuration * 60;
+                break;
+            }
+            
             playSound('sessionComplete');
+            
+            // Handle website blocking
+            if (nextSessionType === 'focus' && settings.websiteBlockingEnabled) {
+              activateWebsiteBlocking(settings.blockedSites);
+            } else {
+              deactivateWebsiteBlocking();
+            }
+            
+              toast({
+                title:
+                  prev.sessionType === 'focus'
+                    ? '✅ Focus Session Complete!'
+                    : '☕ Break Complete!',
+                description:
+                  prev.sessionType === 'focus'
+                    ? 'Time for a break!'
+                    : 'Ready for the next focus session?',
+              })
+;
+            
+            // Reset start time for next session
+            startTimeRef.current = settings.autoStart ? Date.now() : null;
             
             return {
               ...prev,
-              isRunning: false,
-              timeLeft: 0,
+              isRunning: settings.autoStart,
+              timeLeft: nextDuration,
+              sessionType: nextSessionType,
+              currentCycle: nextCycle,
+              currentSessionId: undefined,
+              currentIntention: nextSessionType === 'focus' ? { task: '', why: '' } : prev.currentIntention,
             };
           }
           
-          return { ...prev, timeLeft: newTimeLeft };
+          // Use precise timing instead of simple decrement
+          return { ...prev, timeLeft: preciseTimeLeft };
         });
       }, 1000);
+      
+      startIdleDetection();
     } else {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
         intervalRef.current = null;
       }
+      // Reset start time when timer stops
+      startTimeRef.current = null;
       stopIdleDetection();
     }
 
@@ -195,7 +276,7 @@ export function useTimer() {
         clearInterval(intervalRef.current);
       }
     };
-  }, [timerState.isRunning, timerState.isPaused])
+  }, [timerState.isRunning, timerState.isPaused, settings, sessions, setSessions, toast, startIdleDetection, stopIdleDetection]);
 
   // Update timer duration when settings change (only if timer is not running)
   useEffect(() => {

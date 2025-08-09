@@ -82,26 +82,24 @@ export function GlitchRun({ isOpen, onClose }: GlitchRunProps) {
     gameStartTimeRef.current = Date.now();
   }, []);
 
-  // End game with improved close sequence
+  // End game
   const endGame = useCallback(() => {
     setGameState('finished');
     if (gameLoopRef.current) {
       cancelAnimationFrame(gameLoopRef.current);
-      gameLoopRef.current = undefined;
     }
 
     // Play game over sound
     playSound('glitch-game-over');
 
-    // Show "BACK TO FOCUS" message briefly, then auto-close
+    // Show "BACK TO FOCUS" message after 1 second delay, then auto-close after 2 more seconds
     setTimeout(() => {
       setGameState('showingBackToFocus');
-      // Reduced delay and simplified close to prevent timer interference
       setTimeout(() => {
-        setGameState('waiting');
         onClose();
-      }, 1500); // Reduced from 2000ms
-    }, 800); // Reduced from 1000ms
+        setGameState('waiting');
+      }, 2000);
+    }, 1000);
   }, [onClose]);
 
   // Update game state
