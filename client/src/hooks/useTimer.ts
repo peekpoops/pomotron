@@ -28,7 +28,7 @@ export function useTimer() {
     websiteBlockingEnabled: true,
     frictionOverride: false,
     blockedSites: ['facebook.com', 'twitter.com', 'reddit.com', 'youtube.com', 'instagram.com'],
-    showQuotes: true,
+    motivationalQuotesEnabled: false,
     soundsEnabled: true,
   });
   const [sessions, setSessions] = useLocalStorage<Session[]>('pomotron-sessions', []);
@@ -151,30 +151,27 @@ export function useTimer() {
 
   }, [settings.idleTimeout, timerState.isRunning, timerState.sessionType, toast, resetIdleDetection, stopIdleDetection]);
 
-  // Timer countdown effect with precise timing
+  // Timer countdown effect with safer timing
   useEffect(() => {
     if (timerState.isRunning && !timerState.isPaused) {
-      // Record the exact start time for precision
+      // Initialize start time only once per running session
       if (!startTimeRef.current) {
-        startTimeRef.current = Date.now();
+        startTimeRef.current = Date.now() - ((() => {
+          switch (timerState.sessionType) {
+            case 'focus': return settings.focusDuration * 60;
+            case 'break': return settings.breakDuration * 60;
+            case 'longBreak': return settings.longBreakDuration * 60;
+          }
+        })() - timerState.timeLeft) * 1000;
       }
       
       intervalRef.current = setInterval(() => {
         setTimerState(prev => {
-          // Calculate elapsed time more precisely
-          const currentTime = Date.now();
-          const elapsedSeconds = Math.floor((currentTime - (startTimeRef.current || currentTime)) / 1000);
-          const originalDuration = (() => {
-            switch (prev.sessionType) {
-              case 'focus': return settings.focusDuration * 60;
-              case 'break': return settings.breakDuration * 60;
-              case 'longBreak': return settings.longBreakDuration * 60;
-            }
-          })();
+          // Use simple decrement instead of complex time calculation
+          // This prevents timing drift issues when GlitchRun or other activities interfere
+          const newTimeLeft = Math.max(0, prev.timeLeft - 1);
           
-          const preciseTimeLeft = Math.max(0, originalDuration - elapsedSeconds);
-          
-          if (preciseTimeLeft <= 0) {
+          if (newTimeLeft <= 0) {
             // Timer finished
             const isBreakNext = prev.sessionType === 'focus';
             const isLongBreak = prev.currentCycle >= settings.cyclesBeforeLongBreak && isBreakNext;
@@ -255,8 +252,8 @@ export function useTimer() {
             };
           }
           
-          // Use precise timing instead of simple decrement
-          return { ...prev, timeLeft: preciseTimeLeft };
+          // Simple decrement for reliable timing
+          return { ...prev, timeLeft: newTimeLeft };
         });
       }, 1000);
       
