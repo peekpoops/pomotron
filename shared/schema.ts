@@ -30,9 +30,7 @@ export const settingsSchema = z.object({
   softStart: z.boolean().default(false),
 
   theme: z.enum(['starcourt', 'minimal', 'ghibli']).default('starcourt'),
-  websiteBlockingEnabled: z.boolean().default(true),
-  frictionOverride: z.boolean().default(false),
-  blockedSites: z.array(z.string()).default([]),
+
   motivationalQuotesEnabled: z.boolean().default(false),
 });
 

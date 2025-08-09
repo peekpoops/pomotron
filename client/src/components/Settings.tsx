@@ -22,9 +22,7 @@ const defaultSettings: SettingsType = {
   softStart: false,
 
   theme: 'starcourt',
-  websiteBlockingEnabled: true,
-  frictionOverride: false,
-  blockedSites: ['facebook.com', 'twitter.com', 'reddit.com', 'youtube.com', 'instagram.com'],
+
   showQuotes: false,
   soundsEnabled: true,
   motivationalQuotesEnabled: false,

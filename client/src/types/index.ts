@@ -26,9 +26,6 @@ export interface Settings {
   softStart: boolean;
 
   theme: Theme;
-  websiteBlockingEnabled: boolean;
-  frictionOverride: boolean;
-  blockedSites: string[];
   showQuotes: boolean;
   soundsEnabled: boolean;
   motivationalQuotesEnabled: boolean;

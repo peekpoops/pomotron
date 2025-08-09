@@ -36,7 +36,6 @@ Preferred communication style: Simple, everyday language.
 - **Session Management**: Prepared for PostgreSQL session storage using connect-pg-simple
 
 ## Progressive Web App Features
-- **Service Worker**: Custom implementation for website blocking functionality during focus sessions
 - **Manifest**: Complete PWA manifest with icons, shortcuts, and offline capabilities
 - **Caching Strategy**: Static asset caching with dynamic content management
 - **Offline Support**: Local storage persistence enables full offline functionality
@@ -55,11 +54,7 @@ Preferred communication style: Simple, everyday language.
 
 - **Real-time Configuration**: Timer automatically refreshes duration when settings change (without requiring reset)
 
-## Website Blocking System
-- **Implementation**: Service Worker-based URL interception for blocking distracting websites
-- **Activation**: Automatic blocking during focus sessions with unblocking during breaks
-- **Configuration**: User-managed blocklist with friction-based override options
-- **Browser Integration**: Leverages service worker fetch event handling for seamless blocking
+
 
 ## Analytics and Data Visualization
 - **Charts**: Recharts library for responsive data visualization including weekly progress tracking

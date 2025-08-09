@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useLocalStorage } from './useLocalStorage';
 import { TimerState, Session, InsertSession, Settings } from '@/types';
 import { playSound } from '@/lib/sounds';
-import { activateWebsiteBlocking, deactivateWebsiteBlocking } from '@/lib/websiteBlocker';
+
 import { useToast } from '@/hooks/use-toast';
 
 const defaultTimerState: TimerState = {
@@ -25,9 +25,7 @@ export function useTimer() {
     softStart: false,
 
     theme: 'starcourt',
-    websiteBlockingEnabled: true,
-    frictionOverride: false,
-    blockedSites: ['facebook.com', 'twitter.com', 'reddit.com', 'youtube.com', 'instagram.com'],
+
     showQuotes: true,
     soundsEnabled: true,
     motivationalQuotesEnabled: false,
@@ -129,12 +127,7 @@ export function useTimer() {
             
             playSound('sessionComplete');
             
-            // Handle website blocking
-            if (nextSessionType === 'focus' && settings.websiteBlockingEnabled) {
-              activateWebsiteBlocking(settings.blockedSites);
-            } else {
-              deactivateWebsiteBlocking();
-            }
+
             
               toast({
                 title:
@@ -243,10 +236,6 @@ export function useTimer() {
       currentIntention: intention || prev.currentIntention,
     }));
     
-    if (timerState.sessionType === 'focus' && settings.websiteBlockingEnabled) {
-      activateWebsiteBlocking(settings.blockedSites);
-    }
-    
     playSound('start');
   }, [timerState, settings, setSessions]);
 
@@ -264,8 +253,6 @@ export function useTimer() {
       isRunning: false,
       isPaused: true,
     }));
-    
-    deactivateWebsiteBlocking();
   }, []);
 
   const resumeSession = useCallback(() => {
@@ -277,10 +264,6 @@ export function useTimer() {
       isRunning: true,
       isPaused: false,
     }));
-    
-    if (timerState.sessionType === 'focus' && settings.websiteBlockingEnabled) {
-      activateWebsiteBlocking(settings.blockedSites);
-    }
     
     playSound('start');
   }, [timerState.sessionType, settings]);
@@ -330,7 +313,6 @@ export function useTimer() {
       currentSessionId: undefined,
     }));
     
-    deactivateWebsiteBlocking();
     playSound('reset');
   }, [timerState, settings, setSessions]);
 
@@ -363,7 +345,6 @@ export function useTimer() {
       timeLeft: settings.focusDuration * 60,
     });
     
-    deactivateWebsiteBlocking();
     playSound('reset');
   }, [timerState.currentSessionId, settings.focusDuration, setSessions]);
 
