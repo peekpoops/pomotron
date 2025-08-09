@@ -186,16 +186,24 @@ export function useTimer() {
       // Use a small delay to distinguish between tab switches and actual window switches
       // Tab switches will quickly refocus, window switches will not
       focusCheckTimeout = setTimeout(() => {
-        // Check if window still doesn't have focus after delay
-        if (!document.hasFocus()) {
+        // For tab switches, document.visibilityState becomes 'hidden' but document.hasFocus() may still return false
+        // We should check both visibility and focus to distinguish between tab and window switches
+        const isDocumentVisible = !document.hidden;
+        const hasWindowFocus = document.hasFocus();
+        
+        console.log(`Focus check - Document visible: ${isDocumentVisible}, Window has focus: ${hasWindowFocus}`);
+        
+        // If document is visible OR window has focus, it's likely a tab switch within same window
+        if (isDocumentVisible || hasWindowFocus) {
+          console.log('Tab switch within same window - continuing idle detection');
+        } else {
+          // Both document is hidden AND window doesn't have focus = actual window switch
           console.log('Confirmed window switch - pausing idle detection');
           if (idleIntervalRef.current) {
             clearInterval(idleIntervalRef.current);
             idleIntervalRef.current = null;
             console.log('Idle detection paused while away from browser window');
           }
-        } else {
-          console.log('Tab switch within same window - continuing idle detection');
         }
       }, 100); // 100ms delay to distinguish tab vs window switch
     };
