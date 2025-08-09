@@ -131,10 +131,11 @@ const Analytics = memo(() => {
         s.completed
       );
 
-    // Group by intention and sum focus time
+    // Group by intention and sum focus time based on completed sessions
     const intentionTimeMap = weekFocusSessions.reduce((acc, session) => {
       const intention = session.task?.trim() || 'Focus Session (No intention set)';
-      const focusTimeMinutes = Math.round(session.duration / 60);
+      // Use standard focus duration for completed sessions only
+      const focusTimeMinutes = settings.focusDuration;
       
       if (!acc[intention]) {
         acc[intention] = {
@@ -154,7 +155,7 @@ const Analytics = memo(() => {
     // Sort by total time descending
     return Object.entries(intentionTimeMap)
       .sort(([, a], [, b]) => b.totalTime - a.totalTime);
-  }, [sessions]);
+  }, [sessions, settings.focusDuration]);
 
   const exportData = () => {
     // Import XLSX dynamically
