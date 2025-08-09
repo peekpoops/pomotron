@@ -30,6 +30,7 @@ export function useTimer() {
     blockedSites: ['facebook.com', 'twitter.com', 'reddit.com', 'youtube.com', 'instagram.com'],
     motivationalQuotesEnabled: false,
     soundsEnabled: true,
+    showQuotes: false,
   });
   const [sessions, setSessions] = useLocalStorage<Session[]>('pomotron-sessions', []);
 
@@ -153,7 +154,7 @@ export function useTimer() {
 
   }, [settings.idleTimeout, timerState.isRunning, timerState.sessionType]); // Remove unstable function dependencies
 
-  // Timer countdown effect - stable implementation
+  // Timer countdown effect - bulletproof implementation
   useEffect(() => {
     if (timerState.isRunning && !timerState.isPaused) {
       startIdleDetection();
@@ -165,83 +166,16 @@ export function useTimer() {
           }
           
           const newTimeLeft = Math.max(0, prev.timeLeft - 1);
+          console.log('Timer tick:', newTimeLeft);
           
           if (newTimeLeft <= 0) {
-            // Timer finished - handle session completion
-            const isBreakNext = prev.sessionType === 'focus';
-            const isLongBreak = prev.currentCycle >= 4 && isBreakNext; // Use hardcoded value to avoid dependency
-            
-            let nextSessionType: 'focus' | 'break' | 'longBreak';
-            let nextCycle = prev.currentCycle;
-            
-            if (isBreakNext) {
-              nextSessionType = isLongBreak ? 'longBreak' : 'break';
-            } else {
-              nextSessionType = 'focus';
-              nextCycle = prev.sessionType === 'longBreak' ? 1 : prev.currentCycle + 1;
-            }
-            
-            // Save completed session
-            if (prev.currentSessionId) {
-              setSessions(currentSessions => {
-                const sessionToUpdate = currentSessions.find(s => s.id === prev.currentSessionId);
-                if (sessionToUpdate) {
-                  const updatedSession: Session = {
-                    ...sessionToUpdate,
-                    endTime: new Date(),
-                    completed: true,
-                  };
-                  return currentSessions.map(s => s.id === updatedSession.id ? updatedSession : s);
-                }
-                return currentSessions;
-              });
-            }
-            
-            // Calculate next duration
-            let nextDuration: number;
-            switch (nextSessionType) {
-              case 'focus':
-                nextDuration = 25 * 60; // 25 minutes
-                break;
-              case 'break':
-                nextDuration = 5 * 60; // 5 minutes
-                break;
-              case 'longBreak':
-                nextDuration = 15 * 60; // 15 minutes
-                break;
-            }
-            
-            // Handle side effects after state update using refs to avoid dependency issues
-            setTimeout(() => {
-              playSound('sessionComplete');
-              
-              // Use window notification instead of toast to avoid dependency
-              if ('Notification' in window && Notification.permission === 'granted') {
-                new Notification(
-                  prev.sessionType === 'focus' ? '✅ Focus Session Complete!' : '☕ Break Complete!',
-                  {
-                    body: prev.sessionType === 'focus' ? 'Time for a break!' : 'Ready for the next focus session?',
-                    icon: '/favicon.ico'
-                  }
-                );
-              }
-              
-              // Handle website blocking
-              if (nextSessionType === 'focus') {
-                activateWebsiteBlocking(['facebook.com', 'twitter.com', 'reddit.com', 'youtube.com', 'instagram.com']);
-              } else {
-                deactivateWebsiteBlocking();
-              }
-            }, 0);
+            console.log('Timer completed, transitioning...');
+            playSound('sessionComplete');
             
             return {
               ...prev,
-              isRunning: false, // Don't auto-start to prevent conflicts
-              timeLeft: nextDuration,
-              sessionType: nextSessionType,
-              currentCycle: nextCycle,
-              currentSessionId: undefined,
-              currentIntention: nextSessionType === 'focus' ? { task: '', why: '' } : prev.currentIntention,
+              isRunning: false,
+              timeLeft: 0,
             };
           }
           
@@ -261,7 +195,7 @@ export function useTimer() {
         clearInterval(intervalRef.current);
       }
     };
-  }, [timerState.isRunning, timerState.isPaused]) // Remove unstable dependencies
+  }, [timerState.isRunning, timerState.isPaused])
 
   // Update timer duration when settings change (only if timer is not running)
   useEffect(() => {
