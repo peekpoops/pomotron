@@ -432,16 +432,49 @@ const Analytics = memo(() => {
                   />
                   <Tooltip 
                     contentStyle={{
-                      backgroundColor: 'rgba(45, 45, 68, 0.9)',
-                      border: '1px solid rgba(255, 107, 157, 0.5)',
-                      borderRadius: '8px',
-                      color: 'white'
+                      backgroundColor: 'rgba(20, 20, 35, 0.95)',
+                      border: '2px solid rgba(255, 107, 157, 0.8)',
+                      borderRadius: '12px',
+                      color: '#ffffff',
+                      boxShadow: '0 8px 32px rgba(255, 107, 157, 0.3), 0 0 20px rgba(255, 107, 157, 0.2)',
+                      fontFamily: 'var(--font-tech-mono)',
+                      fontSize: '12px',
+                      fontWeight: '600',
+                      backdropFilter: 'blur(8px)',
+                      padding: '12px 16px'
                     }}
+                    labelStyle={{
+                      color: 'rgba(255, 107, 157, 0.9)',
+                      fontSize: '11px',
+                      fontWeight: '700',
+                      textTransform: 'uppercase',
+                      letterSpacing: '1px',
+                      marginBottom: '4px'
+                    }}
+                    cursor={{ fill: 'rgba(255, 107, 157, 0.1)' }}
+                    formatter={(value, name) => [
+                      `${value} session${value !== 1 ? 's' : ''}`,
+                      name === 'sessions' ? 'FOCUS SESSIONS' : name
+                    ]}
                   />
                   <Bar 
                     dataKey="sessions" 
                     fill="url(#gradient)" 
                     radius={[4, 4, 0, 0]}
+                    stroke="rgba(255, 107, 157, 0.6)"
+                    strokeWidth={0}
+                    onMouseEnter={(data, index, e) => {
+                      if (e && e.target) {
+                        e.target.setAttribute('stroke-width', '2');
+                        e.target.setAttribute('filter', 'drop-shadow(0 0 8px rgba(255, 107, 157, 0.8))');
+                      }
+                    }}
+                    onMouseLeave={(data, index, e) => {
+                      if (e && e.target) {
+                        e.target.setAttribute('stroke-width', '0');
+                        e.target.removeAttribute('filter');
+                      }
+                    }}
                   />
                   <defs>
                     <linearGradient id="gradient" x1="0" y1="0" x2="0" y2="1">
