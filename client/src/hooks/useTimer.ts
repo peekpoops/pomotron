@@ -53,7 +53,13 @@ export function useTimer() {
   const lastActivityRef = useRef<number>(Date.now());
   const startTimeRef = useRef<number | null>(null);
   const pausedTimeRef = useRef<number>(0); // Track total paused time
+  const timerStateRef = useRef(timerState); // Keep current timer state for idle detection
   const { toast } = useToast();
+
+  // Update timer state ref whenever timer state changes
+  useEffect(() => {
+    timerStateRef.current = timerState;
+  }, [timerState]);
 
   // Reset idle detection on user activity
   const resetIdleDetection = useCallback(() => {
@@ -157,14 +163,15 @@ export function useTimer() {
       const now = Date.now();
       const timeSinceActivity = (now - lastActivityRef.current) / 1000 / 60; // minutes
       
-      // Get current timer state directly from the current component state
-      console.log(`Idle check - Time since activity: ${timeSinceActivity.toFixed(2)} minutes, Timer running: ${timerState.isRunning}, Session: ${timerState.sessionType}, Idle timeout: ${settings.idleTimeout}`);
+      // Get current timer state from ref to avoid stale closure issues
+      const currentTimerState = timerStateRef.current;
+      console.log(`Idle check - Time since activity: ${timeSinceActivity.toFixed(2)} minutes, Timer running: ${currentTimerState.isRunning}, Session: ${currentTimerState.sessionType}, Idle timeout: ${settings.idleTimeout}`);
       
       // Only trigger idle detection during focus sessions when timer is running
       // Only check when Pomotron tab is visible (we can't detect activity on other tabs/apps)
       if (timeSinceActivity >= settings.idleTimeout && 
-          timerState.isRunning &&
-          timerState.sessionType === 'focus' && 
+          currentTimerState.isRunning &&
+          currentTimerState.sessionType === 'focus' && 
           !document.hidden) {
         console.log('Triggering idle notification! User idle on Pomotron tab for', timeSinceActivity.toFixed(2), 'minutes');
         toast({
