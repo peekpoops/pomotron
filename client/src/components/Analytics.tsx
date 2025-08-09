@@ -58,9 +58,9 @@ const Analytics = memo(() => {
       }
     }
 
-    // Weekly data with more efficient processing (start from Monday)
-    const weekStart = startOfWeek(new Date(), { weekStartsOn: 1 });
-    const weekEnd = endOfWeek(new Date(), { weekStartsOn: 1 });
+    // Weekly data with more efficient processing
+    const weekStart = startOfWeek(new Date());
+    const weekEnd = endOfWeek(new Date());
     const weekDays = eachDayOfInterval({ start: weekStart, end: weekEnd });
     
     // Group sessions by date first to avoid repeated filtering
