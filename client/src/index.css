@@ -312,6 +312,10 @@
   @media (max-width: 768px) {
     .timer-display {
       font-size: clamp(3rem, 12vw, 5rem) !important; /* Larger mobile timer */
+      letter-spacing: -0.05em; /* Tighter letter spacing for better alignment */
+      text-align: center;
+      width: 100%;
+      margin: 0 auto;
     }
     
     .section-title {
