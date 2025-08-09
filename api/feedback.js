@@ -1,7 +1,7 @@
-import { Pool, neonConfig } from '@neondatabase/serverless';
-import { drizzle } from 'drizzle-orm/neon-serverless';
-import ws from 'ws';
-import { feedback, insertFeedbackSchemaDb } from '../shared/schema.js';
+const { Pool, neonConfig } = require('@neondatabase/serverless');
+const { drizzle } = require('drizzle-orm/neon-serverless');
+const ws = require('ws');
+const { feedback, insertFeedbackSchemaDb } = require('./schema.js');
 
 neonConfig.webSocketConstructor = ws;
 
@@ -12,7 +12,7 @@ if (!process.env.DATABASE_URL) {
 const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 const db = drizzle({ client: pool });
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   // Add CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
