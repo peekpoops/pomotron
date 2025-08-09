@@ -412,9 +412,12 @@ const Analytics = memo(() => {
                 </div>
               </div>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-3 sm:p-6">
               <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={weeklyAnalytics.weeklyData}>
+                <BarChart 
+                  data={weeklyAnalytics.weeklyData}
+                  margin={{ top: 5, right: 10, left: -5, bottom: 5 }}
+                >
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
                   <XAxis 
                     dataKey="date" 
@@ -424,6 +427,8 @@ const Analytics = memo(() => {
                   <YAxis 
                     stroke="rgba(255,255,255,0.7)"
                     fontSize={12}
+                    width={25}
+                    tickFormatter={(value) => value.toString()}
                   />
                   <Tooltip 
                     contentStyle={{
