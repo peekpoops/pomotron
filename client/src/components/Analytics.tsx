@@ -381,7 +381,10 @@ const Analytics = memo(() => {
           <Card className="neon-border glass-morphism">
             <CardHeader>
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                <CardTitle className="section-title text-lg text-secondary">Weekly Progress</CardTitle>
+                <div className="flex items-center gap-3">
+                  <CardTitle className="section-title text-lg text-secondary">Weekly Progress</CardTitle>
+                  <Badge variant="default" className="text-xs font-tech-mono sm:hidden">S</Badge>
+                </div>
                 <div className="flex flex-col sm:flex-row sm:items-center gap-3">
                   <div className="flex items-center justify-center space-x-2">
                     <Button
@@ -408,7 +411,7 @@ const Analytics = memo(() => {
                       <ChevronRight className="h-4 w-4 text-accent" />
                     </Button>
                   </div>
-                  <Badge variant="default" className="text-xs font-tech-mono">Sessions</Badge>
+                  <Badge variant="default" className="text-xs font-tech-mono hidden sm:inline-flex">Sessions</Badge>
                 </div>
               </div>
             </CardHeader>
@@ -464,13 +467,13 @@ const Analytics = memo(() => {
                     stroke="rgba(255, 107, 157, 0.6)"
                     strokeWidth={0}
                     onMouseEnter={(data, index, e) => {
-                      if (e && e.target) {
+                      if (e && e.target && e.target instanceof Element) {
                         e.target.setAttribute('stroke-width', '2');
                         e.target.setAttribute('filter', 'drop-shadow(0 0 8px rgba(255, 107, 157, 0.8))');
                       }
                     }}
                     onMouseLeave={(data, index, e) => {
-                      if (e && e.target) {
+                      if (e && e.target && e.target instanceof Element) {
                         e.target.setAttribute('stroke-width', '0');
                         e.target.removeAttribute('filter');
                       }
