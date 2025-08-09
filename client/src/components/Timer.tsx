@@ -387,7 +387,7 @@ const Timer = memo(({ onOpenSettings, timerHook: externalTimerHook, onModalState
         </Card>
       )}
 
-      <div className="grid xl:grid-cols-3 lg:grid-cols-2 gap-6 lg:gap-8 items-start">
+      <div className="grid xl:grid-cols-3 lg:grid-cols-2 gap-4 lg:gap-6 xl:gap-8 items-start mobile-single-col">
         {/* Timer Section */}
         <div className="xl:col-span-2 lg:col-span-2 w-full">
           <Card className={getCardClassName()}>
@@ -437,7 +437,7 @@ const Timer = memo(({ onOpenSettings, timerHook: externalTimerHook, onModalState
                     </div>
                   </div>
                 )}
-                <div className={`timer-display mobile-timer-large iphone-se-fix text-8xl sm:text-9xl md:text-[7rem] lg:text-[8rem] xl:text-[10rem] font-orbitron font-black ${getTimerDisplayColor()} mb-6 lg:mb-8 leading-none w-full max-w-full overflow-hidden`} style={{ boxSizing: 'border-box', maxWidth: 'calc(100vw - 2rem)' }}>
+                <div className={`timer-display text-6xl sm:text-8xl md:text-[7rem] lg:text-[8rem] xl:text-[10rem] font-orbitron font-black ${getTimerDisplayColor()} mb-6 lg:mb-8 leading-none w-full overflow-hidden`}>
                   {formatTime(timerState.timeLeft)}
                 </div>
                 <div className="flex items-center justify-center space-x-2 mb-2">
