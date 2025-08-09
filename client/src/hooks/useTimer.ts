@@ -138,18 +138,20 @@ export function useTimer() {
         // Additional check: only notify if page is currently visible
         // This prevents false positives when user is working in other apps
         if (!document.hidden) {
-          toast({
-            title: "Idle Detected",
-            description: `No activity detected for ${settings.idleTimeout} minutes. Still focused?`,
-            duration: 6000,
-          });
+          // Use browser notification instead of toast to avoid dependencies
+          if ('Notification' in window && Notification.permission === 'granted') {
+            new Notification("Idle Detected", {
+              body: `No activity detected for ${settings.idleTimeout} minutes. Still focused?`,
+              icon: '/favicon.ico'
+            });
+          }
           playSound('idleNudge');
         }
         resetIdleDetection();
       }
     }, 30000); // Reduced frequency to improve performance (30 seconds)
 
-  }, [settings.idleTimeout, timerState.isRunning, timerState.sessionType, toast, resetIdleDetection, stopIdleDetection]);
+  }, [settings.idleTimeout, timerState.isRunning, timerState.sessionType]); // Remove unstable function dependencies
 
   // Timer countdown effect - stable implementation
   useEffect(() => {
@@ -209,14 +211,20 @@ export function useTimer() {
                 break;
             }
             
-            // Handle side effects after state update
+            // Handle side effects after state update using refs to avoid dependency issues
             setTimeout(() => {
               playSound('sessionComplete');
               
-              toast({
-                title: prev.sessionType === 'focus' ? '✅ Focus Session Complete!' : '☕ Break Complete!',
-                description: prev.sessionType === 'focus' ? 'Time for a break!' : 'Ready for the next focus session?',
-              });
+              // Use window notification instead of toast to avoid dependency
+              if ('Notification' in window && Notification.permission === 'granted') {
+                new Notification(
+                  prev.sessionType === 'focus' ? '✅ Focus Session Complete!' : '☕ Break Complete!',
+                  {
+                    body: prev.sessionType === 'focus' ? 'Time for a break!' : 'Ready for the next focus session?',
+                    icon: '/favicon.ico'
+                  }
+                );
+              }
               
               // Handle website blocking
               if (nextSessionType === 'focus') {
@@ -253,7 +261,7 @@ export function useTimer() {
         clearInterval(intervalRef.current);
       }
     };
-  }, [timerState.isRunning, timerState.isPaused, setSessions, toast])
+  }, [timerState.isRunning, timerState.isPaused]) // Remove unstable dependencies
 
   // Update timer duration when settings change (only if timer is not running)
   useEffect(() => {
