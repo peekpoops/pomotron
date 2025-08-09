@@ -310,7 +310,7 @@
 
   /* Mobile Responsive Fixes */
   @media (max-width: 768px) {
-    .timer-display {
+    .timer-display:not(.session-panel .timer-display) {
       font-size: clamp(3rem, 12vw, 5rem) !important; /* Larger mobile timer */
     }
     
@@ -375,7 +375,7 @@
 
   @media (max-width: 480px) {
     /* Extra compact for very small screens */
-    .timer-display {
+    .timer-display:not(.session-panel .timer-display) {
       font-size: clamp(2.5rem, 10vw, 4rem) !important; /* Larger on small screens */
     }
     
@@ -511,12 +511,69 @@
       padding-right: 0.75rem;
     }
     
-    .timer-display {
+    .timer-display:not(.session-panel .timer-display) {
       font-size: clamp(2.25rem, 8vw, 3.5rem) !important;
     }
     
     .mobile-padding-md {
       padding: 0.75rem !important;
+    }
+  }
+
+  /* Session Panel Container Query Setup */
+  .session-panel {
+    container-type: inline-size;
+  }
+
+  /* Mobile-only timer alignment with progress bar */
+  @media screen and (max-width: 640px) {
+    .session-panel .timer-display {
+      font-size: clamp(4rem, 15cqw, 8rem) !important;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      padding: 0;
+      margin: 0 auto;
+      letter-spacing: 0;
+      line-height: 1;
+    }
+
+    .session-panel .timer-char-first,
+    .session-panel .timer-char-last {
+      flex-shrink: 0;
+    }
+
+    .session-panel .timer-char-middle {
+      text-align: center;
+      flex: 1;
+      min-width: 0;
+    }
+
+    /* Ensure timer container matches progress bar width */
+    .session-panel .timer-display {
+      box-sizing: border-box;
+    }
+
+    /* Make sure timer display area has same horizontal constraints as progress bar */
+    .session-panel > div:first-child {
+      padding-left: 0 !important;
+      padding-right: 0 !important;
+    }
+  }
+
+  /* Desktop: Keep original timer display intact */
+  @media screen and (min-width: 641px) {
+    .session-panel .timer-display {
+      display: block;
+      text-align: center;
+      justify-content: center;
+    }
+
+    .session-panel .timer-char-first,
+    .session-panel .timer-char-middle,
+    .session-panel .timer-char-last {
+      display: inline;
     }
   }
 
