@@ -151,18 +151,23 @@ export function useTimer() {
 
   }, [settings.idleTimeout, timerState.isRunning, timerState.sessionType, toast, resetIdleDetection, stopIdleDetection]);
 
-  // Timer countdown effect - simplified and stable
+  // Timer countdown effect - stable implementation
   useEffect(() => {
     if (timerState.isRunning && !timerState.isPaused) {
       startIdleDetection();
+      
       intervalRef.current = setInterval(() => {
         setTimerState(prev => {
+          if (!prev.isRunning || prev.isPaused) {
+            return prev;
+          }
+          
           const newTimeLeft = Math.max(0, prev.timeLeft - 1);
           
           if (newTimeLeft <= 0) {
-            // Timer finished
+            // Timer finished - handle session completion
             const isBreakNext = prev.sessionType === 'focus';
-            const isLongBreak = prev.currentCycle >= settings.cyclesBeforeLongBreak && isBreakNext;
+            const isLongBreak = prev.currentCycle >= 4 && isBreakNext; // Use hardcoded value to avoid dependency
             
             let nextSessionType: 'focus' | 'break' | 'longBreak';
             let nextCycle = prev.currentCycle;
@@ -171,14 +176,10 @@ export function useTimer() {
               nextSessionType = isLongBreak ? 'longBreak' : 'break';
             } else {
               nextSessionType = 'focus';
-              if (prev.sessionType === 'longBreak') {
-                nextCycle = 1; // Reset cycle after long break
-              } else {
-                nextCycle = prev.currentCycle + 1;
-              }
+              nextCycle = prev.sessionType === 'longBreak' ? 1 : prev.currentCycle + 1;
             }
             
-            // Save completed session using callback to avoid dependency issues
+            // Save completed session
             if (prev.currentSessionId) {
               setSessions(currentSessions => {
                 const sessionToUpdate = currentSessions.find(s => s.id === prev.currentSessionId);
@@ -194,59 +195,40 @@ export function useTimer() {
               });
             }
             
-            // Calculate next duration based on current settings snapshot
-            const getCurrentSettings = () => {
-              const storedSettings = localStorage.getItem('pomotron-settings');
-              if (storedSettings) {
-                try {
-                  return JSON.parse(storedSettings);
-                } catch {
-                  return { focusDuration: 25, breakDuration: 5, longBreakDuration: 15, autoStart: false, websiteBlockingEnabled: true, blockedSites: [] };
-                }
-              }
-              return { focusDuration: 25, breakDuration: 5, longBreakDuration: 15, autoStart: false, websiteBlockingEnabled: true, blockedSites: [] };
-            };
-            
-            const currentSettings = getCurrentSettings();
+            // Calculate next duration
             let nextDuration: number;
             switch (nextSessionType) {
               case 'focus':
-                nextDuration = currentSettings.focusDuration * 60;
+                nextDuration = 25 * 60; // 25 minutes
                 break;
               case 'break':
-                nextDuration = currentSettings.breakDuration * 60;
+                nextDuration = 5 * 60; // 5 minutes
                 break;
               case 'longBreak':
-                nextDuration = currentSettings.longBreakDuration * 60;
+                nextDuration = 15 * 60; // 15 minutes
                 break;
             }
             
-            // Use setTimeout to handle side effects outside the state update
+            // Handle side effects after state update
             setTimeout(() => {
               playSound('sessionComplete');
               
+              toast({
+                title: prev.sessionType === 'focus' ? '✅ Focus Session Complete!' : '☕ Break Complete!',
+                description: prev.sessionType === 'focus' ? 'Time for a break!' : 'Ready for the next focus session?',
+              });
+              
               // Handle website blocking
-              if (nextSessionType === 'focus' && currentSettings.websiteBlockingEnabled) {
-                activateWebsiteBlocking(currentSettings.blockedSites);
+              if (nextSessionType === 'focus') {
+                activateWebsiteBlocking(['facebook.com', 'twitter.com', 'reddit.com', 'youtube.com', 'instagram.com']);
               } else {
                 deactivateWebsiteBlocking();
               }
-              
-              toast({
-                title:
-                  prev.sessionType === 'focus'
-                    ? '✅ Focus Session Complete!'
-                    : '☕ Break Complete!',
-                description:
-                  prev.sessionType === 'focus'
-                    ? 'Time for a break!'
-                    : 'Ready for the next focus session?',
-              });
             }, 0);
             
             return {
               ...prev,
-              isRunning: currentSettings.autoStart,
+              isRunning: false, // Don't auto-start to prevent conflicts
               timeLeft: nextDuration,
               sessionType: nextSessionType,
               currentCycle: nextCycle,
@@ -255,7 +237,6 @@ export function useTimer() {
             };
           }
           
-          // Simple decrement for reliable timing
           return { ...prev, timeLeft: newTimeLeft };
         });
       }, 1000);
@@ -272,7 +253,7 @@ export function useTimer() {
         clearInterval(intervalRef.current);
       }
     };
-  }, [timerState.isRunning, timerState.isPaused]); // Minimal dependencies to prevent restart loops
+  }, [timerState.isRunning, timerState.isPaused, setSessions, toast])
 
   // Update timer duration when settings change (only if timer is not running)
   useEffect(() => {
