@@ -375,15 +375,15 @@ const Analytics = memo(() => {
         </Card>
       </div>
 
-      <div className="grid lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-8">
         {/* Weekly Chart */}
         <div className="lg:col-span-2">
           <Card className="neon-border glass-morphism">
             <CardHeader>
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                 <CardTitle className="section-title text-lg text-secondary">Weekly Progress</CardTitle>
-                <div className="flex items-center space-x-3">
-                  <div className="flex items-center space-x-2">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+                  <div className="flex items-center justify-center space-x-2">
                     <Button
                       variant="ghost"
                       size="sm"
@@ -392,7 +392,7 @@ const Analytics = memo(() => {
                     >
                       <ChevronLeft className="h-4 w-4 text-accent" />
                     </Button>
-                    <span className="text-sm font-tech-mono text-accent/80 min-w-[140px] text-center">
+                    <span className="text-sm font-tech-mono text-accent/80 min-w-[120px] sm:min-w-[140px] text-center">
                       {selectedWeekOffset === 0 
                         ? 'This Week' 
                         : `${Math.abs(selectedWeekOffset)} week${Math.abs(selectedWeekOffset) > 1 ? 's' : ''} ago`
@@ -453,12 +453,12 @@ const Analytics = memo(() => {
         {/* Weekly Sessions */}
         <Card className="neon-border glass-morphism">
           <CardHeader className="pb-4">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
               <CardTitle className="section-title text-lg text-secondary flex items-center space-x-2">
                 <Target className="h-5 w-5 text-secondary" />
                 <span>Weekly Sessions</span>
               </CardTitle>
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center justify-center space-x-2">
                 <Button
                   variant="ghost"
                   size="sm"
@@ -467,7 +467,7 @@ const Analytics = memo(() => {
                 >
                   <ChevronLeft className="h-4 w-4 text-secondary" />
                 </Button>
-                <span className="text-sm font-tech-mono text-secondary/80 min-w-[100px] text-center">
+                <span className="text-xs sm:text-sm font-tech-mono text-secondary/80 min-w-[80px] sm:min-w-[100px] text-center">
                   {format(weeklyAnalytics.weekStart, 'MMM d')} - {format(weeklyAnalytics.weekEnd, 'MMM d')}
                 </span>
                 <Button
