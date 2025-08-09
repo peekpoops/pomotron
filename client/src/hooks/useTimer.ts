@@ -116,14 +116,56 @@ export function useTimer() {
       window.addEventListener(eventType, handleActivity, { passive: true, capture: true });
     });
 
-    // Track page visibility changes - continue idle detection across tabs
+    // Use a simpler approach: only pause on window blur, continue on all other cases
+    // Track if we're actually away from the browser window
+    let isWindowBlurred = false;
+    
+    const handleWindowFocus = () => {
+      console.log('Window focus event');
+      if (isWindowBlurred) {
+        console.log('Returning from different browser window - restarting idle detection');
+        isWindowBlurred = false;
+        resetIdleDetection();
+        
+        // Restart idle detection if it was stopped
+        if (!idleIntervalRef.current) {
+          const currentTimerState = timerStateRef.current;
+          if (currentTimerState.isRunning && currentTimerState.sessionType === 'focus') {
+            startIdleDetectionInterval();
+          }
+        }
+      }
+    };
+    
+    const handleWindowBlur = () => {
+      console.log('Window blur event - pausing idle detection');
+      isWindowBlurred = true;
+      
+      // Always pause on window blur - whether tab switch or window switch
+      if (idleIntervalRef.current) {
+        clearInterval(idleIntervalRef.current);
+        idleIntervalRef.current = null;
+        console.log('Idle detection paused due to window blur');
+      }
+    };
+    
     const handleVisibilityChange = () => {
       console.log('Visibility changed, hidden:', document.hidden);
-      // Don't reset idle timer on tab switches - we want to detect idle across tabs
-      // Only reset when browser window focus changes (handled by focus/blur events)
+      
+      if (!document.hidden && !isWindowBlurred) {
+        // Tab became visible and window wasn't blurred - this is a tab switch within same window
+        console.log('Tab switch within same window - restarting idle detection');
+        
+        // Restart idle detection for tab switches
+        if (!idleIntervalRef.current) {
+          const currentTimerState = timerStateRef.current;
+          if (currentTimerState.isRunning && currentTimerState.sessionType === 'focus') {
+            startIdleDetectionInterval();
+          }
+        }
+      }
     };
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-
+    
     // Extract interval creation to separate function for reuse
     const startIdleDetectionInterval = () => {
       if (idleIntervalRef.current) {
@@ -139,7 +181,6 @@ export function useTimer() {
         console.log(`Idle check - Time since activity: ${timeSinceActivity.toFixed(2)} minutes, Timer running: ${currentTimerState.isRunning}, Session: ${currentTimerState.sessionType}, Idle timeout: ${settings.idleTimeout}`);
         
         // Trigger idle detection during focus sessions when timer is running
-        // Show notifications regardless of tab visibility to detect true idleness across tabs
         if (timeSinceActivity >= settings.idleTimeout && 
             currentTimerState.isRunning &&
             currentTimerState.sessionType === 'focus') {
@@ -155,53 +196,10 @@ export function useTimer() {
         }
       }, 10000); // Check every 10 seconds for testing
     };
-
-    // Track window focus/blur - only pause for actual window switches, not tab switches
-    let focusCheckTimeout: NodeJS.Timeout | null = null;
     
-    const handleFocus = () => {
-      console.log('Window focus event - checking if this is actual window focus');
-      
-      // Clear any pending focus check
-      if (focusCheckTimeout) {
-        clearTimeout(focusCheckTimeout);
-        focusCheckTimeout = null;
-      }
-      
-      // Only restart if idle detection was actually paused
-      if (!idleIntervalRef.current) {
-        console.log('Idle interval was paused, restarting after window focus');
-        resetIdleDetection();
-        
-        const currentTimerState = timerStateRef.current;
-        if (currentTimerState.isRunning && currentTimerState.sessionType === 'focus') {
-          startIdleDetectionInterval();
-        }
-      }
-    };
-    
-    const handleBlur = () => {
-      console.log('Window blur event - checking if this is actual window switch');
-      
-      // Use a small delay to distinguish between tab switches and actual window switches
-      // Tab switches will quickly refocus, window switches will not
-      focusCheckTimeout = setTimeout(() => {
-        // Check if window still doesn't have focus after delay
-        if (!document.hasFocus()) {
-          console.log('Confirmed window switch - pausing idle detection');
-          if (idleIntervalRef.current) {
-            clearInterval(idleIntervalRef.current);
-            idleIntervalRef.current = null;
-            console.log('Idle detection paused while away from browser window');
-          }
-        } else {
-          console.log('Tab switch within same window - continuing idle detection');
-        }
-      }, 100); // 100ms delay to distinguish tab vs window switch
-    };
-    
-    window.addEventListener('focus', handleFocus);
-    window.addEventListener('blur', handleBlur);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('focus', handleWindowFocus);
+    window.addEventListener('blur', handleWindowBlur);
 
     // Store cleanup function for later use
     cleanupIdleDetectionRef.current = () => {
@@ -210,13 +208,8 @@ export function useTimer() {
         window.removeEventListener(eventType, handleActivity, true);
       });
       document.removeEventListener('visibilitychange', handleVisibilityChange);
-      window.removeEventListener('focus', handleFocus);
-      window.removeEventListener('blur', handleBlur);
-      
-      // Clear any pending timeout
-      if (focusCheckTimeout) {
-        clearTimeout(focusCheckTimeout);
-      }
+      window.removeEventListener('focus', handleWindowFocus);
+      window.removeEventListener('blur', handleWindowBlur);
     };
     
     // Start the idle detection interval
