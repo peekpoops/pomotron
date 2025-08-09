@@ -1,16 +1,17 @@
-import { useMemo, memo } from 'react';
+import { useMemo, memo, useState } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { Calendar, Clock, Target, TrendingUp, Download, Trash2 } from 'lucide-react';
+import { Calendar, Clock, Target, TrendingUp, Download, Trash2, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { Session, Settings } from '@/types';
-import { format, isToday, isThisWeek, startOfWeek, endOfWeek, eachDayOfInterval } from 'date-fns';
+import { format, isToday, isThisWeek, startOfWeek, endOfWeek, eachDayOfInterval, addWeeks, subWeeks } from 'date-fns';
 
 const Analytics = memo(() => {
   const [sessions] = useLocalStorage<Session[]>('pomotron-sessions', []);
+  const [selectedWeekOffset, setSelectedWeekOffset] = useState(0); // 0 = current week, -1 = last week, etc.
   const [settings] = useLocalStorage<Settings>('pomotron-settings', { 
     focusDuration: 25,
     breakDuration: 5,
@@ -109,20 +110,51 @@ const Analytics = memo(() => {
       successRate,
       totalFocusTime: Math.round(totalFocusTime / 3600), // Convert to hours
       currentStreak,
-      weeklyData,
     };
   }, [sessions]);
 
-  const recentIntentions = useMemo(() => {
-    // Get all sessions from the past week (both with and without intentions)
-    const oneWeekAgo = new Date();
-    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+  // Separate calculation for weekly data that can handle historical weeks
+  const weeklyAnalytics = useMemo(() => {
+    // Calculate the target week based on offset
+    const targetDate = selectedWeekOffset === 0 ? new Date() : addWeeks(new Date(), selectedWeekOffset);
+    const weekStart = startOfWeek(targetDate, { weekStartsOn: 1 });
+    const weekEnd = endOfWeek(targetDate, { weekStartsOn: 1 });
+    const weekDays = eachDayOfInterval({ start: weekStart, end: weekEnd });
     
+    // Group sessions by date first to avoid repeated filtering
+    const sessionsByDate = new Map<string, typeof sessions>();
+    sessions.forEach(s => {
+      const dayStr = format(new Date(s.startTime), 'yyyy-MM-dd');
+      if (!sessionsByDate.has(dayStr)) {
+        sessionsByDate.set(dayStr, []);
+      }
+      sessionsByDate.get(dayStr)!.push(s);
+    });
+    
+    const weeklyData = weekDays.map(day => {
+      const dayStr = format(day, 'yyyy-MM-dd');
+      const daySessions = sessionsByDate.get(dayStr) || [];
+      
+      const focusTime = daySessions.reduce((acc, s) => {
+        return s.sessionType === 'focus' && s.completed ? acc + s.duration : acc;
+      }, 0) / 60; // Convert to minutes
+      
+      return {
+        date: format(day, 'EEE'),
+        sessions: daySessions.length,
+        focusTime,
+      };
+    });
+
+    // Get sessions for this specific week for the sessions list
     const weekSessions = sessions
-      .filter(s => new Date(s.startTime) >= oneWeekAgo)
+      .filter(s => {
+        const sessionDate = new Date(s.startTime);
+        return sessionDate >= weekStart && sessionDate <= weekEnd;
+      })
       .sort((a, b) => new Date(b.startTime).getTime() - new Date(a.startTime).getTime());
 
-    // Group sessions by day
+    // Group weekly sessions by day
     const groupedByDay = weekSessions.reduce((acc, session) => {
       const dayKey = format(new Date(session.startTime), 'yyyy-MM-dd');
       if (!acc[dayKey]) {
@@ -132,20 +164,30 @@ const Analytics = memo(() => {
       return acc;
     }, {} as Record<string, Session[]>);
 
-    return groupedByDay;
-  }, [sessions]);
+    return {
+      weeklyData,
+      weekSessions: groupedByDay,
+      weekStart,
+      weekEnd,
+    };
+  }, [sessions, selectedWeekOffset]);
+
+  // This is now handled by weeklyAnalytics.weekSessions
 
   const focusTimeByIntention = useMemo(() => {
-    // Get all focus sessions from the past week
-    const oneWeekAgo = new Date();
-    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+    // Get all focus sessions from the selected week
+    const targetDate = selectedWeekOffset === 0 ? new Date() : addWeeks(new Date(), selectedWeekOffset);
+    const weekStart = startOfWeek(targetDate, { weekStartsOn: 1 });
+    const weekEnd = endOfWeek(targetDate, { weekStartsOn: 1 });
     
     const weekFocusSessions = sessions
-      .filter(s => 
-        new Date(s.startTime) >= oneWeekAgo && 
-        s.sessionType === 'focus' && 
-        s.completed
-      );
+      .filter(s => {
+        const sessionDate = new Date(s.startTime);
+        return sessionDate >= weekStart && 
+               sessionDate <= weekEnd && 
+               s.sessionType === 'focus' && 
+               s.completed;
+      });
 
     // Group by intention and sum focus time based on completed sessions
     const intentionTimeMap = weekFocusSessions.reduce((acc, session) => {
@@ -171,7 +213,7 @@ const Analytics = memo(() => {
     // Sort by total time descending
     return Object.entries(intentionTimeMap)
       .sort(([, a], [, b]) => b.totalTime - a.totalTime);
-  }, [sessions, settings.focusDuration]);
+  }, [sessions, settings.focusDuration, selectedWeekOffset]);
 
   const exportData = () => {
     // Import XLSX dynamically
@@ -340,14 +382,39 @@ const Analytics = memo(() => {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle className="section-title text-lg text-secondary">Weekly Progress</CardTitle>
-                <div className="flex space-x-2">
+                <div className="flex items-center space-x-3">
+                  <div className="flex items-center space-x-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setSelectedWeekOffset(selectedWeekOffset - 1)}
+                      className="h-8 w-8 p-0 neon-border-sm glass-morphism hover:bg-accent/10"
+                    >
+                      <ChevronLeft className="h-4 w-4 text-accent" />
+                    </Button>
+                    <span className="text-sm font-tech-mono text-accent/80 min-w-[140px] text-center">
+                      {selectedWeekOffset === 0 
+                        ? 'This Week' 
+                        : `${Math.abs(selectedWeekOffset)} week${Math.abs(selectedWeekOffset) > 1 ? 's' : ''} ago`
+                      }
+                    </span>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setSelectedWeekOffset(selectedWeekOffset + 1)}
+                      disabled={selectedWeekOffset >= 0}
+                      className="h-8 w-8 p-0 neon-border-sm glass-morphism hover:bg-accent/10 disabled:opacity-40 disabled:cursor-not-allowed"
+                    >
+                      <ChevronRight className="h-4 w-4 text-accent" />
+                    </Button>
+                  </div>
                   <Badge variant="default" className="text-xs font-tech-mono">Sessions</Badge>
                 </div>
               </div>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={analytics.weeklyData}>
+                <BarChart data={weeklyAnalytics.weeklyData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
                   <XAxis 
                     dataKey="date" 
@@ -386,24 +453,48 @@ const Analytics = memo(() => {
         {/* Weekly Sessions */}
         <Card className="neon-border glass-morphism">
           <CardHeader className="pb-4">
-            <CardTitle className="section-title text-lg text-secondary flex items-center space-x-2">
-              <Target className="h-5 w-5 text-secondary" />
-              <span>Weekly Sessions</span>
-            </CardTitle>
+            <div className="flex items-center justify-between">
+              <CardTitle className="section-title text-lg text-secondary flex items-center space-x-2">
+                <Target className="h-5 w-5 text-secondary" />
+                <span>Weekly Sessions</span>
+              </CardTitle>
+              <div className="flex items-center space-x-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setSelectedWeekOffset(selectedWeekOffset - 1)}
+                  className="h-8 w-8 p-0 neon-border-sm glass-morphism hover:bg-secondary/10"
+                >
+                  <ChevronLeft className="h-4 w-4 text-secondary" />
+                </Button>
+                <span className="text-sm font-tech-mono text-secondary/80 min-w-[100px] text-center">
+                  {format(weeklyAnalytics.weekStart, 'MMM d')} - {format(weeklyAnalytics.weekEnd, 'MMM d')}
+                </span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setSelectedWeekOffset(selectedWeekOffset + 1)}
+                  disabled={selectedWeekOffset >= 0}
+                  className="h-8 w-8 p-0 neon-border-sm glass-morphism hover:bg-secondary/10 disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  <ChevronRight className="h-4 w-4 text-secondary" />
+                </Button>
+              </div>
+            </div>
           </CardHeader>
           <CardContent className="p-0">
             <ScrollArea className="h-96 px-6 py-4">
               <div className="space-y-6">
-                {Object.keys(recentIntentions).length === 0 ? (
+                {Object.keys(weeklyAnalytics.weekSessions).length === 0 ? (
                   <div className="text-center text-muted-foreground py-8">
                     <Target className="h-8 w-8 mx-auto mb-2 opacity-50" />
                     <p className="text-sm">No sessions recorded this week</p>
                     <p className="text-xs">Start your first focus session to see your activity here</p>
                   </div>
                 ) : (
-                  Object.entries(recentIntentions)
+                  Object.entries(weeklyAnalytics.weekSessions)
                     .sort(([a], [b]) => b.localeCompare(a)) // Sort by date descending
-                    .map(([dateKey, daySessions]) => {
+                    .map(([dateKey, daySessions]: [string, Session[]]) => {
                       const date = new Date(dateKey);
                       const dayLabel = isToday(date) 
                         ? 'Today' 
@@ -423,7 +514,7 @@ const Analytics = memo(() => {
                           </div>
                           
                           <div className="space-y-2">
-                            {daySessions.map((session, index) => {
+                            {daySessions.map((session: Session, index: number) => {
                               // Calculate individual session duration (actual time spent)
                               const sessionDurationMinutes = Math.round(session.duration / 60);
                               const sessionHours = Math.floor(sessionDurationMinutes / 60);
