@@ -129,26 +129,32 @@ export function useTimer() {
     };
     document.addEventListener('visibilitychange', handleVisibilityChange);
 
-    // Track window focus/blur for cross-window activity detection
-    // Only reset idle detection if user was actually idle before focusing
+    // Track window focus/blur - assume user is active when switching windows frequently
+    let lastBlurTime = 0;
+    
     const handleFocus = () => {
       const now = Date.now();
-      const timeSinceActivity = (now - lastActivityRef.current) / 1000 / 60;
-      console.log('Browser window focused after', timeSinceActivity.toFixed(2), 'minutes');
+      const timeSinceBlur = (now - lastBlurTime) / 1000; // seconds
+      const timeSinceActivity = (now - lastActivityRef.current) / 1000 / 60; // minutes
       
-      // Only reset if this focus represents genuine activity (not just window switching)
-      // If user just switched windows without being idle, don't reset the timer
-      if (timeSinceActivity < 0.1) { // Less than 6 seconds means they were just switching
-        console.log('Quick window switch detected, not resetting idle timer');
-      } else {
-        console.log('Window focus after idle period, resetting idle detection');
+      console.log('Browser window focused after', timeSinceActivity.toFixed(2), 'minutes idle,', timeSinceBlur.toFixed(1), 'seconds since blur');
+      
+      // If user focused this window recently after blur, assume they're actively working
+      // Reset idle timer to give benefit of the doubt for cross-window activity
+      if (timeSinceBlur < 300) { // Less than 5 minutes since blur = probably active elsewhere
+        console.log('Recent window switch detected, assuming user was active elsewhere, resetting idle timer');
         resetIdleDetection();
+      } else if (timeSinceActivity < 0.1) {
+        console.log('Quick focus with recent activity, resetting idle timer');
+        resetIdleDetection();  
+      } else {
+        console.log('Focus after long idle period, not resetting');
       }
     };
     
     const handleBlur = () => {
-      console.log('Browser window blurred, continuing idle detection');
-      // Don't reset - continue monitoring for true idleness
+      lastBlurTime = Date.now();
+      console.log('Browser window blurred at', new Date(lastBlurTime).toLocaleTimeString());
     };
     
     window.addEventListener('focus', handleFocus);
