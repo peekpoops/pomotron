@@ -52,7 +52,7 @@ Preferred communication style: Simple, everyday language.
 - **Settings Integration**: Configurable durations, auto-start, and cycle management with real-time settings updates
 - **Intention Setting**: Modal-based workflow for task and motivation capture before sessions
 - **Sound System**: Web Audio API integration for retro-style sound effects and notifications
-- **Idle Detection**: Automatic detection and notification of user inactivity during focus sessions
+
 - **Real-time Configuration**: Timer automatically refreshes duration when settings change (without requiring reset)
 
 ## Website Blocking System

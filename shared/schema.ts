@@ -28,7 +28,7 @@ export const settingsSchema = z.object({
   cyclesBeforeLongBreak: z.number().min(1).max(10).default(4),
   autoStart: z.boolean().default(false),
   softStart: z.boolean().default(false),
-  idleTimeout: z.number().min(1).max(60).default(5), // minutes
+
   theme: z.enum(['starcourt', 'minimal', 'ghibli']).default('starcourt'),
   websiteBlockingEnabled: z.boolean().default(true),
   frictionOverride: z.boolean().default(false),
