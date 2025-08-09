@@ -104,8 +104,6 @@ export function useTimer() {
       const now = Date.now();
       console.log('Activity detected at:', new Date(now).toLocaleTimeString());
       resetIdleDetection();
-      // Clear any pending idle notifications since user is active
-      sessionStorage.removeItem('pomotron-idle-pending');
     };
 
     // Add activity listeners to document (works for current tab)
@@ -125,30 +123,27 @@ export function useTimer() {
       if (!document.hidden) {
         // User returned to Pomotron tab - reset idle timer since switching tabs counts as activity
         console.log('User returned to Pomotron tab, resetting idle timer');
-        
-        // Check if there was a pending idle notification
-        if (sessionStorage.getItem('pomotron-idle-pending') === 'true') {
-          console.log('Showing pending idle notification');
-          toast({
-            title: "Idle Detected",
-            description: `You were idle while away. Time to refocus?`,
-            duration: 6000,
-          });
-          playSound('idleNudge');
-          sessionStorage.removeItem('pomotron-idle-pending');
-        }
-        
         resetIdleDetection();
       }
       // Don't pause idle detection when switching away - continue monitoring for true idleness
     };
     document.addEventListener('visibilitychange', handleVisibilityChange);
 
-    // Track window focus/blur for cross-tab activity detection
+    // Track window focus/blur for cross-window activity detection
+    // Only reset idle detection if user was actually idle before focusing
     const handleFocus = () => {
-      console.log('Browser window focused, resetting idle detection');
-      resetIdleDetection();
-      sessionStorage.removeItem('pomotron-idle-pending');
+      const now = Date.now();
+      const timeSinceActivity = (now - lastActivityRef.current) / 1000 / 60;
+      console.log('Browser window focused after', timeSinceActivity.toFixed(2), 'minutes');
+      
+      // Only reset if this focus represents genuine activity (not just window switching)
+      // If user just switched windows without being idle, don't reset the timer
+      if (timeSinceActivity < 0.1) { // Less than 6 seconds means they were just switching
+        console.log('Quick window switch detected, not resetting idle timer');
+      } else {
+        console.log('Window focus after idle period, resetting idle detection');
+        resetIdleDetection();
+      }
     };
     
     const handleBlur = () => {
@@ -186,21 +181,15 @@ export function useTimer() {
           currentTimerState.sessionType === 'focus') {
         console.log('Triggering idle notification! User idle for', timeSinceActivity.toFixed(2), 'minutes');
         
-        // Use different notification based on tab visibility
-        if (document.hidden) {
-          // User is on another tab - show notification when they return
-          console.log('User idle on another tab, will show notification on return');
-          // Store the idle state to show notification when they return
-          sessionStorage.setItem('pomotron-idle-pending', 'true');
-        } else {
-          // User is on Pomotron tab and idle
-          toast({
-            title: "Idle Detected",
-            description: `No activity detected for ${settings.idleTimeout} minutes. Still focused?`,
-            duration: 6000,
-          });
-          playSound('idleNudge');
-        }
+        // Show notification immediately regardless of tab visibility
+        // This allows sound/notification to work as a nudge even when on other tabs
+        console.log('Showing idle notification immediately');
+        toast({
+          title: "Idle Detected",
+          description: `No activity detected for ${settings.idleTimeout} minutes. Still focused?`,
+          duration: 6000,
+        });
+        playSound('idleNudge');
         resetIdleDetection();
       }
     }, 10000); // Check every 10 seconds for testing
