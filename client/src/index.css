@@ -529,51 +529,23 @@
   @media screen and (max-width: 640px) {
     .session-panel .timer-display {
       font-size: clamp(4rem, 15cqw, 8rem) !important;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      width: 100%;
-      padding: 0;
-      margin: 0 auto;
-      letter-spacing: 0;
-      line-height: 1;
-    }
-
-    .session-panel .timer-char-first,
-    .session-panel .timer-char-last {
-      flex-shrink: 0;
-    }
-
-    .session-panel .timer-char-middle {
       text-align: center;
-      flex: 1;
-      min-width: 0;
+      width: 100%;
+      margin: 0 auto;
+      line-height: 1;
+      display: block;
     }
 
-    /* Ensure timer container matches progress bar width */
-    .session-panel .timer-display {
-      box-sizing: border-box;
-    }
-
-    /* Make sure timer display area has same horizontal constraints as progress bar */
+    /* Ensure timer and progress bar share same horizontal constraints */
     .session-panel > div:first-child {
       padding-left: 0 !important;
       padding-right: 0 !important;
     }
-  }
-
-  /* Desktop: Keep original timer display intact */
-  @media screen and (min-width: 641px) {
+    
+    /* Make timer container width match progress bar container */
     .session-panel .timer-display {
-      display: block;
-      text-align: center;
-      justify-content: center;
-    }
-
-    .session-panel .timer-char-first,
-    .session-panel .timer-char-middle,
-    .session-panel .timer-char-last {
-      display: inline;
+      box-sizing: border-box;
+      max-width: 100%;
     }
   }
 
