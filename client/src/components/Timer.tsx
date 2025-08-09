@@ -387,7 +387,7 @@ const Timer = memo(({ onOpenSettings, timerHook: externalTimerHook, onModalState
         </Card>
       )}
 
-      <div className="grid xl:grid-cols-3 lg:grid-cols-2 gap-4 lg:gap-6 xl:gap-8 items-start mobile-single-col">
+      <div className="grid xl:grid-cols-3 lg:grid-cols-2 gap-6 lg:gap-8 items-start">
         {/* Timer Section */}
         <div className="xl:col-span-2 lg:col-span-2 w-full">
           <Card className={getCardClassName()}>
@@ -421,80 +421,77 @@ const Timer = memo(({ onOpenSettings, timerHook: externalTimerHook, onModalState
                 </div>
               )}
               
-              {/* Session Panel - Timer + Progress Bar wrapper for alignment */}
-              <div className="session-panel">
-                {/* Timer Display */}
-                <div className="text-center mb-8 lg:mb-12 xl:mb-16 relative z-10 w-full max-w-full px-2 sm:px-4">
-                  {(timerState.sessionType === 'break' || timerState.sessionType === 'longBreak') && (
-                    <div className="mb-4 animate-bounce">
-                      <div className={`text-2xl sm:text-3xl font-orbitron font-bold ${
-                        timerState.sessionType === 'break' ? 'text-emerald-400' : 'text-purple-400'
-                      }`}>
-                        🎉 {timerState.sessionType === 'break' ? 'BREAK TIME!' : 'LONG BREAK!'} 🎉
-                      </div>
-                      <div className="text-sm text-muted-foreground mt-2 font-tech-mono">
-                        {timerState.sessionType === 'break' 
-                          ? 'Time to recharge your focus energy!' 
-                          : 'You\'ve earned this extended break!'}
-                      </div>
+              {/* Timer Display */}
+              <div className="text-center mb-8 lg:mb-12 xl:mb-16 relative z-10 w-full max-w-full px-2 sm:px-4">
+                {(timerState.sessionType === 'break' || timerState.sessionType === 'longBreak') && (
+                  <div className="mb-4 animate-bounce">
+                    <div className={`text-2xl sm:text-3xl font-orbitron font-bold ${
+                      timerState.sessionType === 'break' ? 'text-emerald-400' : 'text-purple-400'
+                    }`}>
+                      🎉 {timerState.sessionType === 'break' ? 'BREAK TIME!' : 'LONG BREAK!'} 🎉
                     </div>
-                  )}
-                  <div className={`timer-display text-6xl sm:text-8xl md:text-[7rem] lg:text-[8rem] xl:text-[10rem] font-orbitron font-black ${getTimerDisplayColor()} mb-6 lg:mb-8 leading-none w-full overflow-hidden text-center`}>
-                    {formatTime(timerState.timeLeft)}
-                  </div>
-                  <div className="flex items-center justify-center space-x-2 mb-2">
-                    <Badge className={`${getSessionTypeColor()} text-primary-foreground text-xs sm:text-sm`}>
-                      {getSessionTypeLabel()}
-                    </Badge>
-                  </div>
-                  {/* Visual Cycle Progress - Only show during focus sessions */}
-                  {timerState.sessionType === 'focus' && (
-                    <div className="flex items-center justify-center space-x-2 mb-2">
-                      {Array.from({ length: settings.cyclesBeforeLongBreak }, (_, index) => {
-                        const cycleNumber = index + 1;
-                        const isCompleted = cycleNumber < timerState.currentCycle;
-                        const isCurrent = cycleNumber === timerState.currentCycle && timerState.sessionType === 'focus';
-                        
-                        return (
-                          <div
-                            key={cycleNumber}
-                            className={`w-3 h-3 rounded-full border-2 transition-all duration-300 ${
-                              isCompleted
-                                ? 'bg-primary border-primary shadow-lg shadow-primary/50'
-                                : isCurrent
-                                ? 'bg-gradient-to-br from-accent to-secondary border-accent shadow-md shadow-accent/40'
-                                : 'bg-muted border-muted-foreground/30'
-                            }`}
-                            title={`Focus Cycle ${cycleNumber}${isCompleted ? ' (Completed)' : isCurrent ? ' (Current)' : ''}`}
-                          />
-                        );
-                      })}
+                    <div className="text-sm text-muted-foreground mt-2 font-tech-mono">
+                      {timerState.sessionType === 'break' 
+                        ? 'Time to recharge your focus energy!' 
+                        : 'You\'ve earned this extended break!'}
                     </div>
-                  )}
+                  </div>
+                )}
+                <div className={`timer-display mobile-timer-large iphone-se-fix text-8xl sm:text-9xl md:text-[7rem] lg:text-[8rem] xl:text-[10rem] font-orbitron font-black ${getTimerDisplayColor()} mb-6 lg:mb-8 leading-none w-full max-w-full overflow-hidden`} style={{ boxSizing: 'border-box', maxWidth: 'calc(100vw - 2rem)' }}>
+                  {formatTime(timerState.timeLeft)}
                 </div>
-
-                {/* Progress Bar */}
-                <div className="mb-8 lg:mb-12 xl:mb-16">
-                  <Progress 
-                    value={getProgress()} 
-                    className="h-4 lg:h-6 mb-3 lg:mb-4"
-                  />
-                  <div className="flex justify-between text-xs text-muted-foreground">
-                    <span>
-                      {formatTime(
-                        (timerState.sessionType === 'focus' ? settings.focusDuration :
-                         timerState.sessionType === 'break' ? settings.breakDuration :
-                         settings.longBreakDuration) * 60 - timerState.timeLeft
-                      )}
-                    </span>
-                    <span>
-                      {formatTime(
-                        (timerState.sessionType === 'focus' ? settings.focusDuration :
-                         timerState.sessionType === 'break' ? settings.breakDuration :
-                         settings.longBreakDuration) * 60
-                      )}
-                    </span>
+                <div className="flex items-center justify-center space-x-2 mb-2">
+                  <Badge className={`${getSessionTypeColor()} text-primary-foreground text-xs sm:text-sm`}>
+                    {getSessionTypeLabel()}
+                  </Badge>
+                </div>
+                {/* Visual Cycle Progress - Only show during focus sessions */}
+                {timerState.sessionType === 'focus' && (
+                  <div className="flex items-center justify-center space-x-2 mb-2">
+                    {Array.from({ length: settings.cyclesBeforeLongBreak }, (_, index) => {
+                      const cycleNumber = index + 1;
+                      const isCompleted = cycleNumber < timerState.currentCycle;
+                      const isCurrent = cycleNumber === timerState.currentCycle && timerState.sessionType === 'focus';
+                      
+                      return (
+                        <div
+                          key={cycleNumber}
+                          className={`w-3 h-3 rounded-full border-2 transition-all duration-300 ${
+                            isCompleted
+                              ? 'bg-primary border-primary shadow-lg shadow-primary/50'
+                              : isCurrent
+                              ? 'bg-gradient-to-br from-accent to-secondary border-accent shadow-md shadow-accent/40'
+                              : 'bg-muted border-muted-foreground/30'
+                          }`}
+                          title={`Focus Cycle ${cycleNumber}${isCompleted ? ' (Completed)' : isCurrent ? ' (Current)' : ''}`}
+                        />
+                      );
+                    })}
                   </div>
+                )}
+              </div>
+
+              {/* Progress Bar */}
+              <div className="mb-8 lg:mb-12 xl:mb-16">
+                <Progress 
+                  value={getProgress()} 
+                  className="h-4 lg:h-6 mb-3 lg:mb-4"
+                />
+                <div className="flex justify-between text-xs text-muted-foreground">
+                  <span>
+                    {formatTime(
+                      (timerState.sessionType === 'focus' ? settings.focusDuration :
+                       timerState.sessionType === 'break' ? settings.breakDuration :
+                       settings.longBreakDuration) * 60 - timerState.timeLeft
+                    )}
+                  </span>
+                  <span>
+                    {formatTime(
+                      (timerState.sessionType === 'focus' ? settings.focusDuration :
+                       timerState.sessionType === 'break' ? settings.breakDuration :
+                       settings.longBreakDuration) * 60
+                    )}
+                  </span>
                 </div>
               </div>
 
