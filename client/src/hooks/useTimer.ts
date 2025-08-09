@@ -398,9 +398,19 @@ export function useTimer() {
   const resetSession = useCallback(() => {
     // Mark current session as incomplete if exists
     if (timerState.currentSessionId) {
+      // Calculate actual duration spent on this session
+      const actualDuration = startTimeRef.current 
+        ? Math.round((Date.now() - startTimeRef.current - pausedTimeRef.current) / 1000)
+        : 0;
+      
       setSessions(prev => prev.map(s => 
         s.id === timerState.currentSessionId 
-          ? { ...s, endTime: new Date(), completed: false }
+          ? { 
+              ...s, 
+              endTime: new Date(), 
+              completed: false,
+              duration: Math.max(0, actualDuration) // Ensure duration is not negative
+            }
           : s
       ));
     }
@@ -437,9 +447,19 @@ export function useTimer() {
   const endSession = useCallback(() => {
     // Mark current session as incomplete if exists
     if (timerState.currentSessionId) {
+      // Calculate actual duration spent on this session
+      const actualDuration = startTimeRef.current 
+        ? Math.round((Date.now() - startTimeRef.current - pausedTimeRef.current) / 1000)
+        : 0;
+      
       setSessions(prev => prev.map(s => 
         s.id === timerState.currentSessionId 
-          ? { ...s, endTime: new Date(), completed: false }
+          ? { 
+              ...s, 
+              endTime: new Date(), 
+              completed: false,
+              duration: Math.max(0, actualDuration) // Ensure duration is not negative
+            }
           : s
       ));
     }
