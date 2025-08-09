@@ -52,6 +52,7 @@ export function useTimer() {
   const idleIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const lastActivityRef = useRef<number>(Date.now());
   const startTimeRef = useRef<number | null>(null);
+  const pausedTimeRef = useRef<number>(0); // Track total paused time
   const { toast } = useToast();
 
   // Reset idle detection on user activity
@@ -162,7 +163,7 @@ export function useTimer() {
       
       intervalRef.current = setInterval(() => {
         setTimerState(prev => {
-          // Calculate elapsed time more precisely
+          // Calculate elapsed time more precisely, accounting for paused time
           const currentTime = Date.now();
           const elapsedSeconds = Math.floor((currentTime - (startTimeRef.current || currentTime)) / 1000);
           const originalDuration = (() => {
@@ -173,7 +174,9 @@ export function useTimer() {
             }
           })();
           
-          const preciseTimeLeft = Math.max(0, originalDuration - elapsedSeconds);
+          // Account for paused time - subtract from original duration, not from timeLeft
+          const totalElapsedSeconds = elapsedSeconds + pausedTimeRef.current;
+          const preciseTimeLeft = Math.max(0, originalDuration - totalElapsedSeconds);
           
           if (preciseTimeLeft <= 0) {
             // Timer finished
@@ -323,6 +326,7 @@ export function useTimer() {
   const startSession = useCallback((intention?: { task: string; why: string }) => {
     // Set precise start time when session begins
     startTimeRef.current = Date.now();
+    pausedTimeRef.current = 0; // Reset paused time for new session
     const sessionId = crypto.randomUUID();
     const currentTime = new Date();
     
@@ -357,6 +361,14 @@ export function useTimer() {
   }, [timerState, settings, setSessions]);
 
   const pauseSession = useCallback(() => {
+    // Calculate and store elapsed time before pausing
+    if (startTimeRef.current) {
+      const currentTime = Date.now();
+      const elapsedSeconds = Math.floor((currentTime - startTimeRef.current) / 1000);
+      pausedTimeRef.current += elapsedSeconds;
+      startTimeRef.current = null;
+    }
+    
     setTimerState(prev => ({
       ...prev,
       isRunning: false,
@@ -367,7 +379,7 @@ export function useTimer() {
   }, []);
 
   const resumeSession = useCallback(() => {
-    // Reset start time to current time when resuming to maintain accurate timing
+    // Reset start time to current time when resuming
     startTimeRef.current = Date.now();
     
     setTimerState(prev => ({
@@ -406,6 +418,10 @@ export function useTimer() {
         break;
     }
     
+    // Reset timing references
+    startTimeRef.current = null;
+    pausedTimeRef.current = 0;
+    
     setTimerState(prev => ({
       ...prev,
       isRunning: false,
@@ -427,6 +443,10 @@ export function useTimer() {
           : s
       ));
     }
+    
+    // Reset timing references
+    startTimeRef.current = null;
+    pausedTimeRef.current = 0;
     
     setTimerState({
       ...defaultTimerState,
