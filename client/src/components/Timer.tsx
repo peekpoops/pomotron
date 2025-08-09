@@ -331,6 +331,10 @@ const Timer = memo(({ onOpenSettings, timerHook: externalTimerHook, onModalState
 
   const handleGlitchRunClose = () => {
     setShowGlitchRun(false);
+    // Ensure game is marked as used even on manual close
+    if (timerState.sessionType === 'focus' && timerState.isRunning) {
+      setGlitchRunUsedThisSession(true);
+    }
   };
 
   // Reset GlitchRun usage when new focus session starts
