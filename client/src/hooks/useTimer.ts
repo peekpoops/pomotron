@@ -152,7 +152,7 @@ export function useTimer() {
       }
     }, 10000); // Check every 10 seconds for testing
 
-  }, [settings.idleTimeout, timerState.isRunning, timerState.sessionType, toast, resetIdleDetection, stopIdleDetection, playSound]);
+  }, [settings.idleTimeout, toast, resetIdleDetection, stopIdleDetection, playSound]);
 
   // Timer countdown effect with precise timing
   useEffect(() => {
@@ -264,8 +264,6 @@ export function useTimer() {
           return { ...prev, timeLeft: preciseTimeLeft };
         });
       }, 1000);
-      
-      startIdleDetection();
     } else {
       if (intervalRef.current) {
         clearInterval(intervalRef.current);
@@ -273,7 +271,6 @@ export function useTimer() {
       }
       // Reset start time when timer stops
       startTimeRef.current = null;
-      stopIdleDetection();
     }
 
     return () => {
@@ -281,7 +278,16 @@ export function useTimer() {
         clearInterval(intervalRef.current);
       }
     };
-  }, [timerState.isRunning, timerState.isPaused, settings, sessions, setSessions, toast, startIdleDetection, stopIdleDetection]);
+  }, [timerState.isRunning, timerState.isPaused, settings, sessions, setSessions, toast]);
+
+  // Separate useEffect for idle detection management
+  useEffect(() => {
+    if (timerState.isRunning && !timerState.isPaused && timerState.sessionType === 'focus') {
+      startIdleDetection();
+    } else {
+      stopIdleDetection();
+    }
+  }, [timerState.isRunning, timerState.isPaused, timerState.sessionType, startIdleDetection, stopIdleDetection]);
 
   // Update timer duration when settings change (only if timer is not running)
   useEffect(() => {
