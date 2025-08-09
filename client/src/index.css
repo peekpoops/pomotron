@@ -525,59 +525,27 @@
     container-type: inline-size;
   }
 
-  /* Mobile-only timer alignment with progress bar edges */
+  /* Mobile-only timer alignment with progress bar */
   @media screen and (max-width: 640px) {
     .session-panel .timer-display {
       font-size: clamp(4rem, 15cqw, 8rem) !important;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      width: 100%;
-      margin: 0;
-      padding: 0;
-      line-height: 1;
-      letter-spacing: 0;
-      text-align: left;
-    }
-
-    /* Position first and last characters at edges */
-    .session-panel .timer-mobile-first {
-      flex-shrink: 0;
-    }
-    
-    .session-panel .timer-mobile-middle {
-      flex: 1;
       text-align: center;
-      min-width: 0;
-    }
-    
-    .session-panel .timer-mobile-last {
-      flex-shrink: 0;
+      width: 100%;
+      margin: 0 auto;
+      line-height: 1;
+      display: block;
     }
 
-    /* Ensure timer and progress bar containers have same horizontal bounds */
+    /* Ensure timer and progress bar share same horizontal constraints */
     .session-panel > div:first-child {
       padding-left: 0 !important;
       padding-right: 0 !important;
     }
     
-    .session-panel > div:last-child {
-      padding-left: 0 !important;
-      padding-right: 0 !important;
-    }
-  }
-
-  /* Desktop: Keep timer as normal centered text */
-  @media screen and (min-width: 641px) {
+    /* Make timer container width match progress bar container */
     .session-panel .timer-display {
-      text-align: center;
-      display: block;
-    }
-
-    .session-panel .timer-mobile-first,
-    .session-panel .timer-mobile-middle,
-    .session-panel .timer-mobile-last {
-      display: inline;
+      box-sizing: border-box;
+      max-width: 100%;
     }
   }
 

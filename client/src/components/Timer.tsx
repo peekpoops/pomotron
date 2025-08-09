@@ -439,10 +439,8 @@ const Timer = memo(({ onOpenSettings, timerHook: externalTimerHook, onModalState
                       </div>
                     </div>
                   )}
-                  <div className={`timer-display text-6xl sm:text-8xl md:text-[7rem] lg:text-[8rem] xl:text-[10rem] font-orbitron font-black ${getTimerDisplayColor()} mb-6 lg:mb-8 leading-none w-full overflow-hidden`}>
-                    <span className="timer-mobile-first">{formatTime(timerState.timeLeft).charAt(0)}</span>
-                    <span className="timer-mobile-middle">{formatTime(timerState.timeLeft).slice(1, -1)}</span>
-                    <span className="timer-mobile-last">{formatTime(timerState.timeLeft).slice(-1)}</span>
+                  <div className={`timer-display text-6xl sm:text-8xl md:text-[7rem] lg:text-[8rem] xl:text-[10rem] font-orbitron font-black ${getTimerDisplayColor()} mb-6 lg:mb-8 leading-none w-full overflow-hidden text-center`}>
+                    {formatTime(timerState.timeLeft)}
                   </div>
                   <div className="flex items-center justify-center space-x-2 mb-2">
                     <Badge className={`${getSessionTypeColor()} text-primary-foreground text-xs sm:text-sm`}>
