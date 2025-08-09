@@ -183,29 +183,31 @@ export function useTimer() {
     const handleBlur = () => {
       console.log('Window blur event - checking if this is actual window switch');
       
-      // Use a small delay to distinguish between tab switches and actual window switches
-      // Tab switches will quickly refocus, window switches will not
+      // Use a longer delay to better distinguish between tab switches and actual window switches
       focusCheckTimeout = setTimeout(() => {
-        // For tab switches, document.visibilityState becomes 'hidden' but document.hasFocus() may still return false
-        // We should check both visibility and focus to distinguish between tab and window switches
-        const isDocumentVisible = !document.hidden;
         const hasWindowFocus = document.hasFocus();
+        const isDocumentHidden = document.hidden;
         
-        console.log(`Focus check - Document visible: ${isDocumentVisible}, Window has focus: ${hasWindowFocus}`);
+        console.log(`Focus check after delay - Window has focus: ${hasWindowFocus}, Document hidden: ${isDocumentHidden}`);
         
-        // If document is visible OR window has focus, it's likely a tab switch within same window
-        if (isDocumentVisible || hasWindowFocus) {
-          console.log('Tab switch within same window - continuing idle detection');
-        } else {
-          // Both document is hidden AND window doesn't have focus = actual window switch
+        // Only pause idle detection if BOTH conditions are true:
+        // 1. Window doesn't have focus (user clicked outside browser)
+        // 2. Document is hidden (not visible to user)
+        // This ensures we continue idle detection for:
+        // - Tab switches (document hidden but window focus varies)
+        // - Side-by-side windows (document visible, window may not have focus)
+        
+        if (!hasWindowFocus && isDocumentHidden) {
           console.log('Confirmed window switch - pausing idle detection');
           if (idleIntervalRef.current) {
             clearInterval(idleIntervalRef.current);
             idleIntervalRef.current = null;
             console.log('Idle detection paused while away from browser window');
           }
+        } else {
+          console.log('Tab switch within same window or visible window - continuing idle detection');
         }
-      }, 100); // 100ms delay to distinguish tab vs window switch
+      }, 200); // Longer delay to better distinguish tab vs window switch
     };
     
     window.addEventListener('focus', handleFocus);
