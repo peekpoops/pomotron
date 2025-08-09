@@ -11,10 +11,14 @@ export default defineConfig({
       "@assets": path.resolve(__dirname, "attached_assets"),
     },
   },
-  root: path.resolve(__dirname, "client"),
+  root: ".",
   build: {
-    outDir: path.resolve(__dirname, "dist"),
+    outDir: "dist",
     emptyOutDir: true,
+    rollupOptions: {
+      input: "index.html"
+    },
     assetsInlineLimit: 0, // Force favicon to be copied as separate file
   },
+  publicDir: path.resolve(__dirname, "client", "public"),
 });

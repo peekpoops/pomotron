@@ -92,5 +92,3 @@ Preferred communication style: Simple, everyday language.
 - **Performance Optimizations**: React.memo, throttled events, optimized calculations for better performance
 - **Vercel Deployment**: Added serverless API functions for full-stack deployment with PostgreSQL database
 - **Browser Tab Title**: Updated to "Pomotron – 💿 Retro Pomodoro Timer // Session_001 Engaged" format
-- **Timer Fixes**: Fixed pause/resume time reversion bug and spacebar conflicts with GlitchRun game
-- **Project Structure**: Cleaned up duplicate index.html files, main file is /client/index.html
