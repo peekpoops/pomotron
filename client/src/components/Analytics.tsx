@@ -424,15 +424,13 @@ const Analytics = memo(() => {
                           
                           <div className="space-y-2">
                             {daySessions.map((session, index) => {
-                              // Calculate total focus time for this intention
-                              const intentionKey = session.task?.trim() || 'Focus Session (No intention set)';
-                              const intentionData = focusTimeByIntention.find(([intention]) => intention === intentionKey);
-                              const totalFocusTime = intentionData ? intentionData[1].totalTime : Math.round(session.duration / 60);
-                              const totalHours = Math.floor(totalFocusTime / 60);
-                              const totalMinutes = totalFocusTime % 60;
-                              const totalTimeString = totalHours > 0 
-                                ? `${totalHours}h ${totalMinutes}m` 
-                                : `${totalMinutes}m`;
+                              // Calculate individual session duration (actual time spent)
+                              const sessionDurationMinutes = Math.round(session.duration / 60);
+                              const sessionHours = Math.floor(sessionDurationMinutes / 60);
+                              const sessionMinutes = sessionDurationMinutes % 60;
+                              const totalTimeString = sessionHours > 0 
+                                ? `${sessionHours}h ${sessionMinutes}m` 
+                                : `${sessionMinutes}m`;
                               
                               return (
                                 <div 
