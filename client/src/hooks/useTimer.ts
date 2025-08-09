@@ -85,27 +85,29 @@ export function useTimer() {
     // Don't start idle detection if it's disabled (idleTimeout = 0)
     if (settings.idleTimeout === 0) return;
     
-    // Track global activity events with throttling to improve performance
-    const activityEvents = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart', 'click'];
+    console.log('Starting idle detection with timeout:', settings.idleTimeout, 'minutes');
     
-    // Throttle activity updates to reduce excessive function calls
-    let throttleTimeout: NodeJS.Timeout | null = null;
+    // Initialize last activity to now
+    lastActivityRef.current = Date.now();
+    
+    // Track global activity events - Safari compatible
+    const activityEvents = ['mousedown', 'mousemove', 'keydown', 'keypress', 'keyup', 'scroll', 'touchstart', 'touchmove', 'click', 'wheel'];
+    
+    // Simpler activity handler without throttling for better reliability
     const handleActivity = () => {
-      if (throttleTimeout) return; // Skip if already throttled
-      
-      throttleTimeout = setTimeout(() => {
-        resetIdleDetection();
-        throttleTimeout = null;
-      }, 1000); // Only update once per second max
+      const now = Date.now();
+      console.log('Activity detected at:', new Date(now).toLocaleTimeString());
+      resetIdleDetection();
     };
 
-    // Add activity listeners with passive flag for better performance
+    // Add activity listeners - more compatible with Safari
     activityEvents.forEach(eventType => {
-      document.addEventListener(eventType, handleActivity, { passive: true, capture: true });
+      document.addEventListener(eventType, handleActivity, { passive: false, capture: true });
     });
 
     // Track page visibility changes - if user switches tabs but comes back, reset idle timer
     const handleVisibilityChange = () => {
+      console.log('Visibility changed, hidden:', document.hidden);
       if (!document.hidden) {
         resetIdleDetection();
       }
@@ -114,16 +116,13 @@ export function useTimer() {
 
     // Track window focus changes - if user comes back to browser, reset idle timer
     const handleFocus = () => {
+      console.log('Window focused');
       resetIdleDetection();
     };
     window.addEventListener('focus', handleFocus);
 
     // Store cleanup function for later use
     cleanupIdleDetectionRef.current = () => {
-      if (throttleTimeout) {
-        clearTimeout(throttleTimeout);
-        throttleTimeout = null;
-      }
       activityEvents.forEach(eventType => {
         document.removeEventListener(eventType, handleActivity, true);
       });
@@ -131,12 +130,16 @@ export function useTimer() {
       window.removeEventListener('focus', handleFocus);
     };
     
+    // Check for idle more frequently for testing
     idleIntervalRef.current = setInterval(() => {
       const now = Date.now();
       const timeSinceActivity = (now - lastActivityRef.current) / 1000 / 60; // minutes
       
+      console.log(`Idle check - Time since activity: ${timeSinceActivity.toFixed(2)} minutes, Timer running: ${timerState.isRunning}, Session: ${timerState.sessionType}, Idle timeout: ${settings.idleTimeout}`);
+      
       // Only trigger idle detection during focus sessions and when timer is running
       if (timeSinceActivity >= settings.idleTimeout && timerState.isRunning && timerState.sessionType === 'focus') {
+        console.log('Triggering idle notification!');
         // Show notification regardless of page visibility - we want to nudge users who are idle
         // even when they're on the Pomotron tab but not moving the mouse
         toast({
@@ -147,9 +150,9 @@ export function useTimer() {
         playSound('idleNudge');
         resetIdleDetection();
       }
-    }, 30000); // Reduced frequency to improve performance (30 seconds)
+    }, 10000); // Check every 10 seconds for testing
 
-  }, [settings.idleTimeout, timerState.isRunning, timerState.sessionType, toast, resetIdleDetection, stopIdleDetection]);
+  }, [settings.idleTimeout, timerState.isRunning, timerState.sessionType, toast, resetIdleDetection, stopIdleDetection, playSound]);
 
   // Timer countdown effect with precise timing
   useEffect(() => {
