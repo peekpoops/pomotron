@@ -503,20 +503,15 @@ const Analytics = memo(() => {
                       return (
                         <div key={dateKey} className="space-y-4">
                           <div className="mb-4 pb-3 border-b border-accent/30">
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center space-x-3">
-                                <h3 className="text-lg font-orbitron font-bold text-accent drop-shadow-neon">
-                                  {dayLabel}
-                                </h3>
-                                <div className="flex items-center space-x-2">
-                                  <div className="w-2 h-2 bg-accent rounded-full animate-pulse" />
-                                  <span className="text-sm font-tech-mono text-accent/70 tracking-wider">
-                                    {daySessions.length} SESSION{daySessions.length !== 1 ? 'S' : ''}
-                                  </span>
-                                </div>
-                              </div>
-                              <div className="text-xs font-tech-mono text-accent/50 tracking-widest">
-                                {format(date, 'MMM d')}
+                            <div className="flex items-center space-x-4">
+                              <h3 className="text-lg font-orbitron font-bold text-accent drop-shadow-neon">
+                                {dayLabel}
+                              </h3>
+                              <div className="flex items-center space-x-2">
+                                <div className="w-2 h-2 bg-accent rounded-full animate-pulse" />
+                                <span className="text-sm font-tech-mono text-accent/70 tracking-wider">
+                                  {daySessions.length} SESSION{daySessions.length !== 1 ? 'S' : ''}
+                                </span>
                               </div>
                             </div>
                           </div>
