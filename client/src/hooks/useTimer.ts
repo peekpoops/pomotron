@@ -137,16 +137,14 @@ export function useTimer() {
       
       // Only trigger idle detection during focus sessions and when timer is running
       if (timeSinceActivity >= settings.idleTimeout && timerState.isRunning && timerState.sessionType === 'focus') {
-        // Additional check: only notify if page is currently visible
-        // This prevents false positives when user is working in other apps
-        if (!document.hidden) {
-          toast({
-            title: "Idle Detected",
-            description: `No activity detected for ${settings.idleTimeout} minutes. Still focused?`,
-            duration: 6000,
-          });
-          playSound('idleNudge');
-        }
+        // Show notification regardless of page visibility - we want to nudge users who are idle
+        // even when they're on the Pomotron tab but not moving the mouse
+        toast({
+          title: "Idle Detected",
+          description: `No activity detected for ${settings.idleTimeout} minutes. Still focused?`,
+          duration: 6000,
+        });
+        playSound('idleNudge');
         resetIdleDetection();
       }
     }, 30000); // Reduced frequency to improve performance (30 seconds)
