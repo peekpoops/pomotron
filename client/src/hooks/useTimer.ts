@@ -119,13 +119,8 @@ export function useTimer() {
     // Track page visibility changes - continue idle detection across tabs
     const handleVisibilityChange = () => {
       console.log('Visibility changed, hidden:', document.hidden);
-      
-      if (!document.hidden) {
-        // User returned to Pomotron tab - reset idle timer since switching tabs counts as activity
-        console.log('User returned to Pomotron tab, resetting idle timer');
-        resetIdleDetection();
-      }
-      // Don't pause idle detection when switching away - continue monitoring for true idleness
+      // Don't reset idle timer on tab switches - we want to detect idle across tabs
+      // Only reset when browser window focus changes (handled by focus/blur events)
     };
     document.addEventListener('visibilitychange', handleVisibilityChange);
 
@@ -143,13 +138,11 @@ export function useTimer() {
         const currentTimerState = timerStateRef.current;
         console.log(`Idle check - Time since activity: ${timeSinceActivity.toFixed(2)} minutes, Timer running: ${currentTimerState.isRunning}, Session: ${currentTimerState.sessionType}, Idle timeout: ${settings.idleTimeout}`);
         
-        // Only trigger when browser window is focused (not blurred)
-        // This ensures we only detect idle when user is actually in this browser
+        // Trigger idle detection during focus sessions when timer is running
+        // Show notifications regardless of tab visibility to detect true idleness across tabs
         if (timeSinceActivity >= settings.idleTimeout && 
             currentTimerState.isRunning &&
-            currentTimerState.sessionType === 'focus' && 
-            !document.hidden &&
-            document.hasFocus()) {
+            currentTimerState.sessionType === 'focus') {
           console.log('Triggering idle notification! User idle for', timeSinceActivity.toFixed(2), 'minutes');
           
           toast({
