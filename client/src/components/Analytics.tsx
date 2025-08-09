@@ -501,8 +501,8 @@ const Analytics = memo(() => {
                         : format(date, 'EEEE, MMM d');
                       
                       return (
-                        <div key={dateKey} className="space-y-3">
-                          <div className="mb-4 pb-3 border-b-2 border-accent/40">
+                        <div key={dateKey} className="space-y-4">
+                          <div className="mb-4 pb-3 border-b border-accent/30">
                             <div className="flex items-center justify-between">
                               <h3 className="text-lg font-orbitron font-bold text-accent drop-shadow-neon">
                                 {dayLabel}
@@ -513,7 +513,7 @@ const Analytics = memo(() => {
                             </div>
                           </div>
                           
-                          <div className="space-y-2">
+                          <div className="space-y-3">
                             {daySessions.map((session: Session, index: number) => {
                               // Calculate individual session duration (actual time spent)
                               const sessionDurationMinutes = Math.round(session.duration / 60);
@@ -526,8 +526,11 @@ const Analytics = memo(() => {
                               return (
                                 <div 
                                   key={session.id} 
-                                  className="bg-card/50 rounded-md p-3 border border-border/40 hover:border-accent/40 transition-colors max-w-full"
+                                  className="bg-card/30 hover:bg-card/50 rounded-lg p-4 transition-all duration-200 hover:scale-[1.02] relative overflow-hidden group"
                                 >
+                                  {/* Subtle left accent line */}
+                                  <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-accent/60 via-accent/40 to-transparent opacity-60 group-hover:opacity-100 transition-opacity" />
+                                  
                                   <div className="flex items-start justify-between mb-2 gap-2">
                                     <div className="flex-1 min-w-0 overflow-hidden">
                                       <div className="text-sm font-medium text-foreground truncate mb-1">
