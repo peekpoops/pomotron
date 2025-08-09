@@ -6,11 +6,27 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import { useLocalStorage } from '@/hooks/useLocalStorage';
-import { Session } from '@/types';
+import { Session, Settings } from '@/types';
 import { format, isToday, isThisWeek, startOfWeek, endOfWeek, eachDayOfInterval } from 'date-fns';
 
 const Analytics = memo(() => {
   const [sessions] = useLocalStorage<Session[]>('pomotron-sessions', []);
+  const [settings] = useLocalStorage<Settings>('pomotron-settings', { 
+    focusDuration: 25,
+    breakDuration: 5,
+    longBreakDuration: 15,
+    cyclesBeforeLongBreak: 4,
+    autoStart: false,
+    softStart: false,
+    idleTimeout: 5,
+    theme: 'starcourt' as const,
+    websiteBlockingEnabled: true,
+    frictionOverride: false,
+    blockedSites: [],
+    showQuotes: false,
+    soundsEnabled: false,
+    motivationalQuotesEnabled: false,
+  });
 
   // Optimize analytics calculation with better performance
   const analytics = useMemo(() => {
