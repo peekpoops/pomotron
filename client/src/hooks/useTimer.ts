@@ -116,54 +116,48 @@ export function useTimer() {
       window.addEventListener(eventType, handleActivity, { passive: true, capture: true });
     });
 
-    // Use a simpler approach: only pause on window blur, continue on all other cases
-    // Track if we're actually away from the browser window
-    let isWindowBlurred = false;
+    // Simple approach: only pause when completely away from browser, continue for all tab activity
+    let pauseTimeout: NodeJS.Timeout | null = null;
     
     const handleWindowFocus = () => {
-      console.log('Window focus event');
-      if (isWindowBlurred) {
-        console.log('Returning from different browser window - restarting idle detection');
-        isWindowBlurred = false;
+      console.log('Window focus event - browser window gained focus');
+      
+      // Clear any pending pause timeout
+      if (pauseTimeout) {
+        clearTimeout(pauseTimeout);
+        pauseTimeout = null;
+        console.log('Cancelled pause timeout - staying in same browser');
+      }
+      
+      // Restart idle detection if it was paused
+      if (!idleIntervalRef.current) {
+        console.log('Restarting idle detection after window focus');
         resetIdleDetection();
         
-        // Restart idle detection if it was stopped
-        if (!idleIntervalRef.current) {
-          const currentTimerState = timerStateRef.current;
-          if (currentTimerState.isRunning && currentTimerState.sessionType === 'focus') {
-            startIdleDetectionInterval();
-          }
+        const currentTimerState = timerStateRef.current;
+        if (currentTimerState.isRunning && currentTimerState.sessionType === 'focus') {
+          startIdleDetectionInterval();
         }
       }
     };
     
     const handleWindowBlur = () => {
-      console.log('Window blur event - pausing idle detection');
-      isWindowBlurred = true;
+      console.log('Window blur event - checking if user left browser');
       
-      // Always pause on window blur - whether tab switch or window switch
-      if (idleIntervalRef.current) {
-        clearInterval(idleIntervalRef.current);
-        idleIntervalRef.current = null;
-        console.log('Idle detection paused due to window blur');
-      }
+      // Use a longer delay to distinguish between quick tab switches and leaving browser
+      pauseTimeout = setTimeout(() => {
+        console.log('User has left browser window - pausing idle detection');
+        if (idleIntervalRef.current) {
+          clearInterval(idleIntervalRef.current);
+          idleIntervalRef.current = null;
+        }
+      }, 500); // 500ms delay - tab switches will refocus before this
     };
     
     const handleVisibilityChange = () => {
       console.log('Visibility changed, hidden:', document.hidden);
-      
-      if (!document.hidden && !isWindowBlurred) {
-        // Tab became visible and window wasn't blurred - this is a tab switch within same window
-        console.log('Tab switch within same window - restarting idle detection');
-        
-        // Restart idle detection for tab switches
-        if (!idleIntervalRef.current) {
-          const currentTimerState = timerStateRef.current;
-          if (currentTimerState.isRunning && currentTimerState.sessionType === 'focus') {
-            startIdleDetectionInterval();
-          }
-        }
-      }
+      // Just log for debugging - don't pause/restart based on tab visibility
+      // We want idle detection to continue across all tabs
     };
     
     // Extract interval creation to separate function for reuse
@@ -210,6 +204,11 @@ export function useTimer() {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       window.removeEventListener('focus', handleWindowFocus);
       window.removeEventListener('blur', handleWindowBlur);
+      
+      // Clear any pending timeout
+      if (pauseTimeout) {
+        clearTimeout(pauseTimeout);
+      }
     };
     
     // Start the idle detection interval
