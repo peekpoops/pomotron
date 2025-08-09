@@ -135,11 +135,12 @@ export function useTimer() {
       const now = Date.now();
       const timeSinceActivity = (now - lastActivityRef.current) / 1000 / 60; // minutes
       
+      // Get current timer state directly from the current component state
       console.log(`Idle check - Time since activity: ${timeSinceActivity.toFixed(2)} minutes, Timer running: ${timerState.isRunning}, Session: ${timerState.sessionType}, Idle timeout: ${settings.idleTimeout}`);
       
-      // Only trigger idle detection during focus sessions and when timer is running
-      if (timeSinceActivity >= settings.idleTimeout && timerState.isRunning && timerState.sessionType === 'focus') {
-        console.log('Triggering idle notification!');
+      // Only trigger idle detection during focus sessions - remove timer running check temporarily for testing
+      if (timeSinceActivity >= settings.idleTimeout && timerState.sessionType === 'focus') {
+        console.log('Triggering idle notification! (Timer state ignored for testing)');
         // Show notification regardless of page visibility - we want to nudge users who are idle
         // even when they're on the Pomotron tab but not moving the mouse
         toast({
