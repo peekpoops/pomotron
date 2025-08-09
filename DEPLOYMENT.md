@@ -28,11 +28,6 @@ This project is configured for Vercel deployment as a full-stack application wit
 {
   "buildCommand": "npm install && npx vite build --config vite.vercel.config.ts",
   "outputDirectory": "dist",
-  "functions": {
-    "api/**/*.js": {
-      "runtime": "nodejs20.x"
-    }
-  },
   "rewrites": [
     {
       "source": "/((?!api).*)",
@@ -41,6 +36,8 @@ This project is configured for Vercel deployment as a full-stack application wit
   ]
 }
 ```
+
+Note: The runtime configuration has been removed to avoid Node.js version compatibility issues. Vercel will automatically detect and use the appropriate Node.js runtime for the API functions.
 
 ## API Routes
 - `/api/feedback` - POST/GET for feedback collection and retrieval
