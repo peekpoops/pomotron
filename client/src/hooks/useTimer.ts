@@ -121,12 +121,29 @@ export function useTimer() {
     };
     window.addEventListener('focus', handleFocus);
 
+    // Track page visibility to pause idle detection when user is on other tabs/apps
+    let wasHidden = document.hidden;
+    const handleVisibilityForIdlePause = () => {
+      const isNowHidden = document.hidden;
+      console.log('Visibility changed for idle pause, was hidden:', wasHidden, 'now hidden:', isNowHidden);
+      
+      if (wasHidden && !isNowHidden) {
+        // User came back to Pomotron tab - reset idle detection
+        console.log('User returned to Pomotron, resetting idle detection');
+        resetIdleDetection();
+      }
+      
+      wasHidden = isNowHidden;
+    };
+    document.addEventListener('visibilitychange', handleVisibilityForIdlePause);
+
     // Store cleanup function for later use
     cleanupIdleDetectionRef.current = () => {
       activityEvents.forEach(eventType => {
         document.removeEventListener(eventType, handleActivity, true);
       });
       document.removeEventListener('visibilitychange', handleVisibilityChange);
+      document.removeEventListener('visibilitychange', handleVisibilityForIdlePause);
       window.removeEventListener('focus', handleFocus);
     };
     
@@ -138,11 +155,13 @@ export function useTimer() {
       // Get current timer state directly from the current component state
       console.log(`Idle check - Time since activity: ${timeSinceActivity.toFixed(2)} minutes, Timer running: ${timerState.isRunning}, Session: ${timerState.sessionType}, Idle timeout: ${settings.idleTimeout}`);
       
-      // Only trigger idle detection during focus sessions - remove timer running check temporarily for testing
-      if (timeSinceActivity >= settings.idleTimeout && timerState.sessionType === 'focus') {
-        console.log('Triggering idle notification! (Timer state ignored for testing)');
-        // Show notification regardless of page visibility - we want to nudge users who are idle
-        // even when they're on the Pomotron tab but not moving the mouse
+      // Only trigger idle detection during focus sessions, when timer is running, and when Pomotron tab is visible
+      // This prevents false positives when user is working on other apps/websites
+      if (timeSinceActivity >= settings.idleTimeout && 
+          timerState.isRunning &&
+          timerState.sessionType === 'focus' && 
+          !document.hidden) {
+        console.log('Triggering idle notification! User idle on Pomotron tab for', timeSinceActivity.toFixed(2), 'minutes');
         toast({
           title: "Idle Detected",
           description: `No activity detected for ${settings.idleTimeout} minutes. Still focused?`,
@@ -150,6 +169,8 @@ export function useTimer() {
         });
         playSound('idleNudge');
         resetIdleDetection();
+      } else if (timeSinceActivity >= settings.idleTimeout && document.hidden) {
+        console.log('User idle but on different tab/app - not triggering notification');
       }
     }, 10000); // Check every 10 seconds for testing
 
