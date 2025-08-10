@@ -133,7 +133,7 @@ export default function FeedbackAdmin() {
                   </div>
                   {item.comment && item.comment.trim() && (
                     <div className="text-sm bg-gray-50 dark:bg-gray-800 rounded p-3">
-                      <p className="whitespace-pre-wrap">{item.comment}</p>
+                      <p className="whitespace-pre-wrap text-gray-900 dark:text-gray-100">{item.comment}</p>
                     </div>
                   )}
                 </div>
