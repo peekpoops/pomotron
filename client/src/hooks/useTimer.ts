@@ -142,12 +142,15 @@ export function useTimer() {
               })
 ;
             
+            // Never auto-start focus sessions - they require intention modal
+            const shouldAutoStart = settings.autoStart && nextSessionType !== 'focus';
+            
             // Reset start time for next session
-            startTimeRef.current = settings.autoStart ? Date.now() : null;
+            startTimeRef.current = shouldAutoStart ? Date.now() : null;
             
             return {
               ...prev,
-              isRunning: settings.autoStart,
+              isRunning: shouldAutoStart,
               timeLeft: nextDuration,
               sessionType: nextSessionType,
               currentCycle: nextCycle,

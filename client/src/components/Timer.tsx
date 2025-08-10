@@ -351,6 +351,17 @@ const Timer = memo(({ onOpenSettings, timerHook: externalTimerHook, onModalState
     }
   }, [timerState.sessionType, timerState.isRunning, timerState.timeLeft, settings.focusDuration]);
 
+  // Auto-show intention modal when transitioning to focus session
+  useEffect(() => {
+    if (timerState.sessionType === 'focus' && !timerState.isRunning && !timerState.isPaused) {
+      // Check if this is a fresh focus session (time left equals full duration)
+      const fullDuration = settings.focusDuration * 60;
+      if (timerState.timeLeft === fullDuration) {
+        setShowIntentionModal(true);
+      }
+    }
+  }, [timerState.sessionType, timerState.isRunning, timerState.isPaused, timerState.timeLeft, settings.focusDuration]);
+
   return (
     <div className="w-full space-y-6 lg:space-y-8">
       {/* Motivational Quote Banner */}
