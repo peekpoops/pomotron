@@ -21,23 +21,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Feedback routes with Safari compatibility
   app.post("/api/feedback", async (req, res) => {
     try {
+      console.log("Received feedback request:", req.body);
+      
       // Add CORS headers for Safari compatibility
       res.header('Access-Control-Allow-Origin', '*');
       res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
       res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
       
       const validatedFeedback = insertFeedbackSchema.parse(req.body);
+      console.log("Validated feedback:", validatedFeedback);
+      
       const feedback = await storage.createFeedback(validatedFeedback);
+      console.log("Created feedback:", feedback);
       
       // Ensure proper JSON response for Safari
       res.setHeader('Content-Type', 'application/json');
       res.status(201).json(feedback);
     } catch (error: any) {
       console.error("Error creating feedback:", error);
+      console.error("Error stack:", error?.stack);
       res.setHeader('Content-Type', 'application/json');
-      res.status(400).json({ 
-        error: "Invalid feedback data", 
-        message: error?.message || "Unknown error occurred"
+      res.status(500).json({ 
+        error: "Failed to create feedback", 
+        message: error?.message || "Unknown error occurred",
+        details: error?.issues || undefined
       });
     }
   });
