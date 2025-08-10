@@ -132,19 +132,6 @@ export default function Home() {
             </div>
             
             <div className="flex items-center space-x-2 sm:space-x-4">
-              {/* Sentry Test Button (Development Only) */}
-              {process.env.NODE_ENV === 'development' && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {throw new Error("This is your first error!");}}
-                  className="text-xs bg-red-500/20 border-red-500/30 text-red-300 hover:bg-red-500/30"
-                  title="Test Sentry Error Tracking"
-                >
-                  Test Error
-                </Button>
-              )}
-              
               {/* Navigation Tabs */}
               <div className="flex space-x-2 sm:space-x-3 p-1 sm:p-2 rounded-xl bg-black/20 backdrop-blur-sm border border-white/10 mobile-nav-container">
                 {navigation.map((item) => {

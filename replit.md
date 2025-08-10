@@ -87,3 +87,4 @@ Preferred communication style: Simple, everyday language.
 - **Performance Optimizations**: React.memo, throttled events, optimized calculations for better performance
 - **Vercel Deployment**: Added serverless API functions for full-stack deployment with PostgreSQL database
 - **Browser Tab Title**: Updated to "Pomotron – 💿 Retro Pomodoro Timer // Session_001 Engaged" format
+- **Sentry Monitoring**: Comprehensive error tracking and performance monitoring with custom spans for timer events, user interactions, and API calls
