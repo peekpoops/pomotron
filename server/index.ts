@@ -1,7 +1,15 @@
+import * as Sentry from "@sentry/node";
 import express, { type Request, Response, NextFunction } from "express";
 import path from "path";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+
+// Initialize Sentry first
+Sentry.init({
+  dsn: "https://394f8038acaffef6b0d78b852808f0fb@o4509820680798208.ingest.de.sentry.io/4509820702752848",
+  environment: process.env.NODE_ENV,
+  enableLogs: true,
+});
 
 const app = express();
 app.use(express.json());

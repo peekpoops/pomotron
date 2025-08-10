@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
+import * as Sentry from '@sentry/react';
 import { useLocalStorage } from './useLocalStorage';
 import { TimerState, Session, InsertSession, Settings } from '@/types';
 import { playSound } from '@/lib/sounds';
@@ -207,53 +208,102 @@ export function useTimer() {
 
 
   const startSession = useCallback((intention?: { task: string; why: string }) => {
-    // Set precise start time when session begins
-    startTimeRef.current = Date.now();
-    pausedTimeRef.current = 0; // Reset paused time for new session
-    const sessionId = crypto.randomUUID();
-    const currentTime = new Date();
-    
-    const newSession: Session = {
-      id: sessionId,
-      task: intention?.task || '',
-      why: intention?.why || '',
-      startTime: currentTime,
-      duration: timerState.sessionType === 'focus' ? settings.focusDuration * 60 : 
-                 timerState.sessionType === 'break' ? settings.breakDuration * 60 : 
-                 settings.longBreakDuration * 60,
-      completed: false,
-      sessionType: timerState.sessionType,
-      cycleNumber: timerState.currentCycle,
-    };
-    
-    setSessions(prev => [...prev, newSession]);
-    
-    setTimerState(prev => ({
-      ...prev,
-      isRunning: true,
-      isPaused: false,
-      currentSessionId: sessionId,
-      currentIntention: intention || prev.currentIntention,
-    }));
-    
-    playSound('start');
+    return Sentry.startSpan(
+      {
+        op: "pomodoro.session.start",
+        name: `Start ${timerState.sessionType} session`,
+      },
+      (span) => {
+        try {
+          // Set precise start time when session begins
+          startTimeRef.current = Date.now();
+          pausedTimeRef.current = 0; // Reset paused time for new session
+          const sessionId = crypto.randomUUID();
+          const currentTime = new Date();
+          
+          const sessionDuration = timerState.sessionType === 'focus' ? settings.focusDuration * 60 : 
+                       timerState.sessionType === 'break' ? settings.breakDuration * 60 : 
+                       settings.longBreakDuration * 60;
+          
+          // Add attributes to the span
+          span.setAttribute("session.type", timerState.sessionType);
+          span.setAttribute("session.duration", sessionDuration);
+          span.setAttribute("session.cycle", timerState.currentCycle);
+          span.setAttribute("session.has_intention", !!(intention?.task));
+          
+          const newSession: Session = {
+            id: sessionId,
+            task: intention?.task || '',
+            why: intention?.why || '',
+            startTime: currentTime,
+            duration: sessionDuration,
+            completed: false,
+            sessionType: timerState.sessionType,
+            cycleNumber: timerState.currentCycle,
+          };
+          
+          setSessions(prev => [...prev, newSession]);
+          
+          setTimerState(prev => ({
+            ...prev,
+            isRunning: true,
+            isPaused: false,
+            currentSessionId: sessionId,
+            currentIntention: intention || prev.currentIntention,
+          }));
+          
+          playSound('start');
+          
+          Sentry.logger.info("Pomodoro session started", {
+            sessionType: timerState.sessionType,
+            duration: sessionDuration,
+            cycle: timerState.currentCycle,
+            hasIntention: !!(intention?.task)
+          });
+        } catch (error) {
+          Sentry.captureException(error);
+          throw error;
+        }
+      }
+    );
   }, [timerState, settings, setSessions]);
 
   const pauseSession = useCallback(() => {
-    // Calculate and store elapsed time before pausing
-    if (startTimeRef.current) {
-      const currentTime = Date.now();
-      const elapsedSeconds = Math.floor((currentTime - startTimeRef.current) / 1000);
-      pausedTimeRef.current += elapsedSeconds;
-      startTimeRef.current = null;
-    }
-    
-    setTimerState(prev => ({
-      ...prev,
-      isRunning: false,
-      isPaused: true,
-    }));
-  }, []);
+    return Sentry.startSpan(
+      {
+        op: "pomodoro.session.pause",
+        name: "Pause session",
+      },
+      (span) => {
+        try {
+          // Calculate and store elapsed time before pausing
+          if (startTimeRef.current) {
+            const currentTime = Date.now();
+            const elapsedSeconds = Math.floor((currentTime - startTimeRef.current) / 1000);
+            pausedTimeRef.current += elapsedSeconds;
+            startTimeRef.current = null;
+            
+            span.setAttribute("elapsed_seconds", elapsedSeconds);
+            span.setAttribute("total_paused_time", pausedTimeRef.current);
+          }
+          
+          setTimerState(prev => ({
+            ...prev,
+            isRunning: false,
+            isPaused: true,
+          }));
+          
+          Sentry.logger.info("Pomodoro session paused", {
+            sessionType: timerState.sessionType,
+            timeRemaining: timerState.timeLeft
+          });
+        } catch (error) {
+          Sentry.captureException(error);
+          throw error;
+        }
+      }
+    );
+  }, [timerState]);
 
   const resumeSession = useCallback(() => {
     // Reset start time to current time when resuming

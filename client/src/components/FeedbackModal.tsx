@@ -1,4 +1,5 @@
 import { useState } from "react";
+import * as Sentry from "@sentry/react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -68,19 +69,44 @@ export function FeedbackModal({ open, onOpenChange }: FeedbackModalProps) {
   };
 
   const handleSubmit = () => {
-    if (rating === 0) {
-      toast({
-        title: "Rating required",
-        description: "Please select a rating before submitting.",
-        variant: "destructive",
-      });
-      return;
-    }
+    return Sentry.startSpan(
+      {
+        op: "ui.feedback.submit",
+        name: "Submit feedback",
+      },
+      (span) => {
+        try {
+          if (rating === 0) {
+            span.setAttribute("validation_error", "missing_rating");
+            toast({
+              title: "Rating required",
+              description: "Please select a rating before submitting.",
+              variant: "destructive",
+            });
+            return;
+          }
 
-    submitFeedbackMutation.mutate({
-      rating,
-      comment: comment.trim() || undefined,
-    });
+          // Add attributes to track feedback submission
+          span.setAttribute("feedback.rating", rating);
+          span.setAttribute("feedback.has_comment", !!comment.trim());
+          span.setAttribute("feedback.comment_length", comment.trim().length);
+
+          submitFeedbackMutation.mutate({
+            rating,
+            comment: comment.trim() || undefined,
+          });
+
+          Sentry.logger.info("User submitted feedback", {
+            rating,
+            hasComment: !!comment.trim(),
+            commentLength: comment.trim().length
+          });
+        } catch (error) {
+          Sentry.captureException(error);
+          throw error;
+        }
+      }
+    );
   };
 
   return (

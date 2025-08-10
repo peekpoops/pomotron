@@ -4,10 +4,15 @@ import App from "./App";
 import "./index.css";
 
 Sentry.init({
-  dsn: "https://394f8038acaffef6b0d78b852808f0fb6c456992068070208.ingest.de.sentry.io/4509820702752848",
+  dsn: "https://394f8038acaffef6b0d78b852808f0fb@o4509820680798208.ingest.de.sentry.io/4509820702752848",
   // Setting this option to true will send default PII data to Sentry.
   // For example, automatic IP address collection on events
-  sendDefaultPii: true
+  sendDefaultPii: true,
+  enableLogs: true,
+  integrations: [
+    // Send console.log, console.error, and console.warn calls as logs to Sentry
+    Sentry.consoleLoggingIntegration({ levels: ["log", "error", "warn"] }),
+  ],
 });
 
 const container = document.getElementById("root");

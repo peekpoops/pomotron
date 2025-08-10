@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, memo, useCallback } from 'react';
+import * as Sentry from '@sentry/react';
 import { Clock, Play, Pause, RotateCcw, Square, Settings2, Target, Gamepad2, Flame, TrendingUp, Heart, Lightbulb, Volume2, VolumeX } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -137,11 +138,7 @@ const Timer = memo(({ onOpenSettings, timerHook: externalTimerHook, onModalState
     cyclesBeforeLongBreak: 4,
     autoStart: true,
     softStart: false,
-    idleTimeout: 5,
     theme: 'starcourt',
-    websiteBlockingEnabled: true,
-    frictionOverride: false,
-    blockedSites: [],
     showQuotes: false,
     soundsEnabled: true,
     motivationalQuotesEnabled: false,
@@ -237,11 +234,17 @@ const Timer = memo(({ onOpenSettings, timerHook: externalTimerHook, onModalState
   }, [availableQuotes, getShuffledQuotes, setAvailableQuotes, setUsedQuotes, getRandomQuote, setCurrentQuote]);
 
   const handleStartSession = () => {
-    if (timerState.sessionType === 'focus') {
-      setShowIntentionModal(true);
-    } else {
-      startSession();
-    }
+    return Sentry.startSpan(
+      { op: "ui.timer.start", name: "Start timer button click" },
+      (span) => {
+        span.setAttribute("session.type", timerState.sessionType);
+        if (timerState.sessionType === 'focus') {
+          setShowIntentionModal(true);
+        } else {
+          startSession();
+        }
+      }
+    );
   };
 
   const handleIntentionSet = (intention?: { task: string; why: string }) => {
@@ -516,7 +519,10 @@ const Timer = memo(({ onOpenSettings, timerHook: externalTimerHook, onModalState
                   </Button>
                 ) : timerState.isRunning ? (
                   <Button
-                    onClick={pauseSession}
+                    onClick={() => Sentry.startSpan(
+                      { op: "ui.timer.pause", name: "Pause timer button click" },
+                      () => pauseSession()
+                    )}
                     className="btn-secondary px-6 py-4 font-medium hover:scale-105 transition-transform timer-control-button"
                   >
                     <Pause className="h-4 w-4 mr-2 button-icon" />
@@ -524,7 +530,10 @@ const Timer = memo(({ onOpenSettings, timerHook: externalTimerHook, onModalState
                   </Button>
                 ) : (
                   <Button
-                    onClick={resumeSession}
+                    onClick={() => Sentry.startSpan(
+                      { op: "ui.timer.resume", name: "Resume timer button click" },
+                      () => resumeSession()
+                    )}
                     className={`px-6 py-4 font-medium hover:scale-105 transition-transform timer-control-button ${
                       timerState.sessionType === 'break' 
                         ? 'bg-gradient-to-r from-emerald-500 to-teal-400 hover:from-emerald-400 hover:to-teal-300 text-white'
@@ -540,7 +549,10 @@ const Timer = memo(({ onOpenSettings, timerHook: externalTimerHook, onModalState
                 )}
                 
                 <Button
-                  onClick={resetSession}
+                  onClick={() => Sentry.startSpan(
+                    { op: "ui.timer.reset", name: "Reset timer button click" },
+                    () => resetSession()
+                  )}
                   className="btn-tertiary px-6 py-4 font-medium hover:scale-105 transition-transform timer-control-button"
                 >
                   <RotateCcw className="h-4 w-4 mr-2 button-icon" />
@@ -548,7 +560,10 @@ const Timer = memo(({ onOpenSettings, timerHook: externalTimerHook, onModalState
                 </Button>
                 
                 <Button
-                  onClick={endSession}
+                  onClick={() => Sentry.startSpan(
+                    { op: "ui.timer.end", name: "End timer button click" },
+                    () => endSession()
+                  )}
                   className="btn-danger px-6 py-4 font-medium hover:scale-105 transition-transform timer-control-button"
                 >
                   <Square className="h-4 w-4 mr-2 button-icon" />
