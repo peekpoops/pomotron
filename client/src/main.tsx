@@ -1,5 +1,6 @@
 import * as Sentry from "@sentry/react";
 import { createRoot } from "react-dom/client";
+import { PostHogProvider } from 'posthog-js/react';
 import App from "./App";
 import "./index.css";
 
@@ -15,10 +16,16 @@ Sentry.init({
   ],
 });
 
+const options = {
+  api_host: import.meta.env.VITE_PUBLIC_POSTHOG_HOST,
+};
+
 const container = document.getElementById("root");
 const root = createRoot(container!);
 root.render(
   <Sentry.ErrorBoundary fallback={<div>Something went wrong</div>} showDialog>
-    <App />
+    <PostHogProvider apiKey={import.meta.env.VITE_PUBLIC_POSTHOG_KEY} options={options}>
+      <App />
+    </PostHogProvider>
   </Sentry.ErrorBoundary>
 );
