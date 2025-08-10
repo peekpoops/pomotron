@@ -146,10 +146,22 @@ export default function Settings() {
                   min="1"
                   max="120"
                   value={localSettings.focusDuration}
-                  onChange={(e) => setLocalSettings(prev => ({
-                    ...prev,
-                    focusDuration: parseInt(e.target.value) || 25
-                  }))}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (value === '') {
+                      setLocalSettings(prev => ({ ...prev, focusDuration: '' as any }));
+                    } else {
+                      const numValue = parseInt(value);
+                      if (!isNaN(numValue) && numValue >= 1) {
+                        setLocalSettings(prev => ({ ...prev, focusDuration: numValue }));
+                      }
+                    }
+                  }}
+                  onBlur={(e) => {
+                    if (e.target.value === '' || parseInt(e.target.value) < 1) {
+                      setLocalSettings(prev => ({ ...prev, focusDuration: 25 }));
+                    }
+                  }}
                   className="form-input mt-1 text-sm"
                 />
               </div>
@@ -163,10 +175,22 @@ export default function Settings() {
                   min="1"
                   max="60"
                   value={localSettings.breakDuration}
-                  onChange={(e) => setLocalSettings(prev => ({
-                    ...prev,
-                    breakDuration: parseInt(e.target.value) || 5
-                  }))}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (value === '') {
+                      setLocalSettings(prev => ({ ...prev, breakDuration: '' as any }));
+                    } else {
+                      const numValue = parseInt(value);
+                      if (!isNaN(numValue) && numValue >= 1) {
+                        setLocalSettings(prev => ({ ...prev, breakDuration: numValue }));
+                      }
+                    }
+                  }}
+                  onBlur={(e) => {
+                    if (e.target.value === '' || parseInt(e.target.value) < 1) {
+                      setLocalSettings(prev => ({ ...prev, breakDuration: 5 }));
+                    }
+                  }}
                   className="form-input mt-1 text-sm"
                 />
               </div>
@@ -180,10 +204,22 @@ export default function Settings() {
                   min="1"
                   max="120"
                   value={localSettings.longBreakDuration}
-                  onChange={(e) => setLocalSettings(prev => ({
-                    ...prev,
-                    longBreakDuration: parseInt(e.target.value) || 15
-                  }))}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    if (value === '') {
+                      setLocalSettings(prev => ({ ...prev, longBreakDuration: '' as any }));
+                    } else {
+                      const numValue = parseInt(value);
+                      if (!isNaN(numValue) && numValue >= 1) {
+                        setLocalSettings(prev => ({ ...prev, longBreakDuration: numValue }));
+                      }
+                    }
+                  }}
+                  onBlur={(e) => {
+                    if (e.target.value === '' || parseInt(e.target.value) < 1) {
+                      setLocalSettings(prev => ({ ...prev, longBreakDuration: 15 }));
+                    }
+                  }}
                   className="form-input mt-1 text-sm"
                 />
               </div>
@@ -199,10 +235,22 @@ export default function Settings() {
                 min="1"
                 max="10"
                 value={localSettings.cyclesBeforeLongBreak}
-                onChange={(e) => setLocalSettings(prev => ({
-                  ...prev,
-                  cyclesBeforeLongBreak: parseInt(e.target.value) || 4
-                }))}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (value === '') {
+                    setLocalSettings(prev => ({ ...prev, cyclesBeforeLongBreak: '' as any }));
+                  } else {
+                    const numValue = parseInt(value);
+                    if (!isNaN(numValue) && numValue >= 1) {
+                      setLocalSettings(prev => ({ ...prev, cyclesBeforeLongBreak: numValue }));
+                    }
+                  }
+                }}
+                onBlur={(e) => {
+                  if (e.target.value === '' || parseInt(e.target.value) < 1) {
+                    setLocalSettings(prev => ({ ...prev, cyclesBeforeLongBreak: 4 }));
+                  }
+                }}
                 className="form-input mt-1 text-sm"
               />
             </div>
