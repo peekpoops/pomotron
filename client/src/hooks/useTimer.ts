@@ -32,6 +32,9 @@ export function useTimer() {
     motivationalQuotesEnabled: false,
   });
   const [sessions, setSessions] = useLocalStorage<Session[]>('pomotron-sessions', []);
+  
+  // Track accumulated focus time within current session
+  const accumulatedFocusTimeRef = useRef<number>(0);
 
   // Initialize timer with correct duration from settings
   useEffect(() => {
@@ -99,14 +102,22 @@ export function useTimer() {
               }
             }
             
-            // Save completed session
+            // Save completed session and accumulate focus time
             if (prev.currentSessionId) {
               const sessionToUpdate = sessions.find(s => s.id === prev.currentSessionId);
               if (sessionToUpdate) {
+                // If this was a focus session, add the focus time to accumulated time
+                if (prev.sessionType === 'focus' && startTimeRef.current) {
+                  const focusTimeSpent = Math.round((Date.now() - startTimeRef.current + pausedTimeRef.current) / 1000);
+                  accumulatedFocusTimeRef.current += focusTimeSpent;
+                }
+                
                 const updatedSession: Session = {
                   ...sessionToUpdate,
                   endTime: new Date(),
                   completed: true,
+                  // Update duration with accumulated focus time (only for focus sessions)
+                  duration: prev.sessionType === 'focus' ? accumulatedFocusTimeRef.current : sessionToUpdate.duration,
                 };
                 setSessions(prev => prev.map(s => s.id === updatedSession.id ? updatedSession : s));
               }
@@ -155,7 +166,8 @@ export function useTimer() {
               sessionType: nextSessionType,
               currentCycle: nextCycle,
               // Keep the same currentSessionId to continue the session
-              currentIntention: nextSessionType === 'focus' ? { task: '', why: '' } : prev.currentIntention,
+              // Keep the same intention throughout the entire session (all cycles)
+              currentIntention: prev.currentIntention,
             };
           }
           
@@ -234,6 +246,7 @@ export function useTimer() {
             // 1. No current session exists (completely fresh start)
             // 2. Intention is provided (user explicitly started with intention modal)
             pausedTimeRef.current = 0; // Reset paused time for new session
+            accumulatedFocusTimeRef.current = 0; // Reset accumulated focus time for new session
             sessionId = crypto.randomUUID();
             const currentTime = new Date();
             
@@ -376,20 +389,21 @@ export function useTimer() {
   }, [timerState, settings]);
 
   const endSession = useCallback(() => {
-    // Mark current session as incomplete if exists
+    // Mark current session as ended and update with accumulated focus time
     if (timerState.currentSessionId) {
-      // Calculate actual duration spent on this session
-      const actualDuration = startTimeRef.current 
-        ? Math.round((Date.now() - startTimeRef.current - pausedTimeRef.current) / 1000)
-        : 0;
+      // If currently in a focus session, add the current time to accumulated time
+      if (timerState.sessionType === 'focus' && startTimeRef.current) {
+        const currentFocusTime = Math.round((Date.now() - startTimeRef.current + pausedTimeRef.current) / 1000);
+        accumulatedFocusTimeRef.current += currentFocusTime;
+      }
       
       setSessions(prev => prev.map(s => 
         s.id === timerState.currentSessionId 
           ? { 
               ...s, 
               endTime: new Date(), 
-              completed: false,
-              duration: Math.max(0, actualDuration) // Ensure duration is not negative
+              completed: false, // User manually ended, so mark as incomplete
+              duration: Math.max(0, accumulatedFocusTimeRef.current) // Use accumulated focus time
             }
           : s
       ));
@@ -398,6 +412,7 @@ export function useTimer() {
     // Reset timing references
     startTimeRef.current = null;
     pausedTimeRef.current = 0;
+    accumulatedFocusTimeRef.current = 0;
     
     setTimerState({
       ...defaultTimerState,
@@ -405,7 +420,7 @@ export function useTimer() {
     });
     
     playSound('reset');
-  }, [timerState.currentSessionId, settings.focusDuration, setSessions]);
+  }, [timerState.currentSessionId, timerState.sessionType, settings.focusDuration, setSessions]);
 
   // Format time display
   const formatTime = useCallback((seconds: number): string => {
