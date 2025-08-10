@@ -152,7 +152,7 @@ export function useTimer() {
               sessionType: nextSessionType,
               currentCycle: nextCycle,
               currentSessionId: undefined,
-              currentIntention: prev.currentIntention,
+              currentIntention: nextSessionType === 'focus' ? { task: '', why: '' } : prev.currentIntention,
             };
           }
           
@@ -218,54 +218,31 @@ export function useTimer() {
           // Set precise start time when session begins
           startTimeRef.current = Date.now();
           pausedTimeRef.current = 0; // Reset paused time for new session
+          const sessionId = crypto.randomUUID();
+          const currentTime = new Date();
           
           const sessionDuration = timerState.sessionType === 'focus' ? settings.focusDuration * 60 : 
                        timerState.sessionType === 'break' ? settings.breakDuration * 60 : 
                        settings.longBreakDuration * 60;
-          
-          // Check if there's already a current session to continue
-          let sessionId = timerState.currentSessionId;
-          let isNewSession = false;
-          
-          if (!sessionId) {
-            // Only create a new session if there isn't one already
-            sessionId = crypto.randomUUID();
-            isNewSession = true;
-            
-            const currentTime = new Date();
-            const newSession: Session = {
-              id: sessionId,
-              task: intention?.task || '',
-              why: intention?.why || '',
-              startTime: currentTime,
-              duration: sessionDuration,
-              completed: false,
-              sessionType: timerState.sessionType,
-              cycleNumber: timerState.currentCycle,
-            };
-            
-            setSessions(prev => [...prev, newSession]);
-          } else {
-            // Update existing session with new intention if provided
-            if (intention?.task || intention?.why) {
-              setSessions(prev => prev.map(s => 
-                s.id === sessionId 
-                  ? { 
-                      ...s, 
-                      task: intention?.task || s.task,
-                      why: intention?.why || s.why
-                    }
-                  : s
-              ));
-            }
-          }
           
           // Add attributes to the span
           span.setAttribute("session.type", timerState.sessionType);
           span.setAttribute("session.duration", sessionDuration);
           span.setAttribute("session.cycle", timerState.currentCycle);
           span.setAttribute("session.has_intention", !!(intention?.task));
-          span.setAttribute("session.is_new", isNewSession);
+          
+          const newSession: Session = {
+            id: sessionId,
+            task: intention?.task || '',
+            why: intention?.why || '',
+            startTime: currentTime,
+            duration: sessionDuration,
+            completed: false,
+            sessionType: timerState.sessionType,
+            cycleNumber: timerState.currentCycle,
+          };
+          
+          setSessions(prev => [...prev, newSession]);
           
           setTimerState(prev => ({
             ...prev,
@@ -281,8 +258,7 @@ export function useTimer() {
             sessionType: timerState.sessionType,
             duration: sessionDuration,
             cycle: timerState.currentCycle,
-            hasIntention: !!(intention?.task),
-            isNewSession
+            hasIntention: !!(intention?.task)
           });
         } catch (error) {
           Sentry.captureException(error);
@@ -343,8 +319,24 @@ export function useTimer() {
   }, [timerState.sessionType, settings]);
 
   const resetSession = useCallback(() => {
-    // Don't mark session as complete when resetting - just reset the timer
-    // This preserves the current session and intention
+    // Mark current session as incomplete if exists
+    if (timerState.currentSessionId) {
+      // Calculate actual duration spent on this session
+      const actualDuration = startTimeRef.current 
+        ? Math.round((Date.now() - startTimeRef.current - pausedTimeRef.current) / 1000)
+        : 0;
+      
+      setSessions(prev => prev.map(s => 
+        s.id === timerState.currentSessionId 
+          ? { 
+              ...s, 
+              endTime: new Date(), 
+              completed: false,
+              duration: Math.max(0, actualDuration) // Ensure duration is not negative
+            }
+          : s
+      ));
+    }
     
     let duration: number;
     switch (timerState.sessionType) {
@@ -368,13 +360,11 @@ export function useTimer() {
       isRunning: false,
       isPaused: false,
       timeLeft: duration,
-      // Explicitly preserve currentSessionId and currentIntention
-      currentSessionId: prev.currentSessionId,
-      currentIntention: prev.currentIntention,
+      currentSessionId: undefined,
     }));
     
     playSound('reset');
-  }, [timerState.sessionType, settings]);
+  }, [timerState, settings, setSessions]);
 
   const endSession = useCallback(() => {
     // Mark current session as incomplete if exists
