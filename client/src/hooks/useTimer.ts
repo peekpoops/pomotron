@@ -152,7 +152,7 @@ export function useTimer() {
               sessionType: nextSessionType,
               currentCycle: nextCycle,
               currentSessionId: undefined,
-              currentIntention: nextSessionType === 'focus' ? { task: '', why: '' } : prev.currentIntention,
+              currentIntention: prev.currentIntention,
             };
           }
           
