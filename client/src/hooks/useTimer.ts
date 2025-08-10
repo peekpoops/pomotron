@@ -282,17 +282,7 @@ export function useTimer() {
             duration: sessionDuration,
             cycle: timerState.currentCycle,
             hasIntention: !!(intention?.task),
-            isNewSession,
-            existingSessionId: timerState.currentSessionId,
-            newSessionId: sessionId
-          });
-          
-          // Debug logging for break session issues
-          console.log(`[DEBUG] Starting ${timerState.sessionType} session:`, {
-            existingSessionId: timerState.currentSessionId,
-            newSessionId: sessionId,
-            isNewSession,
-            sessionType: timerState.sessionType
+            isNewSession
           });
         } catch (error) {
           Sentry.captureException(error);
@@ -356,12 +346,6 @@ export function useTimer() {
     // Don't mark session as complete when resetting - just reset the timer
     // This preserves the current session and intention
     
-    console.log(`[DEBUG] Resetting ${timerState.sessionType} session:`, {
-      currentSessionId: timerState.currentSessionId,
-      sessionType: timerState.sessionType,
-      intention: timerState.currentIntention
-    });
-    
     let duration: number;
     switch (timerState.sessionType) {
       case 'focus':
@@ -379,19 +363,18 @@ export function useTimer() {
     startTimeRef.current = null;
     pausedTimeRef.current = 0;
     
-    setTimerState(prev => {
-      console.log(`[DEBUG] Reset preserving sessionId: ${prev.currentSessionId}`);
-      return {
-        ...prev,
-        isRunning: false,
-        isPaused: false,
-        timeLeft: duration,
-        // Keep currentSessionId and currentIntention intact
-      };
-    });
+    setTimerState(prev => ({
+      ...prev,
+      isRunning: false,
+      isPaused: false,
+      timeLeft: duration,
+      // Explicitly preserve currentSessionId and currentIntention
+      currentSessionId: prev.currentSessionId,
+      currentIntention: prev.currentIntention,
+    }));
     
     playSound('reset');
-  }, [timerState.sessionType, settings, timerState.currentSessionId, timerState.currentIntention]);
+  }, [timerState.sessionType, settings]);
 
   const endSession = useCallback(() => {
     // Mark current session as incomplete if exists
