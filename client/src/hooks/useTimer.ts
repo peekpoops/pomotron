@@ -144,35 +144,17 @@ export function useTimer() {
             
             // Reset start time for next session
             startTimeRef.current = settings.autoStart ? Date.now() : null;
-            pausedTimeRef.current = 0; // Reset paused time for new session type
+            pausedTimeRef.current = 0; // Reset paused time for next session type
             
-            // Create new session for auto-start when transitioning between session types
-            let newSessionId: string | undefined = undefined;
-            if (settings.autoStart) {
-              newSessionId = crypto.randomUUID();
-              const currentTime = new Date();
-              
-              const newSession: Session = {
-                id: newSessionId,
-                task: nextSessionType === 'focus' ? '' : (prev.currentIntention?.task || ''),
-                why: nextSessionType === 'focus' ? '' : (prev.currentIntention?.why || ''),
-                startTime: currentTime,
-                duration: nextDuration,
-                completed: false,
-                sessionType: nextSessionType,
-                cycleNumber: nextCycle,
-              };
-              
-              setSessions(prevSessions => [...prevSessions, newSession]);
-            }
-            
+            // Continue the same session - don't create new session for focus/break transitions
+            // The session continues throughout all cycles until explicitly ended
             return {
               ...prev,
               isRunning: settings.autoStart,
               timeLeft: nextDuration,
               sessionType: nextSessionType,
               currentCycle: nextCycle,
-              currentSessionId: newSessionId,
+              // Keep the same currentSessionId to continue the session
               currentIntention: nextSessionType === 'focus' ? { task: '', why: '' } : prev.currentIntention,
             };
           }
@@ -239,11 +221,11 @@ export function useTimer() {
           // Set precise start time when session begins
           startTimeRef.current = Date.now();
           
-          // Check if we're continuing an existing session (from pause/reset) or starting completely fresh
-          // Only create new session when:
-          // 1. No current session exists (completely fresh start or after endSession)
-          // 2. Intention is provided (user explicitly started with intention modal - new focus session)
-          const isNewSession = !timerState.currentSessionId || (intention && timerState.sessionType === 'focus');
+          // Only create a new session when:
+          // 1. No current session exists AND intention is provided (fresh start with intention modal)
+          // 2. No current session exists AND this is the very first start after endSession
+          // All other cases (reset, pause/resume, auto-start transitions) continue existing session
+          const isNewSession = !timerState.currentSessionId;
           
           let sessionId = timerState.currentSessionId;
           

@@ -238,9 +238,14 @@ const Timer = memo(({ onOpenSettings, timerHook: externalTimerHook, onModalState
       { op: "ui.timer.start", name: "Start timer button click" },
       (span) => {
         span.setAttribute("session.type", timerState.sessionType);
-        if (timerState.sessionType === 'focus') {
+        span.setAttribute("has_current_session", !!timerState.currentSessionId);
+        
+        // Only show intention modal for focus sessions when starting a completely new session
+        // (no currentSessionId exists - meaning we're not continuing an existing session)
+        if (timerState.sessionType === 'focus' && !timerState.currentSessionId) {
           setShowIntentionModal(true);
         } else {
+          // Continue existing session or start break/longBreak without intention modal
           startSession();
         }
       }
