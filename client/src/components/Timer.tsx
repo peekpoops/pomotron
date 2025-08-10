@@ -238,10 +238,12 @@ const Timer = memo(({ onOpenSettings, timerHook: externalTimerHook, onModalState
       { op: "ui.timer.start", name: "Start timer button click" },
       (span) => {
         span.setAttribute("session.type", timerState.sessionType);
-        if (timerState.sessionType === 'focus') {
+        // Only show intention modal for focus sessions if no current intention exists
+        if (timerState.sessionType === 'focus' && (!timerState.currentIntention?.task || timerState.currentIntention.task.trim() === '')) {
           setShowIntentionModal(true);
         } else {
-          startSession();
+          // For breaks or focus sessions with existing intention, start directly
+          startSession(timerState.currentIntention);
         }
       }
     );

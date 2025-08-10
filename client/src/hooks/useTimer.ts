@@ -319,24 +319,8 @@ export function useTimer() {
   }, [timerState.sessionType, settings]);
 
   const resetSession = useCallback(() => {
-    // Mark current session as incomplete if exists
-    if (timerState.currentSessionId) {
-      // Calculate actual duration spent on this session
-      const actualDuration = startTimeRef.current 
-        ? Math.round((Date.now() - startTimeRef.current - pausedTimeRef.current) / 1000)
-        : 0;
-      
-      setSessions(prev => prev.map(s => 
-        s.id === timerState.currentSessionId 
-          ? { 
-              ...s, 
-              endTime: new Date(), 
-              completed: false,
-              duration: Math.max(0, actualDuration) // Ensure duration is not negative
-            }
-          : s
-      ));
-    }
+    // Don't mark session as complete when resetting - just reset the timer
+    // This preserves the current session and intention
     
     let duration: number;
     switch (timerState.sessionType) {
@@ -360,11 +344,11 @@ export function useTimer() {
       isRunning: false,
       isPaused: false,
       timeLeft: duration,
-      currentSessionId: undefined,
+      // Keep currentSessionId and currentIntention intact
     }));
     
     playSound('reset');
-  }, [timerState, settings, setSessions]);
+  }, [timerState.sessionType, settings]);
 
   const endSession = useCallback(() => {
     // Mark current session as incomplete if exists

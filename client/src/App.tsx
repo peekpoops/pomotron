@@ -32,7 +32,7 @@ function App() {
     // Show initial loading screen on app startup
     const timer = setTimeout(() => {
       setShowInitialLoading(false);
-    }, 1500);
+    }, 500);
 
     return () => clearTimeout(timer);
   }, []);
@@ -43,7 +43,7 @@ function App() {
         <LoadingScreen 
           isLoading={showInitialLoading} 
           loadingType="initial"
-          duration={1500}
+          duration={500}
           onComplete={() => setShowInitialLoading(false)}
         />
         <Router />
