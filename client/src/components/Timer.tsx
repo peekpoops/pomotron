@@ -267,6 +267,19 @@ const Timer = memo(({ onOpenSettings, timerHook: externalTimerHook, onModalState
     ).length;
   }, [timerSessions]);
 
+  // Calculate today's actual focus time (sum of all completed focus session durations)
+  const todayFocusTime = useMemo(() => {
+    const today = new Date().toDateString();
+    return (timerSessions || []).reduce((total, session) => {
+      if (session.completed && 
+          session.sessionType === 'focus' && 
+          new Date(session.startTime).toDateString() === today) {
+        return total + (session.duration || 0);
+      }
+      return total;
+    }, 0);
+  }, [timerSessions]);
+
   const getSessionInfo = () => {
     if (timerState.sessionType === 'focus') {
       return `Cycle ${timerState.currentCycle} of ${settings.cyclesBeforeLongBreak} • Long break after ${settings.cyclesBeforeLongBreak} cycles`;
@@ -750,11 +763,11 @@ const Timer = memo(({ onOpenSettings, timerHook: externalTimerHook, onModalState
                   </div>
                   <div className="flex items-center space-x-1">
                     <span className="text-xl font-orbitron font-black text-accent">
-                      {Math.floor(todayCompletedCycles * settings.focusDuration / 60)}
+                      {Math.floor(todayFocusTime / 3600)}
                     </span>
                     <span className="text-xs text-accent font-tech-mono">H</span>
                     <span className="text-xl font-orbitron font-black text-accent ml-2">
-                      {todayCompletedCycles * settings.focusDuration % 60}
+                      {Math.floor((todayFocusTime % 3600) / 60)}
                     </span>
                     <span className="text-xs text-accent font-tech-mono">M</span>
                   </div>
