@@ -408,9 +408,9 @@ const Timer = memo(({ onOpenSettings, timerHook: externalTimerHook, onModalState
         </Card>
       )}
 
-      <div className="grid xl:grid-cols-3 lg:grid-cols-2 gap-6 lg:gap-8 items-start">
+      <div className="grid xl:grid-cols-3 lg:grid-cols-2 md:grid-cols-2 gap-4 md:gap-6 lg:gap-8 items-start">
         {/* Timer Section */}
-        <div className="xl:col-span-2 lg:col-span-2 w-full">
+        <div className="xl:col-span-2 lg:col-span-2 md:col-span-1 w-full">
           <Card className={getCardClassName()}>
             <CardContent className="p-4 sm:p-6 lg:p-12 xl:p-16 mobile-padding-md">
               {/* Break Session Visual Enhancement */}
@@ -640,7 +640,7 @@ const Timer = memo(({ onOpenSettings, timerHook: externalTimerHook, onModalState
         </div>
 
         {/* Sidebar */}
-        <div className="space-y-4 sm:space-y-6">
+        <div className="space-y-4 sm:space-y-6 md:col-span-1">
           {/* Current Intention - Enhanced Retro Style */}
           {timerState.currentIntention.task && (
             <Card className="neon-border glass-morphism relative overflow-hidden">
