@@ -271,9 +271,11 @@ const Timer = memo(({ onOpenSettings, timerHook: externalTimerHook, onModalState
   const todayFocusTime = useMemo(() => {
     const today = new Date().toDateString();
     return (timerSessions || []).reduce((total, session) => {
-      if (session.completed && 
-          session.sessionType === 'focus' && 
-          new Date(session.startTime).toDateString() === today) {
+      // Sum ALL focus time for today (including incomplete sessions)
+      // This matches the Analytics tab calculation for focus time per session
+      if (session.sessionType === 'focus' && 
+          new Date(session.startTime).toDateString() === today &&
+          session.duration > 0) {
         return total + (session.duration || 0);
       }
       return total;
